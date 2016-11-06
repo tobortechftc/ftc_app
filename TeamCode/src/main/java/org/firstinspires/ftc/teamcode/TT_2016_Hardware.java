@@ -299,13 +299,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             double init_time = getRuntime();
             boolean navx_ok = false;
-            while (!navx_ok && (getRuntime() - init_time < 3)) { // wait for three sec to get connected
+            while (!navx_ok && (getRuntime() - init_time < 6)) { // wait for three sec to get connected
                 navx_ok = navx_device.isConnected();
+                idle();
             }
             if (navx_ok) {
                 boolean navx_cal = true;
-                while (navx_cal && (getRuntime() - init_time < 5)) { // wait for 2 sec to get calibration
+                while (navx_cal && (getRuntime() - init_time < 12)) { // wait for 2 sec to get calibration
                     navx_cal = navx_device.isCalibrating();
+                    idle();
                 }
                 if (navx_cal)
                     navx_ok = false;
@@ -318,6 +320,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         }
         hardwareMap.logDevices();
+        show_telemetry();
         DbgLog.msg(String.format("TOBOT-INIT  end() -"));
     } // end of tobot_init
 
@@ -422,13 +425,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         //if (use_gyro == true && lp == rp) {
         if (use_navx) {
             double cur_heading = navx_device.getYaw();
-            if (cur_heading - imu_heading > 2.5) { // cook to right,  slow down left motor
+            if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
                 if (lp > 0) lp *= 0.9;
                 else rp *= 0.9;
-            } else if (cur_heading - imu_heading < -2.5) {
+            } else if (cur_heading - imu_heading < -0.7) { // crook to the left, slow down right motor
                 if (lp > 0) rp *= 0.9;
                 else lp *= 0.9;
             }
+
         }
         motorR.setPower(rp);
         motorL.setPower(lp);
@@ -769,8 +773,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_left_beacon(LEFT_BEACON_INIT);
     }
 
-    public void forwardTillUltra(double us_stop_val, double power, double max_sec) throws InterruptedException {
+    public void forwardTillUltra(double us_stop_val, double power, double max_sec, boolean is_red) throws InterruptedException {
         double us_val = 0;
+        if(is_red){
+            imu_heading = -45.0;
+        }
+        else{
+            imu_heading = 45.0;
+        }
         if (use_range) {
             us_val = rangeSensor.getDistance(DistanceUnit.CM);
         } else if (use_ultra) {
@@ -847,7 +857,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             return;
         }
 
-            StraightIn(0.6, 34);
+            StraightIn(0.5, 34);
             //sleep(300);
 
         if (use_gyro) {
@@ -857,26 +867,26 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (is_in) {
             if (is_red){
-                TurnRightD(0.6,35,true);
+                TurnRightD(0.4,27,true);
             }
             else {
-                TurnLeftD(0.6,45,true);
+                TurnLeftD(0.4,45,true);
             }
         }
         else {
             if (is_red){
-                TurnLeftD(0.6,35,true);
-                StraightIn(0.6,29);
-                TurnRightD(0.6,85,true);
+                TurnLeftD(0.4,35,true);
+                StraightIn(0.4,29);
+                TurnRightD(0.4,85,true);
             }
             else {
-                TurnRightD(0.6,40,true);
-                StraightIn(0.6,26);
-                TurnLeftD(0.6,90,true);
+                TurnRightD(0.4,40,true);
+                StraightIn(0.4,26);
+                TurnLeftD(0.4,90,true);
             }
         }
 
-        StraightIn(0.6, 5);
+        StraightIn(0.5, 3);
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
@@ -901,11 +911,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             goUntilWall(0.3);
             // StraightIn(0.5, 0.5);
             if(is_red){
-                TurnLeftD(0.5, 81, true);
+                TurnLeftD(0.5, 65, true);
             }
             else{
-                TurnRightD(0.5, 81, true);
+                TurnRightD(0.5, 65, true);
             }
+            StraightIn(0.5, -3);
         }
         sleep(500);
         //forwardTillUltra(10, 0.25, 3);
@@ -915,7 +926,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-             forwardTillUltra(10, 0.25, 5);
+             forwardTillUltra(10, 0.25, 5, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
