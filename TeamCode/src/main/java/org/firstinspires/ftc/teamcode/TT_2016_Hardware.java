@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -71,7 +72,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
-    final static int WHITE_ADA = 9000  ;
+    final static int WHITE_ADA = 9000;
+    final static double WHITE_NXT = 2.00;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -92,6 +94,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     double armDelta = 0.1;
     int slider_counter = 0;
+
+    boolean bPrevState = false;
+    boolean bCurrState = false;
 
     // position of servos
 
@@ -123,6 +128,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     UltrasonicSensor ultra;
     OpticalDistanceSensor opSensor;
     GyroSensor gyro;
+    LightSensor lightSensor;
     int heading = 360;
     double imu_heading = 0;
     int touch = 0;
@@ -139,6 +145,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_ultra = false;
     Boolean use_range = true;
     Boolean use_adacolor = false;
+    Boolean use_light = true;
 
     public enum State {
         STATE_TELEOP,    // state to test teleop
@@ -255,6 +262,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         coSensor = hardwareMap.colorSensor.get("co");
         coSensor.setI2cAddress(I2cAddr.create8bit(0x60));
 
+
         coSensor2 = hardwareMap.colorSensor.get("co2");
         coSensor2.setI2cAddress(I2cAddr.create8bit(0x3c));
         coSensor2.enableLed(true);
@@ -271,6 +279,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             coAda = hardwareMap.colorSensor.get("color");
         }
 
+        if (use_light) {
+            lightSensor = hardwareMap.lightSensor.get("nxtLight");
+            lightSensor.enableLed(true);
+        }
         // bEnabled represents the state of the LED.
         boolean bEnabled = true;
 
@@ -359,6 +371,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
         telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
         telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
+        telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
+        telemetry.addData("12. Normal", lightSensor.getLightDetected());
 
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
@@ -826,7 +840,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
 
 
-    public void goUntilWhite(double power) throws InterruptedException {
+    /*public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
         while ((!detectWhite() || !detectWall()) && (getRuntime() - initAutoOpTime < 0.5)) {
             driveTT(power, power);
@@ -835,7 +849,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             driveTT(power, power);
         }
         stop_chassis();
-    }
+    }*/
 
     public void goUntilWall(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
@@ -960,12 +974,20 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public boolean detectWhite() {
     int cur_sum_ada_colors = 0;
+        double nxtlight = 0;
         if(use_adacolor) {
-            cur_sum_ada_colors = coAda.alpha()+coAda.blue()+coAda.red()+coAda.green();
-        }
+            cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
 
-        if (cur_sum_ada_colors < WHITE_ADA) {
-            return false;
+
+            if (cur_sum_ada_colors < WHITE_ADA) {
+                return false;
+            }
+        }else if (use_light) {
+            nxtlight = lightSensor.getRawLightDetected();
+
+            if (nxtlight < WHITE_NXT) {
+                return false;
+            }
         }
     //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
     //        return false;
