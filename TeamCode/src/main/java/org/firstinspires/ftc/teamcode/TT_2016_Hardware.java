@@ -86,6 +86,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
     final static double GYRO_ROTATION_RATIO_L = 0.80; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
     final static double GYRO_ROTATION_RATIO_R = 0.85; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
+    final static double NAVX_ROTATION_RATIO_L = 0.55; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
+    final static double NAVX_ROTATION_RATIO_R = 0.56; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     int numOpLoops = 1;
 
     //
@@ -420,6 +422,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void StraightIn(double power, double in) throws InterruptedException {
+        if (use_navx){
+            imu_heading = navx_device.getYaw();
+        }
         if (use_encoder) {
             double numberR = in / INCHES_PER_ROTATION;
             StraightR(power, numberR);
@@ -477,7 +482,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void TurnLeftD(double power, int degree, boolean spotTurn) throws InterruptedException {
-        double adjust_degree = GYRO_ROTATION_RATIO_L * (double) degree;
+        double adjust_degree_gyro = GYRO_ROTATION_RATIO_L * (double) degree;
+        double adjust_degree_navx = NAVX_ROTATION_RATIO_L  * (double) degree;
         double current_pos = 0;
         boolean heading_cross_zero = false;
         initAutoOpTime = getRuntime();
@@ -501,7 +507,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         rightPower = (float) power;
         if (use_navx) {
             current_pos = navx_device.getYaw();
-            imu_heading = current_pos - adjust_degree ;
+            imu_heading = current_pos - adjust_degree_navx ;
             if (imu_heading <= -180) {
                 imu_heading += 360;
                 heading_cross_zero = true;
@@ -521,7 +527,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // if (false) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
-            heading = gyro.getHeading() - (int) adjust_degree;
+            heading = gyro.getHeading() - (int) adjust_degree_gyro;
             Boolean cross_zero = false;
             if (heading < 0) {
                 heading += 360;
@@ -541,7 +547,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 prev_heading = cur_heading;
                 cur_heading = gyro.getHeading();
                 if (cross_zero == true) {
-                    if (cur_heading < adjust_degree) {
+                    if (cur_heading < adjust_degree_gyro) {
                         cur_heading += 360;
                     } else {
                         cross_zero = false;
@@ -561,7 +567,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void TurnRightD(double power, int degree, boolean spotTurn) throws InterruptedException {
-        double adjust_degree = GYRO_ROTATION_RATIO_R * (double) degree;
+        double adjust_degree_gyro = GYRO_ROTATION_RATIO_R * (double) degree;
+        double adjust_degree_navx = NAVX_ROTATION_RATIO_R * (double) degree;
         double current_pos = 0;
         boolean heading_cross_zero = false;
         initAutoOpTime = getRuntime();
@@ -586,7 +593,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (use_navx) {
             current_pos = navx_device.getYaw();
-            imu_heading = current_pos + adjust_degree ;
+            imu_heading = current_pos + adjust_degree_navx ;
             if (imu_heading >= 180) {
                 imu_heading -= 360;
                 heading_cross_zero = true;
@@ -606,7 +613,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // if (false) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
-            heading = cur_heading + (int)adjust_degree;
+            heading = cur_heading + (int)adjust_degree_gyro;
             int prev_heading = -1;
             int init_heading = cur_heading;
             DbgLog.msg(String.format("LOP: Right Turn %d degree: Gyro tar/curr heading = %d/%d",

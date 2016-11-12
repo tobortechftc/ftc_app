@@ -153,7 +153,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 sleep(300);
             }
             if (gamepad1.right_bumper) { //
-                TurnRightD(0.9,90,true);
+                TurnRightD(0.45,90,true);
             }
 
             if (gamepad1.left_trigger > 0.1) { //
@@ -161,7 +161,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 sleep(300);
             }
             if (gamepad1.left_bumper) { //
-                TurnLeftD(0.9,90,true);
+                TurnLeftD(0.45,90,true);
             }
 
             if (gamepad2.dpad_left) {
@@ -208,25 +208,27 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             } else if (gamepad1.dpad_left) {
                 TurnLeftD(0.5, 90, true);
             }
-            if (gamepad2.dpad_left) {
-                if (gate_sv_pos>0.005)
-                    set_gate(gate_sv_pos-0.005);
-                sleep(5);
-            }
-            if (gamepad2.dpad_right) {
-                if (gate_sv_pos<0.995)
-                    set_gate(gate_sv_pos+0.005);
-                sleep(5);
-            }
-            if (gamepad2.dpad_down) {
-                if (pusher_sv_pos>0.005)
-                    set_pusher(pusher_sv_pos-0.005);
-                sleep(5);
-            }
-            if (gamepad2.dpad_up) {
-                if (pusher_sv_pos<0.995)
-                    set_pusher(pusher_sv_pos+0.005);
-                sleep(5);
+            if (false) {
+                if (gamepad2.dpad_left) {
+                    if (gate_sv_pos > 0.005)
+                        set_gate(gate_sv_pos - 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_right) {
+                    if (gate_sv_pos < 0.995)
+                        set_gate(gate_sv_pos + 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_down) {
+                    if (pusher_sv_pos > 0.005)
+                        set_pusher(pusher_sv_pos - 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_up) {
+                    if (pusher_sv_pos < 0.995)
+                        set_pusher(pusher_sv_pos + 0.005);
+                    sleep(5);
+                }
             }
 
 
