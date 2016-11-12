@@ -802,7 +802,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         else{
             imu_heading = 45.0;
         }
-        if (use_range) {
+        if (use_range){
+        // (true) {
             us_val = rangeSensor.getDistance(DistanceUnit.CM);
         } else if (use_ultra) {
             us_val = ultra.getUltrasonicLevel();
@@ -847,20 +848,17 @@ public class TT_2016_Hardware extends LinearOpMode {
 
 
 
-    /*public void goUntilWhite(double power) throws InterruptedException {
+    public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
-        while ((!detectWhite() || !detectWall()) && (getRuntime() - initAutoOpTime < 0.5)) {
-            driveTT(power, power);
-        }
-        while ((!detectWhite() || !detectWall())&& (getRuntime() - initAutoOpTime < 2)) {
+        while ((!detectWhite() || !detectWall(RANGE_WALL)) && (getRuntime() - initAutoOpTime < 3)) {
             driveTT(power, power);
         }
         stop_chassis();
-    }*/
+    }
 
-    public void goUntilWall(double power) throws InterruptedException {
+    public void goUntilWall(double power, double distance) throws InterruptedException {
         initAutoOpTime = getRuntime();
-        while (!detectWall() && (getRuntime() - initAutoOpTime < 2)) {
+        while (!detectWall(distance) && (getRuntime() - initAutoOpTime < 2)) {
             driveTT(power, power);
         }
         stop_chassis();
@@ -928,14 +926,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void goBeacon (boolean is_red) throws InterruptedException {
         if (true) {
-            //goUntilWhite(0.3);
-            goUntilWall(0.3);
-            // StraightIn(0.5, 0.5);
+            //goUntilWhite(0.23);
+            goUntilWall(0.3, 180.2);
+            StraightIn(-0.5, 2.5);
+            sleep(400);
             if(is_red){
-                TurnLeftD(0.5, 65, true);
+                TurnLeftD(0.45, 65, true);
             }
             else{
-                TurnRightD(0.5, 65, true);
+                TurnRightD(0.45, 65, true);
             }
             StraightIn(0.5, -3);
         }
@@ -1002,11 +1001,15 @@ public class TT_2016_Hardware extends LinearOpMode {
         return true;
     }
 
-    public boolean detectWall() {
-        double range = rangeSensor.getDistance(DistanceUnit.CM);
-        if (range  > RANGE_WALL) {
+    public boolean detectWall(double distance) {
+        if(!use_range){
             return false;
         }
+        double range = rangeSensor.getDistance(DistanceUnit.CM);
+        if (range  > distance) {
+            return false;
+        }
+
         //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
         //        return false;
         //    }
