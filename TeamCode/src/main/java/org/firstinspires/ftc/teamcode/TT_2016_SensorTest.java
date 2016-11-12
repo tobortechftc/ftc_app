@@ -170,6 +170,9 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             if (gamepad2.dpad_right) {
                 goBeacon(false);
             }
+            if (gamepad2.dpad_up){
+                StraightIn(0.5,72);
+            }
 
             // write the values to the motors
             motorR.setPower(rightPower);

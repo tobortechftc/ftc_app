@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -71,7 +72,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
-    final static int WHITE_ADA = 9000  ;
+    final static int WHITE_ADA = 9000;
+    final static double WHITE_NXT = 2.00;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -92,6 +94,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     double armDelta = 0.1;
     int slider_counter = 0;
+
+    boolean bPrevState = false;
+    boolean bCurrState = false;
 
     // position of servos
 
@@ -123,6 +128,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     UltrasonicSensor ultra;
     OpticalDistanceSensor opSensor;
     GyroSensor gyro;
+    LightSensor lightSensor;
     int heading = 360;
     double imu_heading = 0;
     int touch = 0;
@@ -139,6 +145,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_ultra = false;
     Boolean use_range = true;
     Boolean use_adacolor = false;
+    Boolean use_light = true;
 
     public enum State {
         STATE_TELEOP,    // state to test teleop
@@ -255,6 +262,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         coSensor = hardwareMap.colorSensor.get("co");
         coSensor.setI2cAddress(I2cAddr.create8bit(0x60));
 
+
         coSensor2 = hardwareMap.colorSensor.get("co2");
         coSensor2.setI2cAddress(I2cAddr.create8bit(0x3c));
         coSensor2.enableLed(true);
@@ -271,6 +279,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             coAda = hardwareMap.colorSensor.get("color");
         }
 
+        if (use_light) {
+            lightSensor = hardwareMap.lightSensor.get("nxtLight");
+            lightSensor.enableLed(true);
+        }
         // bEnabled represents the state of the LED.
         boolean bEnabled = true;
 
@@ -299,13 +311,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             double init_time = getRuntime();
             boolean navx_ok = false;
-            while (!navx_ok && (getRuntime() - init_time < 3)) { // wait for three sec to get connected
+            while (!navx_ok && (getRuntime() - init_time < 6)) { // wait for three sec to get connected
                 navx_ok = navx_device.isConnected();
+                idle();
             }
             if (navx_ok) {
                 boolean navx_cal = true;
-                while (navx_cal && (getRuntime() - init_time < 5)) { // wait for 2 sec to get calibration
+                while (navx_cal && (getRuntime() - init_time < 12)) { // wait for 2 sec to get calibration
                     navx_cal = navx_device.isCalibrating();
+                    idle();
                 }
                 if (navx_cal)
                     navx_ok = false;
@@ -318,6 +332,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         }
         hardwareMap.logDevices();
+        show_telemetry();
         DbgLog.msg(String.format("TOBOT-INIT  end() -"));
     } // end of tobot_init
 
@@ -356,6 +371,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
         telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
         telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
+        telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
+        telemetry.addData("12. Normal", lightSensor.getLightDetected());
 
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
@@ -422,13 +439,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         //if (use_gyro == true && lp == rp) {
         if (use_navx) {
             double cur_heading = navx_device.getYaw();
-            if (cur_heading - imu_heading > 2.5) { // cook to right,  slow down left motor
+            if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
                 if (lp > 0) lp *= 0.9;
                 else rp *= 0.9;
-            } else if (cur_heading - imu_heading < -2.5) {
+            } else if (cur_heading - imu_heading < -0.7) { // crook to the left, slow down right motor
                 if (lp > 0) rp *= 0.9;
                 else lp *= 0.9;
             }
+
         }
         motorR.setPower(rp);
         motorL.setPower(lp);
@@ -769,8 +787,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_left_beacon(LEFT_BEACON_INIT);
     }
 
-    public void forwardTillUltra(double us_stop_val, double power, double max_sec) throws InterruptedException {
+    public void forwardTillUltra(double us_stop_val, double power, double max_sec, boolean is_red) throws InterruptedException {
         double us_val = 0;
+        if(is_red){
+            imu_heading = -45.0;
+        }
+        else{
+            imu_heading = 45.0;
+        }
         if (use_range) {
             us_val = rangeSensor.getDistance(DistanceUnit.CM);
         } else if (use_ultra) {
@@ -816,7 +840,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
 
 
-    public void goUntilWhite(double power) throws InterruptedException {
+    /*public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
         while ((!detectWhite() || !detectWall()) && (getRuntime() - initAutoOpTime < 0.5)) {
             driveTT(power, power);
@@ -825,7 +849,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             driveTT(power, power);
         }
         stop_chassis();
-    }
+    }*/
 
     public void goUntilWall(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
@@ -847,7 +871,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             return;
         }
 
-            StraightIn(0.6, 34);
+            StraightIn(0.5, 34);
             //sleep(300);
 
         if (use_gyro) {
@@ -857,26 +881,26 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (is_in) {
             if (is_red){
-                TurnRightD(0.6,35,true);
+                TurnRightD(0.4,27,true);
             }
             else {
-                TurnLeftD(0.6,45,true);
+                TurnLeftD(0.4,45,true);
             }
         }
         else {
             if (is_red){
-                TurnLeftD(0.6,35,true);
-                StraightIn(0.6,29);
-                TurnRightD(0.6,85,true);
+                TurnLeftD(0.4,35,true);
+                StraightIn(0.4,29);
+                TurnRightD(0.4,85,true);
             }
             else {
-                TurnRightD(0.6,40,true);
-                StraightIn(0.6,26);
-                TurnLeftD(0.6,90,true);
+                TurnRightD(0.4,40,true);
+                StraightIn(0.4,26);
+                TurnLeftD(0.4,90,true);
             }
         }
 
-        StraightIn(0.6, 5);
+        StraightIn(0.5, 3);
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
@@ -901,11 +925,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             goUntilWall(0.3);
             // StraightIn(0.5, 0.5);
             if(is_red){
-                TurnLeftD(0.5, 81, true);
+                TurnLeftD(0.5, 65, true);
             }
             else{
-                TurnRightD(0.5, 81, true);
+                TurnRightD(0.5, 65, true);
             }
+            StraightIn(0.5, -3);
         }
         sleep(500);
         //forwardTillUltra(10, 0.25, 3);
@@ -915,7 +940,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-             forwardTillUltra(10, 0.25, 5);
+             forwardTillUltra(10, 0.25, 5, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -949,12 +974,20 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public boolean detectWhite() {
     int cur_sum_ada_colors = 0;
+        double nxtlight = 0;
         if(use_adacolor) {
-            cur_sum_ada_colors = coAda.alpha()+coAda.blue()+coAda.red()+coAda.green();
-        }
+            cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
 
-        if (cur_sum_ada_colors < WHITE_ADA) {
-            return false;
+
+            if (cur_sum_ada_colors < WHITE_ADA) {
+                return false;
+            }
+        }else if (use_light) {
+            nxtlight = lightSensor.getRawLightDetected();
+
+            if (nxtlight < WHITE_NXT) {
+                return false;
+            }
         }
     //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
     //        return false;

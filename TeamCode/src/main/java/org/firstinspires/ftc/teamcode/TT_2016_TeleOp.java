@@ -146,25 +146,29 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             sweeper.setPower(SW_power);
             shooter.setPower(SH_power);
 
-            if (gamepad1.b && gamepad1.x) { // stop sweeper
-                SW_power = (float) 0;
-                sweeper.setPower(SW_power); // stop right away
-                sleep(400); // make sure other botton reset
-            } else if (gamepad1.b) { // sweeper backward
-                SW_power = (float) 1.0;
+            if (gamepad1.b) { // sweeper backward
+                if (SW_power>0.1) {
+                    SW_power = (float) 0.0;
+                } else {
+                    SW_power = (float) 1.0;
+                }
                 SH_power = (float) 0;
-            } else if (gamepad1.x) { // sweeper forward
-                SW_power = (float) -1.0;
-                SH_power = (float) 0;
-            }
-            if (gamepad2.b) { // shooter on
-                SW_power = (float) 0;
-                if (SH_power<0.1)
-                    SH_power = (float) 0.5;
-                else
-                    SH_power = (float) 1.0;
                 sleep(400);
-            } else if (gamepad2.x) { // shooter off
+            } else if (gamepad1.x) { // sweeper forward
+                if (SW_power<-0.1) {
+                    SW_power = (float) 0.0;
+                } else {
+                    SW_power = (float) -1.0;
+                }
+                SH_power = (float) 0;
+                sleep(400);
+            }
+            if (gamepad2.x) { // shooter on
+                SW_power = (float) 0;
+                shooter.setPower(0.5);
+                SH_power = (float) 1.0;
+                sleep(400);
+            } else if (gamepad2.b) { // shooter off
                 SW_power = (float) 0;
                 SH_power = (float) 0;
             }
