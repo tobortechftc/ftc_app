@@ -65,7 +65,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double GATE_OPEN = 0.001;
     final static double LIGHT_SENSOR_UP = 0.03;
     final static double LIGHT_SENSOR_DOWN = 0.5;
-    final static double LEFT_BEACON_PRESS = 0.5;
+    final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.05;
     final static double RIGHT_BEACON_PRESS = 0.5;
     final static double RIGHT_BEACON_INIT = 0.95;
@@ -884,7 +884,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             return;
         }
 
-            StraightIn(0.5, 43);
+            StraightIn(0.5, 42);
             //sleep(300);
 
         if (use_gyro) {
@@ -902,18 +902,25 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         else {
             if (is_red){
-                TurnLeftD(0.4,35,true);
-                StraightIn(0.4,29);
+                TurnLeftD(0.4,40,true);
+                StraightIn(0.4,26);
                 TurnRightD(0.4,85,true);
             }
             else {
                 TurnRightD(0.4,40,true);
                 StraightIn(0.4,26);
-                TurnLeftD(0.4,90,true);
+                TurnLeftD(0.4,85,true);
             }
         }
 
-        StraightIn(0.5, 5);
+        if (is_red) {
+            StraightIn(0.5, 5);
+        }
+        else {
+            StraightIn(0.5,4);
+        }
+
+
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
@@ -922,12 +929,27 @@ public class TT_2016_Hardware extends LinearOpMode {
         // driveTT(0.5,0.5); sleep(1);driveTT(0,0);
     }
 
-    public void auto_part2 (boolean is_red) throws InterruptedException{
+    public void auto_part2 (boolean is_red, boolean is_shooting, boolean do_second_beacon) throws InterruptedException{
         if (is_red){
             goBeacon(true);
         }
         else{
             goBeacon(false);
+        }
+
+        StraightIn(-0.5, 7);
+
+        if (is_shooting){
+            goShooting(2,is_red,true);
+        }
+
+        if(do_second_beacon){
+            if(is_red){
+                TurnRightD(0.45,90,true);
+            }
+            else{
+                TurnLeftD(0.45,90,true);
+            }
         }
         // Additional Autonomous code (launch ball, second beacon, etc.) goes here
     }
@@ -942,7 +964,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goShooting (int times, boolean is_red, boolean first_beacon) throws InterruptedException {
         if (is_red) {
             if (first_beacon) {
-                StraightIn(-0.5, 10);
+                //StraightIn(-0.5, 7);
                 sleep(400);
                //TurnRightD(0.3,1,true);
             } else {
@@ -950,7 +972,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         } else { // blue zone
             if (first_beacon) {
-                StraightIn(-0.5, 10);
+                //StraightIn(-0.5, 7);
                 sleep(400);
                 //TurnLeftD(0.3,1,true);
             } else {
@@ -982,10 +1004,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             StraightIn(-0.5, 2.5);
             sleep(400);
             if(is_red){
-                TurnLeftD(0.5, 85, true);
+                TurnLeftD(0.5, 83, true);
             }
             else{
-                TurnRightD(0.5, 85, true);
+                TurnRightD(0.5, 90, true);
             }
             StraightIn(0.5, -3);
         }
