@@ -149,7 +149,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 sleep(5);
             }
             if (gamepad1.right_trigger > 0.1) { //
-
+                goShooting(2,true, true);
                 sleep(300);
             }
             if (gamepad1.right_bumper) { //

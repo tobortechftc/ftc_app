@@ -240,6 +240,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         motorR.setPower(0);
         sweeper.setPower(0);
         shooter.setPower(0);
+        // shooter.setDirection(DcMotor.Direction.REVERSE);
         sweeper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -924,6 +925,49 @@ public class TT_2016_Hardware extends LinearOpMode {
         // Additional Autonomous code (launch ball, second beacon, etc.) goes here
     }
 
+    public void push_ball() {
+        set_pusher(PUSHER_EXTRA);
+        sleep(1000);
+        set_pusher(PUSHER_UP);
+    }
+
+
+    public void goShooting (int times, boolean is_red, boolean first_beacon) throws InterruptedException {
+        if (is_red) {
+            if (first_beacon) {
+                StraightIn(-0.5, 10);
+                sleep(400);
+               //TurnRightD(0.3,1,true);
+            } else {
+
+            }
+        } else { // blue zone
+            if (first_beacon) {
+                StraightIn(-0.5, 10);
+                sleep(400);
+                //TurnLeftD(0.3,1,true);
+            } else {
+
+            }
+        }
+        for (int i=0; i<times; i++) {
+            push_ball();
+            if (i==0) {
+                shooter.setPower(0.5);
+                sleep(200);
+                shooter.setPower(1.0);
+                sleep(3000);
+            } else {
+                sleep(2000);
+            }
+            set_gate(GATE_OPEN);
+            sleep(500);
+            set_gate(GATE_CLOSED);
+        }
+
+        sleep(1000);
+        shooter.setPower(0);
+    }
     public void goBeacon (boolean is_red) throws InterruptedException {
         if (true) {
             //goUntilWhite(0.23);

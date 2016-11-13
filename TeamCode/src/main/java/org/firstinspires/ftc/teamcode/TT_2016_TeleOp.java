@@ -236,9 +236,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 sleep(5);
             }
             if (gamepad2.left_trigger > 0.1) {
-                set_pusher(PUSHER_EXTRA);
-                sleep(1000);
-                set_pusher(PUSHER_UP);
+                push_ball();
             }
 
 
