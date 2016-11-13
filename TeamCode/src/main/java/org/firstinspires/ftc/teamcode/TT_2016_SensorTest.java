@@ -199,7 +199,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             }
             else if (gamepad1.dpad_up) { // try out auto-blue
                 DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red out!");
-                auto_part1(true,false);
+                auto_part1(false,true);
             } else if (gamepad1.dpad_down) { // try out auto-red
                 DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red in!");
                 auto_part1(true, true);

@@ -80,14 +80,15 @@ public class TT_2016_Hardware extends LinearOpMode {
     // digital port 5 (zero indexed).
     static final int LED_CHANNEL = 1;
 
-    final static int ONE_ROTATION = 1120; // for AndyMark motor encoder one rotation
+    //final static int ONE_ROTATION = 1120; // for AndyMark-40 motor encoder one rotation
+    final static int ONE_ROTATION = 1680; // for AndyMark-60 motor encoder one rotation
     // final static double RROBOT = 11;  // number of wheel turns to get chassis 360-degree
     final static double RROBOT = 6.63;  // number of wheel turns to get chassis 360-degree turn
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
     final static double GYRO_ROTATION_RATIO_L = 0.80; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
     final static double GYRO_ROTATION_RATIO_R = 0.85; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
-    final static double NAVX_ROTATION_RATIO_L = 0.55; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
-    final static double NAVX_ROTATION_RATIO_R = 0.56; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
+    final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
+    final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     int numOpLoops = 1;
 
     //
@@ -877,7 +878,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             return;
         }
 
-            StraightIn(0.5, 34);
+            StraightIn(0.5, 43);
             //sleep(300);
 
         if (use_gyro) {
@@ -887,10 +888,10 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (is_in) {
             if (is_red){
-                TurnRightD(0.4,27,true);
+                TurnRightD(0.4,40,true);
             }
             else {
-                TurnLeftD(0.4,45,true);
+                TurnLeftD(0.4,40,true);
             }
         }
         else {
@@ -906,7 +907,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         }
 
-        StraightIn(0.5, 3);
+        StraightIn(0.5, 5);
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
