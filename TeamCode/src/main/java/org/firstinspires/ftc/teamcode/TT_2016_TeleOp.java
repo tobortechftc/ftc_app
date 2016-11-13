@@ -166,7 +166,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (gamepad2.x) { // shooter on
                 SW_power = (float) 0;
                 shooter.setPower(0.5);
-                SH_power = (float) 1.0;
+                SH_power = (float) 0.9;
                 sleep(400);
             } else if (gamepad2.b) { // shooter off
                 SW_power = (float) 0;

@@ -156,7 +156,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
 
-    float speedScale = (float) 0.5; // controlling the speed of the chassis in teleOp state
+    float speedScale = (float) 0.7; // controlling the speed of the chassis in teleOp state
     float leftPower = 0;
     float rightPower = 0;
     float SW_power = 0;
@@ -955,7 +955,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             if (i==0) {
                 shooter.setPower(0.5);
                 sleep(200);
-                shooter.setPower(1.0);
+                shooter.setPower(0.9);
                 sleep(3000);
             } else {
                 sleep(2000);
