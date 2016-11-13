@@ -63,8 +63,8 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
         //cdim = hardwareMap.deviceInterfaceModule.get("dim");
         //colorSensor = hardwareMap.colorSensor.get("co");
         //colorSensor.enableLed(false);
-        TT_ColorPicker cp = new TT_ColorPicker(coSensor);
-        TT_ColorPicker cp2 = new TT_ColorPicker(coSensor2);
+        TT_ColorPicker cp = new TT_ColorPicker(coSensor,coSensor);
+        TT_ColorPicker cp2 = new TT_ColorPicker(coSensor2,coSensor2);
         boolean connected = false;
         //ls1 = hardwareMap.lightSensor.get("ll");
         //ls2 = hardwareMap.lightSensor.get("lr");

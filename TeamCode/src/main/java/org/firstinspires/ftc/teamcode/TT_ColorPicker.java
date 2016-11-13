@@ -14,18 +14,21 @@ public class TT_ColorPicker {
         RED          // red color
     }
 
-    ColorSensor _colorSensor;
+    ColorSensor _colorSensorL;
+    ColorSensor _colorSensorR;
+
     //DeviceInterfaceModule cdim;
     //TouchSensor t;
-    final static double COLOR_THRESHOLD = 2;
+    final static double COLOR_THRESHOLD = 4;
     double _currentRed  ;
     double _currentBlue ;
 
     double[] _runningRed  = new double[10] ;
     double[] _runningBlue = new double[10] ;
 
-    TT_ColorPicker(ColorSensor colorSensor){
-        _colorSensor = colorSensor ;
+    TT_ColorPicker(ColorSensor colorSensorR, ColorSensor colorSensorL){
+        _colorSensorR = colorSensorR ;
+        _colorSensorL = colorSensorL ;
         for ( int i = 0 ; i < 10 ; i++){
             _runningRed[i] = 0 ;
             _runningBlue[i]= 0 ;
@@ -34,7 +37,7 @@ public class TT_ColorPicker {
 
     public Color getColor(){
 
-        insertNewSamples( _colorSensor.red(), _colorSensor.blue());
+        insertNewSamples( _colorSensorL.red(), _colorSensorL.blue());
         calcFinal();
         if ( _currentBlue > ( _currentRed + COLOR_THRESHOLD) ){
             return  Color.BLUE; // 1 = Blue

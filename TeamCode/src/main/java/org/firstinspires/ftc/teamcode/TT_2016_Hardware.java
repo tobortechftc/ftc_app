@@ -65,15 +65,15 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double GATE_OPEN = 0.001;
     final static double LIGHT_SENSOR_UP = 0.03;
     final static double LIGHT_SENSOR_DOWN = 0.5;
-    final static double LEFT_BEACON_PRESS = 0.6;
+    final static double LEFT_BEACON_PRESS = 0.5;
     final static double LEFT_BEACON_INIT = 0.05;
-    final static double RIGHT_BEACON_PRESS = 0.4;
+    final static double RIGHT_BEACON_PRESS = 0.5;
     final static double RIGHT_BEACON_INIT = 0.95;
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
     final static int WHITE_ADA = 9000;
-    final static double WHITE_NXT = 2.00;
+    final static double WHITE_NXT = 1.9;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -122,8 +122,8 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     AHRS navx_device;
     double yaw;
-    ColorSensor coSensor;
-    ColorSensor coSensor2;
+    ColorSensor coSensor; // right sensor
+    ColorSensor coSensor2; // left sensor
     ColorSensor coAda;
     DeviceInterfaceModule cdim;
     TouchSensor tSensor;
@@ -307,7 +307,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             gyro.calibrate();
         }
         //Instantiate ToborTech Nav object
-        colorPicker = new TT_ColorPicker(coSensor2);
+        colorPicker = new TT_ColorPicker(coSensor, coSensor2);
         if (true) {
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT,
@@ -852,16 +852,22 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
+        driveTT(power, power);
+        int i=0;
         while ((!detectWhite() || !detectWall(RANGE_WALL)) && (getRuntime() - initAutoOpTime < 3)) {
-            driveTT(power, power);
+            if ((++i%10)==0)
+              driveTT(power, power);
         }
         stop_chassis();
     }
 
     public void goUntilWall(double power, double distance) throws InterruptedException {
         initAutoOpTime = getRuntime();
+        driveTT(power, power);
+        int i=0;
         while (!detectWall(distance) && (getRuntime() - initAutoOpTime < 2)) {
-            driveTT(power, power);
+            if ((++i%10)==0)
+                driveTT(power, power);
         }
         stop_chassis();
     }
@@ -971,15 +977,15 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
     public void goBeacon (boolean is_red) throws InterruptedException {
         if (true) {
-            //goUntilWhite(0.23);
+            //goUntilWhite(0.2);
             goUntilWall(0.3, 180.2);
             StraightIn(-0.5, 2.5);
             sleep(400);
             if(is_red){
-                TurnLeftD(0.45, 65, true);
+                TurnLeftD(0.5, 85, true);
             }
             else{
-                TurnRightD(0.45, 65, true);
+                TurnRightD(0.5, 85, true);
             }
             StraightIn(0.5, -3);
         }
@@ -991,7 +997,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-             forwardTillUltra(10, 0.25, 5, is_red);
+             forwardTillUltra(11, 0.25, 5, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1030,24 +1036,25 @@ public class TT_2016_Hardware extends LinearOpMode {
             cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
 
 
-            if (cur_sum_ada_colors < WHITE_ADA) {
-                return false;
+            if (cur_sum_ada_colors >= WHITE_ADA) {
+                return true;
             }
         }else if (use_light) {
             nxtlight = lightSensor.getRawLightDetected();
 
-            if (nxtlight < WHITE_NXT) {
-                return false;
+            if (nxtlight >= WHITE_NXT) {
+                return true;
             }
         }
     //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
     //        return false;
     //    }
-        return true;
+        return false;
     }
 
     public boolean detectWall(double distance) {
         if(!use_range){
+        //if (true) {
             return false;
         }
         double range = rangeSensor.getDistance(DistanceUnit.CM);
