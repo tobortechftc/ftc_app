@@ -883,8 +883,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (false) {  // change true to skip part1
             return;
         }
-
-            StraightIn(0.5, 42);
             //sleep(300);
 
         if (use_gyro) {
@@ -893,30 +891,19 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
 
         if (is_in) {
-            if (is_red){
-                TurnRightD(0.4,40,true);
-            }
-            else {
-                TurnLeftD(0.4,40,true);
-            }
+            StraightIn(0.5, 42);
         }
         else {
-            if (is_red){
-                TurnLeftD(0.4,40,true);
-                StraightIn(0.4,26);
-                TurnRightD(0.4,85,true);
-            }
-            else {
-                TurnRightD(0.4,40,true);
-                StraightIn(0.4,26);
-                TurnLeftD(0.4,85,true);
-            }
+            StraightIn(0.5,91);
         }
+        sleep(300);
 
-        if (is_red) {
+        if (is_red){
+            TurnRightD(0.4,40,true);
             StraightIn(0.5, 5);
         }
         else {
+            TurnLeftD(0.4,40,true);
             StraightIn(0.5,4);
         }
 
@@ -998,9 +985,18 @@ public class TT_2016_Hardware extends LinearOpMode {
         shooter.setPower(0);
     }
     public void goBeacon (boolean is_red) throws InterruptedException {
+        boolean isFirstBeacon = false;
+        double distanceToWall = 68.6;
+        if(use_range){
+            if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
+                isFirstBeacon = true;
+                distanceToWall = 180.2;
+            }
+        }
+
         if (true) {
             //goUntilWhite(0.2);
-            goUntilWall(0.3, 180.2);
+            goUntilWall(0.3, distanceToWall);
             StraightIn(-0.5, 2.5);
             sleep(400);
             if(is_red){
