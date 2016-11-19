@@ -997,7 +997,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void goBall (boolean is_red) throws InterruptedException {
 
-            StraightIn(0.6, -57);
+            StraightIn(-0.6, 57);
             if(is_red) {
                 TurnRightD(0.5, 60, true);
                 TurnLeftD(0.5, 60, true);
@@ -1006,7 +1006,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 TurnLeftD(0.5, 60, true);
                 TurnRightD(0.5, 60, true);
             }
-            StraightIn(0.4, 7);
+            StraightIn(-0.4, 7);
 
     }
 
