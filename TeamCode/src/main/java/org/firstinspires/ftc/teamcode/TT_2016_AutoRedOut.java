@@ -58,7 +58,7 @@ public class TT_2016_AutoRedOut extends TT_2016_Hardware {
 
         auto_part1(true, false);
 
-        auto_part2(true, false, false, false);
+        auto_part2(true, false, false, false, true);
 
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);

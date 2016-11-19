@@ -58,7 +58,7 @@ public class TT_2016_AutoBlueInFullExtra extends TT_2016_Hardware {
 
         auto_part1(false, true);
 
-        auto_part2(false, true, false, true);
+        auto_part2(false, true, true, false, true);
 
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);

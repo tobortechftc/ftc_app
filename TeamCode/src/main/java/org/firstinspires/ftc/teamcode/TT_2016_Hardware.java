@@ -894,7 +894,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             StraightIn(0.5, 42);
         }
         else {
-            StraightIn(0.5,91);
+            StraightIn(1.0,91);
         }
         sleep(300);
 
@@ -916,7 +916,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // driveTT(0.5,0.5); sleep(1);driveTT(0,0);
     }
 
-    public void auto_part2 (boolean is_red, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException{
+    public void auto_part2 (boolean is_red, boolean is_in, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException{
         if (is_red){
             goBeacon(true);
         }
@@ -931,7 +931,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
 
         if(is_hitting_ball){
-            goBall(is_red);
+            goBall(is_red, is_in);
         }
 
         else if(do_second_beacon){
@@ -995,24 +995,32 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     }
 
-    public void goBall (boolean is_red) throws InterruptedException {
-
-            StraightIn(-0.6, 57);
-            if(is_red) {
-                TurnRightD(0.5, 60, true);
-                TurnLeftD(0.5, 60, true);
+    public void goBall (boolean is_red, boolean is_in) throws InterruptedException {
+            if (is_in) {
+                StraightIn(-0.6, 57);
+                if (is_red) {
+                    TurnRightD(0.5, 60, true);
+                    TurnLeftD(0.5, 60, true);
+                } else {
+                    TurnLeftD(0.5, 60, true);
+                    TurnRightD(0.5, 60, true);
+                }
+                StraightIn(-0.4, 7);
+            } else { // out position
+                StraightIn(-0.6, 5);
+                if (is_red) {
+                    TurnRightD(0.5, 45, true);
+                }
+                else {
+                    TurnLeftD(0.5, 45, true);
+                }
+                StraightIn(-0.6, 55);
             }
-            else {
-                TurnLeftD(0.5, 60, true);
-                TurnRightD(0.5, 60, true);
-            }
-            StraightIn(-0.4, 7);
-
     }
 
     public void goBeacon (boolean is_red) throws InterruptedException {
         boolean isFirstBeacon = false;
-        double distanceToWall = 68.6;
+        double distanceToWall = 66.1;
         if(use_range){
             if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
                 isFirstBeacon = true;
@@ -1031,7 +1039,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             else{
                 TurnRightD(0.5, 90, true);
             }
-            StraightIn(0.5, -3);
+            StraightIn(-0.5, 3);
         }
         sleep(500);
         //forwardTillUltra(10, 0.25, 3);
