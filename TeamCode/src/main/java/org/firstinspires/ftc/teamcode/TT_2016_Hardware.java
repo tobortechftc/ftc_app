@@ -916,7 +916,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // driveTT(0.5,0.5); sleep(1);driveTT(0,0);
     }
 
-    public void auto_part2 (boolean is_red, boolean is_shooting, boolean do_second_beacon) throws InterruptedException{
+    public void auto_part2 (boolean is_red, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException{
         if (is_red){
             goBeacon(true);
         }
@@ -924,18 +924,20 @@ public class TT_2016_Hardware extends LinearOpMode {
             goBeacon(false);
         }
 
-        StraightIn(-0.5, 7);
+        //StraightIn(-0.5, 7);
 
         if (is_shooting){
-            goShooting(2,is_red,true);
+            goShooting(2,is_red,true, is_hitting_ball);
         }
 
         if(do_second_beacon){
             if(is_red){
                 TurnRightD(0.45,90,true);
+                StraightIn(0.5,35);
             }
             else{
                 TurnLeftD(0.45,90,true);
+                StraightIn(0.5,35);
             }
         }
         // Additional Autonomous code (launch ball, second beacon, etc.) goes here
@@ -948,7 +950,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
 
-    public void goShooting (int times, boolean is_red, boolean first_beacon) throws InterruptedException {
+    public void goShooting (int times, boolean is_red, boolean first_beacon, boolean is_hitting_ball) throws InterruptedException {
         if (is_red) {
             if (first_beacon) {
                 //StraightIn(-0.5, 7);
@@ -983,6 +985,19 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         sleep(1000);
         shooter.setPower(0);
+
+        if(is_hitting_ball){
+            StraightIn(0.6, -57);
+            if(is_red) {
+                TurnRightD(0.5, 60, true);
+                TurnLeftD(0.5, 60, true);
+            }
+            else {
+                TurnLeftD(0.5, 60, true);
+                TurnRightD(0.5, 60, true);
+            }
+            StraightIn(0.4, 7);
+        }
     }
     public void goBeacon (boolean is_red) throws InterruptedException {
         boolean isFirstBeacon = false;

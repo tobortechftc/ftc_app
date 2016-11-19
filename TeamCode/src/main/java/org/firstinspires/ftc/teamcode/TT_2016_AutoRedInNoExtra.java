@@ -39,8 +39,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Enables control of the robot via the gamepad.
  * NOTE: This op mode will not work with the NXT Motor Controllers. Use an Nxt op mode instead.
  */
-@Autonomous(name="AutoBlueOut", group="2016_Auto")
-public class TT_2016_AutoBlueOut extends TT_2016_Hardware {
+@Autonomous(name="AutoRedInNoExtra", group="2016_Auto")
+public class TT_2016_AutoRedInNoExtra extends TT_2016_Hardware {
     // CONSTANT VALUES.
     // CONSTANT VALUES.
 
@@ -56,9 +56,9 @@ public class TT_2016_AutoBlueOut extends TT_2016_Hardware {
 
         waitForStart();
 
-        auto_part1(false, false);
+        auto_part1(true, true);
 
-        auto_part2(false, false, false, false);
+        auto_part2(true, false, false, false);
 
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);
