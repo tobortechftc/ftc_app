@@ -45,6 +45,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -74,6 +75,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
     final static int WHITE_ADA = 9000;
     final static double WHITE_NXT = 1.9;
+    final static double WHITE_ODS = 0.02;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -132,6 +134,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     OpticalDistanceSensor opSensor;
     GyroSensor gyro;
     LightSensor lightSensor;
+    OpticalDistanceSensor odsSensor;
     int heading = 360;
     double imu_heading = 0;
     int touch = 0;
@@ -148,7 +151,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_ultra = false;
     Boolean use_range = true;
     Boolean use_adacolor = false;
-    Boolean use_light = true;
+    Boolean use_light = false;
+    Boolean use_ods = true;
+
 
     public enum State {
         STATE_TELEOP,    // state to test teleop
@@ -287,6 +292,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             lightSensor = hardwareMap.lightSensor.get("nxtLight");
             lightSensor.enableLed(true);
         }
+        if (use_ods) {
+            odsSensor = hardwareMap.opticalDistanceSensor.get("ods_sensor");
+        }
         // bEnabled represents the state of the LED.
         boolean bEnabled = true;
 
@@ -377,6 +385,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
         telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
         telemetry.addData("12. Normal", lightSensor.getLightDetected());
+        telemetry.addData("13. Raw",odsSensor.getRawLightDetected());
+        telemetry.addData("14. Normal", odsSensor.getLightDetected());
 
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
@@ -1176,7 +1186,8 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public boolean detectWhite() {
     int cur_sum_ada_colors = 0;
-        double nxtlight = 0;
+        double light = 0;
+
         if(use_adacolor) {
             cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
 
@@ -1185,9 +1196,16 @@ public class TT_2016_Hardware extends LinearOpMode {
                 return true;
             }
         }else if (use_light) {
-            nxtlight = lightSensor.getRawLightDetected();
+            light = lightSensor.getRawLightDetected();
 
-            if (nxtlight >= WHITE_NXT) {
+            if (light >= WHITE_NXT) {
+                return true;
+            }
+        }
+        else if (use_ods){
+            light = odsSensor.getRawLightDetected();
+
+            if (light >= WHITE_ODS) {
                 return true;
             }
         }
