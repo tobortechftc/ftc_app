@@ -927,27 +927,40 @@ public class TT_2016_Hardware extends LinearOpMode {
         //StraightIn(-0.5, 7);
 
         if (is_shooting){
-            goShooting(2,is_red,true);
-        }
-
-        if(is_hitting_ball){
-            goBall(is_red, is_in);
-        }
-
-        else if(do_second_beacon){
-            if(is_red){
-                TurnRightD(0.45,90,true);
-                StraightIn(0.5,35);
-                goBeacon(true);
+            if(do_second_beacon){
+                goBeaconAndShooting(false,is_red);
+                if(is_red){
+                    TurnRightD(0.45,90,true);
+                    StraightIn(0.5,35);
+                    goBeacon(true);
+                }
+                else{
+                    TurnLeftD(0.45,90,true);
+                    StraightIn(0.5,35);
+                    goBeacon(false);
+                }
             }
-            else{
-                TurnLeftD(0.45,90,true);
-                StraightIn(0.5,35);
-                goBeacon(false);
+            else if(is_hitting_ball){
+                goShooting(2,is_red,true);
+                goBall(is_red, is_in);
             }
 
         }
+
         // Additional Autonomous code (launch ball, second beacon, etc.) goes here
+    }
+
+    public void auto_out_shooting (boolean is_red) throws InterruptedException {
+        sleep(7000);
+        StraightIn(0.5,15);
+        if (is_red){
+            TurnLeftD(0.5, 45, true);
+            goShooting(2, true, false);
+        }
+        else{
+            TurnRightD(0.5, 45, true);
+            goShooting(2, false, false);
+        }
     }
 
     public void push_ball() {
@@ -983,7 +996,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 shooter.setPower(0.9);
                 sleep(3000);
             } else {
-                sleep(2000);
+                sleep(3000);
             }
             set_gate(GATE_OPEN);
             sleep(500);
@@ -1039,7 +1052,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             else{
                 TurnRightD(0.5, 90, true);
             }
-            StraightIn(-0.5, 3);
+            //StraightIn(-0.5, 3);
         }
         sleep(500);
         //forwardTillUltra(10, 0.25, 3);
@@ -1078,6 +1091,86 @@ public class TT_2016_Hardware extends LinearOpMode {
                 // doing nothing. May print out the message for debugging
             }
 
+        }
+    }
+
+    public void goBeaconAndShooting (boolean shoot_twice, boolean is_red) throws InterruptedException {
+        boolean isFirstBeacon = false;
+        double distanceToWall = 66.1;
+        if(use_range){
+            if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
+                isFirstBeacon = true;
+                distanceToWall = 180.2;
+            }
+        }
+
+        if (true) {
+            //goUntilWhite(0.2);
+            goUntilWall(0.3, distanceToWall);
+            StraightIn(-0.5, 2.5);
+            shooter.setPower(0.5);
+            sleep(400);
+            if(is_red){
+                TurnLeftD(0.5, 83, true);
+            }
+            else{
+                TurnRightD(0.5, 90, true);
+            }
+            shooter.setPower(0.9);
+            //StraightIn(-0.5, 3);
+        }
+        sleep(500);
+        //forwardTillUltra(10, 0.25, 3);
+        blue_detected = false;
+        red_detected = false;
+
+        if (true) {
+            //sleep(1000);
+            // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
+            forwardTillUltra(11, 0.25, 5, is_red);
+
+            // StraightIn(0.3, 1.0);
+            //hit_left_button();
+            TT_ColorPicker.Color cur_co = TT_ColorPicker.Color.UNKNOWN;
+            double initTime = getRuntime();
+            // sense color up to 2 secs
+            do {
+                cur_co = colorPicker.getColor();
+            } while (cur_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<2);
+            // Detect Beacon color and hit the right side
+            if (cur_co == TT_ColorPicker.Color.BLUE) {
+                blue_detected = true;
+                if (is_red) {
+                    hit_right_button();
+                } else {
+                    hit_left_button();
+                }
+            } else if (cur_co == TT_ColorPicker.Color.RED) {
+                red_detected = true;
+                if (is_red) {
+                    hit_left_button();
+                } else {
+                    hit_right_button();
+                }
+            } else { // unknown, better not do anything than giving the credit to the opponent
+                // doing nothing. May print out the message for debugging
+            }
+
+        }
+        if(true){
+            push_ball();
+            sleep(1000);
+            set_gate(GATE_OPEN);
+            sleep(500);
+            set_gate(GATE_CLOSED);
+            if(shoot_twice){
+                push_ball();
+                sleep(3000);
+                set_gate(GATE_OPEN);
+                sleep(500);
+                set_gate(GATE_CLOSED);
+            }
+            shooter.setPower(0.0);
         }
     }
 
