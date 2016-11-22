@@ -152,7 +152,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_range = true;
     Boolean use_adacolor = false;
     Boolean use_light = false;
-    Boolean use_ods = true;
+    Boolean use_ods = false;
 
 
     public enum State {
@@ -383,11 +383,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
         telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
         telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
-        telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
-        telemetry.addData("12. Normal", lightSensor.getLightDetected());
-        telemetry.addData("13. Raw",odsSensor.getRawLightDetected());
-        telemetry.addData("14. Normal", odsSensor.getLightDetected());
-
+        if (use_light) {
+            telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
+            telemetry.addData("12. Normal", lightSensor.getLightDetected());
+        }
+        if (use_ods) {
+            telemetry.addData("13. Raw", odsSensor.getRawLightDetected());
+            telemetry.addData("14. Normal", odsSensor.getLightDetected());
+        }
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
         //telemetry.addData("8. right cur/tg enc:", motorBR.getCurrentPosition() + "/" + rightCnt);
