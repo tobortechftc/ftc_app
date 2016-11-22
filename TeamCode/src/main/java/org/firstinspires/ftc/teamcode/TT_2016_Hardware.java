@@ -927,50 +927,73 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void auto_part2 (boolean is_red, boolean is_in, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException{
-        if (is_red){
-            goBeacon(true);
-        }
-        else{
-            goBeacon(false);
-        }
+
 
         //StraightIn(-0.5, 7);
 
         if (is_shooting){
             if(do_second_beacon){
                 goBeaconAndShooting(false,is_red);
+                StraightIn(-0.5, 5);
                 if(is_red){
                     TurnRightD(0.45,90,true);
-                    StraightIn(0.5,35);
+                    StraightIn(0.5,45);
                     goBeacon(true);
                 }
                 else{
                     TurnLeftD(0.45,90,true);
-                    StraightIn(0.5,35);
+                    StraightIn(0.5,45);
                     goBeacon(false);
                 }
             }
             else if(is_hitting_ball){
+                if (is_red){
+                    goBeacon(true);
+                }
+                else{
+                    goBeacon(false);
+                }
                 goShooting(2,is_red,true);
                 goBall(is_red, is_in);
             }
 
+
+        }
+        else{
+            if (is_red){
+                goBeacon(true);
+            }
+            else{
+                goBeacon(false);
+            }
         }
 
         // Additional Autonomous code (launch ball, second beacon, etc.) goes here
     }
 
     public void auto_out_shooting (boolean is_red) throws InterruptedException {
-        sleep(7000);
-        StraightIn(0.5,15);
+        sleep(4000);
+        StraightIn(-0.5,15);
         if (is_red){
-            TurnLeftD(0.5, 45, true);
+            TurnLeftD(0.5, 20, true);
             goShooting(2, true, false);
+            TurnLeftD(0.5, 35, true);
         }
         else{
-            TurnRightD(0.5, 45, true);
+            TurnRightD(0.5, 25, true);
             goShooting(2, false, false);
+            TurnRightD(0.5, 35, true);
         }
+        StraightIn(-0.6, 55);
+        if(is_red){
+            TurnLeftD(0.5, 45, true);
+            StraightIn(-0.5, 10);
+        }
+        else{
+            TurnLeftD(0.5, 45, true);
+            StraightIn(-0.5, 10);
+        }
+
     }
 
     public void push_ball() {
@@ -1020,7 +1043,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void goBall (boolean is_red, boolean is_in) throws InterruptedException {
             if (is_in) {
-                StraightIn(-0.6, 57);
+                StraightIn(-0.6, 45);
                 if (is_red) {
                     TurnRightD(0.5, 60, true);
                     TurnLeftD(0.5, 60, true);
@@ -1038,6 +1061,14 @@ public class TT_2016_Hardware extends LinearOpMode {
                     TurnLeftD(0.5, 45, true);
                 }
                 StraightIn(-0.6, 55);
+                if (is_red) {
+                    TurnRightD(0.5, 60, true);
+                    TurnLeftD(0.5, 60, true);
+                } else {
+                    TurnLeftD(0.5, 60, true);
+                    TurnRightD(0.5, 60, true);
+                }
+                StraightIn(-0.4, 7);
             }
     }
 
