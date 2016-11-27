@@ -81,7 +81,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
     final static int WHITE_ADA = 9000;
     final static double WHITE_NXT = 1.9;
-    final static double WHITE_ODS = 0.02;
+    final static double WHITE_ODS = 1.9;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -157,7 +157,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_gyro = false;
     Boolean use_encoder = true;
     Boolean use_ultra = false;
-    Boolean use_range = true;
+    Boolean use_range = false;
     Boolean use_adacolor = false;
     Boolean use_light = false;
     Boolean use_ods = false;
@@ -306,7 +306,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             lightSensor.enableLed(true);
         }
         if (use_ods) {
-            odsSensor = hardwareMap.opticalDistanceSensor.get("ods_sensor");
+            odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
         }
         // bEnabled represents the state of the LED.
         boolean bEnabled = true;
@@ -395,7 +395,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
         telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
+<<<<<<< Updated upstream
         telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
+=======
+        telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
+>>>>>>> Stashed changes
         if (use_light) {
             telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
             telemetry.addData("12. Normal", lightSensor.getLightDetected());
@@ -404,6 +408,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             telemetry.addData("13. Raw", odsSensor.getRawLightDetected());
             telemetry.addData("14. Normal", odsSensor.getLightDetected());
         }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
         //telemetry.addData("8. right cur/tg enc:", motorBR.getCurrentPosition() + "/" + rightCnt);
@@ -1106,6 +1114,9 @@ public class TT_2016_Hardware extends LinearOpMode {
                 isFirstBeacon = true;
                 distanceToWall = 180.2;
             }
+        }
+        else if (use_ods) {
+            goUntilWhite(0.15);
         }
 
         if (true) {
