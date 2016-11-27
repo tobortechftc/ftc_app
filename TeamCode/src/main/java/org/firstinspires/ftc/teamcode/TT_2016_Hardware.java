@@ -70,6 +70,12 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LEFT_BEACON_INIT = 0.05;
     final static double RIGHT_BEACON_PRESS = 0.5;
     final static double RIGHT_BEACON_INIT = 0.95;
+    //final static double LEFT_BEACON_SIDE_DOWN = 0.5;
+    //final static double LEFT_BEACON_SIDE_PRESS = 0.5;
+    final static double LEFT_BEACON_SIDE_INIT = 0.5;
+    //final static double RIGHT_BEACON_SIDE_DOWN = 0.5;
+    //final static double RIGHT_BEACON_SIDE_PRESS = 0.5;
+    //final static double RIGHT_BEACON_SIDE_INIT = 0.5;
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
@@ -110,6 +116,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     double right_beacon_sv_pos=0;
     double gate_sv_pos=0;
     double pusher_sv_pos=0;
+    double left_beacon_side_sv_pos=0;
+    double right_beacon_side_sv_pos=0;
     // amount to change the claw servo position by
 
     boolean blue_detected = false;
@@ -178,6 +186,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     Servo right_beacon_sv;
     Servo gate_sv;
     Servo pusher_sv;
+    Servo left_beacon_side_sv;
+    Servo right_beacon_side_sv;
     int motorRightCurrentEncoder = 0;
     int motorLeftCurrentEncoder = 0;
     int motorRightTargetEncoder = 0;
@@ -214,15 +224,18 @@ public class TT_2016_Hardware extends LinearOpMode {
         v_warning_message = "Can't map; ";
 
 
-        light_sensor_sv = init_servo("light_sensor_sv");
+        //light_sensor_sv = init_servo("light_sensor_sv");
         left_beacon_sv = init_servo("left_beacon_sv");
         right_beacon_sv = init_servo("right_beacon_sv");
+        left_beacon_side_sv = init_servo("left_beacon_side_sv");
+        right_beacon_side_sv = init_servo("right_beacon_side_sv");
         gate_sv = init_servo("gate_sv");
         pusher_sv = init_servo("pusher_sv");
         //DbgLog.msg(String.format("TOBOT-INIT  light_sensor_sv -"));
-        set_light_sensor(LIGHT_SENSOR_DOWN);
+        //set_light_sensor(LIGHT_SENSOR_DOWN);
         set_left_beacon(LEFT_BEACON_INIT);
         set_right_beacon(RIGHT_BEACON_INIT);
+        set_left_beacon_side(LEFT_BEACON_SIDE_INIT);
         set_gate(GATE_CLOSED);
         set_pusher(PUSHER_UP);
 
@@ -382,7 +395,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
         telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
-        telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
+        telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
         if (use_light) {
             telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
             telemetry.addData("12. Normal", lightSensor.getLightDetected());
@@ -859,6 +872,16 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void set_right_beacon(double pos) {
         right_beacon_sv_pos = pos;
         right_beacon_sv.setPosition(right_beacon_sv_pos);
+    }
+
+    public void set_left_beacon_side(double pos){
+        left_beacon_side_sv_pos = pos;
+        left_beacon_side_sv.setPosition(left_beacon_side_sv_pos);
+    }
+
+    public void set_right_beacon_side(double pos){
+        right_beacon_side_sv_pos = pos;
+        right_beacon_side_sv.setPosition(right_beacon_side_sv_pos);
     }
 
 

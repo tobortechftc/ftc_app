@@ -173,6 +173,30 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             if (gamepad2.dpad_up){
                 StraightIn(0.5,72);
             }
+            if (gamepad2.left_bumper){
+                if(left_beacon_side_sv_pos > 0.05) {
+                    set_left_beacon_side(0.9);
+                    sleep(5);
+                }
+            }
+            if (gamepad2.left_trigger > 0.1){
+                if(left_beacon_side_sv_pos < 0.995) {
+                    set_left_beacon_side(0.2);
+                    sleep(5);
+                }
+            }
+            if (gamepad2.right_bumper){
+                if(right_beacon_side_sv_pos > 0.05) {
+                    set_right_beacon_side(right_beacon_sv_pos - 0.005);
+                    sleep(5);
+                }
+            }
+            if (gamepad2.right_trigger > 0.1){
+                if(right_beacon_side_sv_pos < 0.995) {
+                    set_right_beacon_side(right_beacon_sv_pos + 0.005);
+                    sleep(5);
+                }
+            }
 
             // write the values to the motors
             motorR.setPower(rightPower);
