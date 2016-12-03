@@ -1057,6 +1057,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 shooter.setPower(0.9);
                 sleep(3000);
             } else {
+                shooter.setPower(0.95);
                 sleep(3000);
             }
             set_gate(GATE_OPEN);
