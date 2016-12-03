@@ -190,10 +190,11 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
 
             if (gamepad1.right_trigger > 0.1) { // *reconfigure later*
-
+                set_left_beacon_side(LEFT_BEACON_SIDE_PRESS);
                 sleep(300);
             }
             if (gamepad1.right_bumper) { //
+                set_left_beacon_side(LEFT_BEACON_SIDE_DOWN);
 
             }
 
