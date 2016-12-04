@@ -81,7 +81,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
     final static int WHITE_ADA = 9000;
     final static double WHITE_NXT = 1.9;
-    final static double WHITE_ODS = 1.9;
+    final static double WHITE_ODS = 1.00;
     final static double RANGE_WALL = 186.2;
 
     // we assume that the LED pin of the RGB sensor is connected to
@@ -160,7 +160,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_range = true;
     Boolean use_adacolor = false;
     Boolean use_light = false;
-    Boolean use_ods = false;
+    Boolean use_ods = true;
 
 
     public enum State {
@@ -419,8 +419,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         touch = (tSensor.isPressed()?1:0);
         telemetry.addData("9. head/gyro/ods/touch:", String.format("%d/%d/%.4f/%d",
                 heading, gyro.getHeading(), opSensor.getLightDetected(),touch));
-        //telemetry.addData("9. head/gyro/ods/ultra/touch:", String.format("%d/%d/%.4f/%.2f/%d",
-        //        heading, gyro.getHeading(), opSensor.getLightDetected(), ultra.getUltrasonicLevel(),touch));
+        telemetry.addData("9. head/gyro/ods/ultra/touch:", String.format("%d/%d/%.4f/%.2f/%d",
+                heading, gyro.getHeading(), opSensor.getLightDetected(), ultra.getUltrasonicLevel(),touch));
     }
 
     public void StraightR(double power, double n_rotations) throws InterruptedException {
@@ -887,6 +887,16 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
 
+    public void stopAtWhite(double power) throws InterruptedException {
+        initAutoOpTime = getRuntime();
+        driveTT(power, power);
+        int i=0;
+        while (!detectWhite() && (getRuntime() - initAutoOpTime < 3)) {
+            if ((++i%10)==0)
+                driveTT(power, power);
+        }
+        stop_chassis();
+    }
 
     public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
@@ -1104,30 +1114,32 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goBeacon (boolean is_red) throws InterruptedException {
         boolean isFirstBeacon = false;
         double distanceToWall = 66.1;
-        if(use_range){
+        // if(use_range){
+        if (false) {
             if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
                 isFirstBeacon = true;
                 distanceToWall = 180.2;
             }
+            goUntilWall(0.3, distanceToWall);
+            StraightIn(-0.5, 2.5);
         }
         else if (use_ods) {
-            goUntilWhite(0.15);
+            stopAtWhite(0.3);
+            StraightIn(-0.5,7.5);
         }
 
         if (true) {
-            //goUntilWhite(0.2);
-            goUntilWall(0.3, distanceToWall);
-            StraightIn(-0.5, 2.5);
-            sleep(400);
+
+            sleep(200);
             if(is_red){
-                TurnLeftD(0.5, 87, true);
+                TurnLeftD(0.5, 90, true);
             }
             else{
                 TurnRightD(0.5, 90, true);
             }
             //StraightIn(-0.5, 3);
         }
-        sleep(500);
+        sleep(200);
         //forwardTillUltra(10, 0.25, 3);
         blue_detected = false;
         red_detected = false;

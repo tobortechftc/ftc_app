@@ -157,8 +157,10 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             }
 
             if (gamepad1.left_trigger > 0.1) { //
-
-                sleep(300);
+                stopAtWhite(0.3);
+                StraightIn(-0.5,7.5);
+                TurnLeftD(0.5,90,true);
+                sleep(500);
             }
             if (gamepad1.left_bumper) { //
                 TurnLeftD(0.45,90,true);
