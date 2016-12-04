@@ -149,6 +149,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 sleep(5);
             }
             if (gamepad1.right_trigger > 0.1) { //
+                StraightIn(-0.5,25);
                 goShooting(2,true, true);
                 sleep(300);
             }
@@ -173,7 +174,12 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 goBeacon(false);
             }
             if (gamepad2.dpad_up){
-                StraightIn(0.5,72);
+                StraightIn(1.0,72);
+            }
+            if (gamepad2.dpad_down){
+                StraightIn(0.5,30);
+                TurnRightD(0.5,45,true);
+                StraightIn(0.5,30);
             }
             if (gamepad2.left_bumper){
                 if(left_beacon_side_sv_pos > 0.05) {
