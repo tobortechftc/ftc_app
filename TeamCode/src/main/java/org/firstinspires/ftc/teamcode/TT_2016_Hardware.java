@@ -59,9 +59,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     // CONSTANT VALUES.
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
-    final static double PUSHER_UP = 0.14;
-    final static double PUSHER_DOWN = 0.52;
-    final static double PUSHER_EXTRA = 1.00;
+    final static double PUSHER_UP = 0.91;
+    final static double PUSHER_DOWN_1 = 0.65;
+    final static double PUSHER_UP1 = 0.75;
+    final static double PUSHER_DOWN_2 = 0.5;
+    final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.55;
     final static double GATE_OPEN = 0.001;
     final static double LIGHT_SENSOR_UP = 0.03;
@@ -1053,8 +1055,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void push_ball() {
-        set_pusher(PUSHER_EXTRA);
-        sleep(1000);
+        set_pusher(PUSHER_DOWN_1);
+        sleep(300);
+        set_pusher(PUSHER_UP);
+        set_pusher(PUSHER_DOWN_2);
+        sleep(700);
         set_pusher(PUSHER_UP);
     }
 
