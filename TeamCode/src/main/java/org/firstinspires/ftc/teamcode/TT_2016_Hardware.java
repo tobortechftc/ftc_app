@@ -75,9 +75,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LEFT_BEACON_SIDE_DOWN = 0.9;
     final static double LEFT_BEACON_SIDE_PRESS = 0.2;
     final static double LEFT_BEACON_SIDE_INIT = 0.3;
-    //final static double RIGHT_BEACON_SIDE_DOWN = 0.5;
-    //final static double RIGHT_BEACON_SIDE_PRESS = 0.5;
-    //final static double RIGHT_BEACON_SIDE_INIT = 0.5;
+    final static double RIGHT_BEACON_SIDE_DOWN = 0.05;
+    final static double RIGHT_BEACON_SIDE_PRESS = 0.6;
+    final static double RIGHT_BEACON_SIDE_INIT = 0.6;
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
@@ -238,6 +238,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_left_beacon(LEFT_BEACON_INIT);
         set_right_beacon(RIGHT_BEACON_INIT);
         set_left_beacon_side(LEFT_BEACON_SIDE_INIT);
+        set_right_beacon_side(RIGHT_BEACON_SIDE_INIT);
         set_gate(GATE_CLOSED);
         set_pusher(PUSHER_UP);
 
