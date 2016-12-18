@@ -70,8 +70,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.05;
-    final static double RIGHT_BEACON_PRESS = 0.5;
-    final static double RIGHT_BEACON_INIT = 0.95;
+    final static double RIGHT_BEACON_PRESS = 0.4;
+    final static double RIGHT_BEACON_INIT = 0.85;
     final static double LEFT_BEACON_SIDE_DOWN = 0.2;
     final static double LEFT_BEACON_SIDE_PRESS = 0.9;
     final static double LEFT_BEACON_SIDE_INIT = 0.3;
