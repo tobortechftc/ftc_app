@@ -56,7 +56,7 @@ public class TT_2016_AutoBlueInTwoBeacons extends TT_2016_Hardware {
 
         waitForStart();
 
-        auto_part1(true, true);
+        auto_part1(false, true);
 
         auto_part2(false, true, true, true, false);
 

@@ -163,15 +163,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 SH_power = (float) 0;
                 sleep(400);
             }
-            if (gamepad2.x) { // shooter on
-                SW_power = (float) 0;
-                shooter.setPower(0.5);
-                SH_power = (float) 0.9;
-                sleep(400);
-            } else if (gamepad2.b) { // shooter off
-                SW_power = (float) 0;
-                SH_power = (float) 0;
-            }
+
             // update the speed of the chassis, or stop tape slider
             if (gamepad1.a) {
                 // if the A button is pushed on gamepad1, decrease the speed
@@ -212,7 +204,34 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (gamepad1.dpad_up) {
 
             }
+            if (gamepad1.dpad_left) {
+                if (Math.abs(left_beacon_sv_pos-LEFT_BEACON_INIT) < 0.1) {
+                    set_left_beacon(LEFT_BEACON_PRESS);
+                }
+                else {
+                    set_left_beacon(LEFT_BEACON_INIT);
+                }
+                sleep(500);
+            } else if (gamepad1.dpad_right) {
+                if (Math.abs(right_beacon_sv_pos-RIGHT_BEACON_INIT) < 0.1) {
+                    set_right_beacon(RIGHT_BEACON_PRESS);
+                }
+                else {
+                    set_right_beacon(RIGHT_BEACON_INIT);
+                }
+                sleep(500);
+            }
 
+            if (gamepad2.x) { // shooter on
+                SW_power = (float) 0;
+                shooter.setPower(0.5);
+                SH_power = (float) 0.9;
+                sleep(400);
+            } else if (gamepad2.b) { // shooter off
+                SW_power = (float) 0;
+                SH_power = (float) 0;
+                set_gate(GATE_CLOSED);
+            }
 
             if (gamepad2.x || gamepad2.b) {
 

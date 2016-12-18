@@ -72,11 +72,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LEFT_BEACON_INIT = 0.05;
     final static double RIGHT_BEACON_PRESS = 0.5;
     final static double RIGHT_BEACON_INIT = 0.95;
-    final static double LEFT_BEACON_SIDE_DOWN = 0.9;
-    final static double LEFT_BEACON_SIDE_PRESS = 0.2;
+    final static double LEFT_BEACON_SIDE_DOWN = 0.2;
+    final static double LEFT_BEACON_SIDE_PRESS = 0.9;
     final static double LEFT_BEACON_SIDE_INIT = 0.3;
-    final static double RIGHT_BEACON_SIDE_DOWN = 0.05;
-    final static double RIGHT_BEACON_SIDE_PRESS = 0.6;
+    final static double RIGHT_BEACON_SIDE_DOWN = 0.4;
+    final static double RIGHT_BEACON_SIDE_PRESS = 0.02;
     final static double RIGHT_BEACON_SIDE_INIT = 0.6;
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
@@ -824,7 +824,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_right_button() throws InterruptedException {
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(500);
+        sleep(300);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
@@ -832,14 +832,14 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void bump_beacon() throws InterruptedException {
         driveTT(0.2, 0.2);
-        sleep(1000);
+        sleep(500);
         driveTT(0, 0);
         StraightIn(-0.5, 3);
     }
 
     void hit_left_button() throws InterruptedException {
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(500);
+        sleep(300);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -957,6 +957,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
                     gyro.getHeading(), leftPower, rightPower));
         }
+        set_right_beacon_side(RIGHT_BEACON_SIDE_DOWN);
 
         if (is_in) {
             StraightIn(1.0, 42);
@@ -968,11 +969,11 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (is_red){
             TurnRightD(0.4,40,true);
-            StraightIn(0.6, 5);
+            StraightIn(0.75, 8);
         }
         else {
             TurnLeftD(0.4,40,true);
-            StraightIn(0.6,4);
+            StraightIn(0.75,7);
         }
 
 
@@ -1226,7 +1227,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             else{
                 TurnRightD(0.5, 90, true);
             }
-            shooter.setPower(1.0);
+            shooter.setPower(0.95);
             //StraightIn(-0.5, 3);
         }
         sleep(500);
@@ -1268,11 +1269,11 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         if(true){
-            StraightIn(-1.0,22);
+            StraightIn(-1.0,20);
             //push_ball();
             //sleep(200);
             set_gate(GATE_OPEN);
-            sleep(500);
+            //sleep(500);
             //set_gate(GATE_CLOSED);
             if(shoot_twice){
                 push_ball();
