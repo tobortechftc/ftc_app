@@ -221,6 +221,13 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 }
                 sleep(500);
             }
+            if (gamepad2.left_stick_y>0.1) {
+                linear_slider.setPower(1);
+            } else if (gamepad2.left_stick_y<-0.1) {
+                linear_slider.setPower(-1);
+            } else {
+                linear_slider.setPower(0);
+            }
 
             if (gamepad2.x) { // shooter on
                 SW_power = (float) 0;

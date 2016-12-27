@@ -70,8 +70,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.05;
-    final static double RIGHT_BEACON_PRESS = 0.4;
-    final static double RIGHT_BEACON_INIT = 0.85;
+    final static double RIGHT_BEACON_PRESS = 0.55;
+    final static double RIGHT_BEACON_INIT = 0.99;
     final static double LEFT_BEACON_SIDE_DOWN = 0.2;
     final static double LEFT_BEACON_SIDE_PRESS = 0.9;
     final static double LEFT_BEACON_SIDE_INIT = 0.3;
@@ -183,6 +183,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     DcMotor motorL;
     DcMotor sweeper;
     DcMotor shooter;
+    DcMotor linear_slider;
     Servo light_sensor_sv;
     Servo left_beacon_sv;
     Servo right_beacon_sv;
@@ -253,6 +254,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         motorR = hardwareMap.dcMotor.get("motorR");
         sweeper = hardwareMap.dcMotor.get("sweeper");
         shooter = hardwareMap.dcMotor.get("shooter");
+        linear_slider = hardwareMap.dcMotor.get("linear_slider");
 
 
         motorR.setDirection(DcMotor.Direction.REVERSE);
@@ -262,6 +264,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         motorR.setPower(0);
         sweeper.setPower(0);
         shooter.setPower(0);
+        linear_slider.setPower(0);
         // shooter.setDirection(DcMotor.Direction.REVERSE);
         sweeper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -715,6 +718,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         stop_chassis();
         sweeper.setPower(0);
         shooter.setPower(0);
+        linear_slider.setPower(0);
     }
 
     void reset_chassis() throws InterruptedException {
