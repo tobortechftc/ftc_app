@@ -68,6 +68,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.55;
     final static double GATE_OPEN = 0.001;
+    final static double SLIDER_GATE_OPEN = 0.001;
+    final static double SLIDER_GATE_CLOSED = 0.5;
     final static double LIGHT_SENSOR_UP = 0.03;
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
@@ -122,6 +124,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     double pusher_sv_pos=0;
     double left_beacon_side_sv_pos=0;
     double right_beacon_side_sv_pos=0;
+    double slider_gate_sv_pos=0;
     // amount to change the claw servo position by
 
     boolean blue_detected = false;
@@ -193,6 +196,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Servo pusher_sv;
     Servo left_beacon_side_sv;
     Servo right_beacon_side_sv;
+    Servo slider_gate_sv;
     int motorRightCurrentEncoder = 0;
     int motorLeftCurrentEncoder = 0;
     int motorRightTargetEncoder = 0;
@@ -236,6 +240,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         right_beacon_side_sv = init_servo("right_beacon_side_sv");
         gate_sv = init_servo("gate_sv");
         pusher_sv = init_servo("pusher_sv");
+        slider_gate_sv = init_servo("slider_gate_sv");
         //DbgLog.msg(String.format("TOBOT-INIT  light_sensor_sv -"));
         //set_light_sensor(LIGHT_SENSOR_DOWN);
         set_left_beacon(LEFT_BEACON_INIT);
@@ -244,6 +249,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_right_beacon_side(RIGHT_BEACON_SIDE_INIT);
         set_gate(GATE_CLOSED);
         set_pusher(PUSHER_UP);
+        set_slider_gate(SLIDER_GATE_CLOSED);
+
 
 
         long systemTime = System.nanoTime();
@@ -885,6 +892,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void set_gate(double pos) {
        gate_sv_pos = pos;
        gate_sv.setPosition(gate_sv_pos);
+    }
+
+    public void set_slider_gate(double pos) {
+          slider_gate_sv_pos = pos;
+        slider_gate_sv.setPosition(slider_gate_sv_pos);
     }
 
     public void set_pusher(double pos) {

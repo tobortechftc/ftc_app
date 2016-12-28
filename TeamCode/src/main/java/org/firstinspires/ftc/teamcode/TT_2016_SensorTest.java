@@ -205,6 +205,12 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     sleep(5);
                 }
             }
+            if (gamepad2.y){
+                set_slider_gate(0.05);
+            }
+            if (gamepad2.a){
+                set_slider_gate(0.5);
+            }
 
             // write the values to the motors
             motorR.setPower(rightPower);
