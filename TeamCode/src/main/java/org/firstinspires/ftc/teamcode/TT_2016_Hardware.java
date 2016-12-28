@@ -60,9 +60,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
     final static double PUSHER_UP = 0.91;
-    final static double PUSHER_DOWN_1 = 0.65;
+    final static double PUSHER_DOWN_1 = 0.55;
     final static double PUSHER_UP1 = 0.75;
-    final static double PUSHER_DOWN_2 = 0.5;
+    final static double PUSHER_DOWN_2 = 0.4;
+
+
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.55;
     final static double GATE_OPEN = 0.001;
@@ -70,8 +72,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.05;
-    final static double RIGHT_BEACON_PRESS = 0.55;
-    final static double RIGHT_BEACON_INIT = 0.99;
+    final static double RIGHT_BEACON_PRESS = 0.42;
+    final static double RIGHT_BEACON_INIT = 0.84;
     final static double LEFT_BEACON_SIDE_DOWN = 0.2;
     final static double LEFT_BEACON_SIDE_PRESS = 0.9;
     final static double LEFT_BEACON_SIDE_INIT = 0.3;
