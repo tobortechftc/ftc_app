@@ -244,11 +244,11 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
 
             }
 
-            if (gamepad2.y) {
-
+            if (gamepad2.y){
+                set_slider_gate(0.05);
             }
-            if (gamepad2.a) {
-
+            if (gamepad2.a){
+                set_slider_gate(0.5);
             }
             if (gamepad2.right_trigger > 0.1) {
                 set_gate(GATE_CLOSED);

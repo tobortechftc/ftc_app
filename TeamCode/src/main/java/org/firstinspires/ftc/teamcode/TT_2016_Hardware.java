@@ -59,7 +59,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     // CONSTANT VALUES.
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
-    final static double PUSHER_UP = 0.91;
+    final static double PUSHER_UP = 0.85;
     final static double PUSHER_DOWN_1 = 0.55;
     final static double PUSHER_UP1 = 0.75;
     final static double PUSHER_DOWN_2 = 0.4;
@@ -160,8 +160,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     // following variables are used by Chassis
     State state;
+    Boolean allow_navx = true;
     Boolean use_navx = false;
-    Boolean use_gyro = false;
+    Boolean use_gyro = true;
     Boolean use_encoder = true;
     Boolean use_ultra = false;
     Boolean use_range = true;
@@ -344,7 +345,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         //Instantiate ToborTech Nav object
         colorPicker = new TT_ColorPicker(coSensor, coSensor2);
-        if (true) {
+        if (allow_navx) {
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT,
                     AHRS.DeviceDataType.kProcessedData);
@@ -596,7 +597,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 cur_heading += 360;
                 cross_zero = true;
             }
-            DbgLog.msg(String.format("LOP: Left Turn %d degree: Gyro tar/curr heading = %d/%d",
+            DbgLog.msg(String.format("LOP: Left Turn %.2f degree: Gyro tar/curr heading = %d/%d",
                     degree, heading, gyro.getHeading()));
             int prev_heading = -1;
 
@@ -678,7 +679,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             heading = cur_heading + (int)adjust_degree_gyro;
             int prev_heading = -1;
             int init_heading = cur_heading;
-            DbgLog.msg(String.format("LOP: Right Turn %d degree: Gyro tar/curr heading = %d/%d",
+            DbgLog.msg(String.format("LOP: Right Turn %.2f degree: Gyro tar/curr heading = %d/%d",
                     degree, heading, gyro.getHeading()));
 
             while (cur_heading < heading && (getRuntime() - initAutoOpTime < 4)) {
