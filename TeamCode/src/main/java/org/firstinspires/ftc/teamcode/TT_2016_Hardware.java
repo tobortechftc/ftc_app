@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode;
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -47,7 +49,10 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * TobotHardware
@@ -103,20 +108,22 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double GYRO_ROTATION_RATIO_R = 0.85; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
-    int numOpLoops = 1;
+    // variables for sensors
+      /* This is the port on the Core Device Interace Module */
+  /* in which the navX-Micro is connected.  Modify this  */
+  /* depending upon which I2C port you are using.        */
+    private final int NAVX_DIM_I2C_PORT = 4;
 
     //
     // following variables are used by Arm/slider
     //
-
+    int numOpLoops = 1;
     double armDelta = 0.1;
     int slider_counter = 0;
-
     boolean bPrevState = false;
-    boolean bCurrState = false;
 
     // position of servos
-
+    boolean bCurrState = false;
     double light_sensor_sv_pos=0;
     double left_beacon_sv_pos=0;
     double right_beacon_sv_pos=0;
@@ -124,20 +131,13 @@ public class TT_2016_Hardware extends LinearOpMode {
     double pusher_sv_pos=0;
     double left_beacon_side_sv_pos=0;
     double right_beacon_side_sv_pos=0;
-    double slider_gate_sv_pos=0;
     // amount to change the claw servo position by
-
+    double slider_gate_sv_pos=0;
     boolean blue_detected = false;
     boolean red_detected = false;
     int detectwhite = 0;
-
-    // variables for sensors
-      /* This is the port on the Core Device Interace Module */
-  /* in which the navX-Micro is connected.  Modify this  */
-  /* depending upon which I2C port you are using.        */
-    private final int NAVX_DIM_I2C_PORT = 4;
-
     AHRS navx_device;
+    BNO055IMU ada_imu; // The Adafruit IMU sensor object
     double yaw;
     ColorSensor coSensor; // right sensor
     ColorSensor coSensor2; // left sensor
@@ -154,14 +154,13 @@ public class TT_2016_Hardware extends LinearOpMode {
     double imu_heading = 0;
     int touch = 0;
     // LightSensor LL, LR;
-
-    // IBNO055IMU imu;
     TT_ColorPicker colorPicker;
 
     // following variables are used by Chassis
     State state;
-    Boolean allow_navx = true;
-    Boolean use_navx = false;
+    Boolean allow_navx = true; // set to false to disable navx
+    Boolean use_navx = false; // will set to true by program when calibration is OK
+    Boolean use_ada_imu = true;
     Boolean use_gyro = true;
     Boolean use_encoder = true;
     Boolean use_ultra = false;
@@ -169,15 +168,6 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_adacolor = false;
     Boolean use_light = false;
     Boolean use_ods = true;
-
-
-    public enum State {
-        STATE_TELEOP,    // state to test teleop
-        STATE_AUTO,        // state to test auto routines
-        STATE_TUNEUP    // state to manually tune up servo positions and arm positions
-    }
-
-
     float speedScale = (float) 0.7; // controlling the speed of the chassis in teleOp state
     float leftPower = 0;
     float rightPower = 0;
@@ -204,6 +194,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     int motorLeftTargetEncoder = 0;
     int leftCnt = 0; // left motor target counter
     int rightCnt = 0; // right motor target counter
+    private boolean v_warning_generated = false;
+    private String v_warning_message;
 
     public Servo init_servo(String name) {
         Servo new_sv;
@@ -338,13 +330,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         //LL = hardwareMap.lightSensor.get("ll");
         //LR = hardwareMap.lightSensor.get("lr");
-        if (use_gyro) {
-            gyro = hardwareMap.gyroSensor.get("gyro");
-            // calibrate the gyro.
-            gyro.calibrate();
-        }
-        //Instantiate ToborTech Nav object
+
         colorPicker = new TT_ColorPicker(coSensor, coSensor2);
+
+        //Instantiate ToborTech Nav objects:
+        // 1. navx
+        // 2. ada imu
+        // 3. gyro
         if (allow_navx) {
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT,
@@ -352,26 +344,60 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             double init_time = getRuntime();
             boolean navx_ok = false;
-            while (!navx_ok && (getRuntime() - init_time < 6)) { // wait for three sec to get connected
+            while (!navx_ok && (getRuntime() - init_time < 6)) { // wait for 6 sec to get connected
                 navx_ok = navx_device.isConnected();
                 idle();
             }
             if (navx_ok) {
                 boolean navx_cal = true;
-                while (navx_cal && (getRuntime() - init_time < 12)) { // wait for 2 sec to get calibration
+                while (navx_cal && (getRuntime() - init_time < 12)) { // wait for 12 sec to get calibration
                     navx_cal = navx_device.isCalibrating();
                     idle();
                 }
-                if (navx_cal)
+                if (navx_cal) {
                     navx_ok = false;
-            }
-            if (!navx_ok) {
-                DbgLog.msg(String.format("TOBOT-INIT: NaxX IMU is not connected!"));
+                    DbgLog.msg(String.format("TOBOT-INIT: NaxX IMU is not calibrated properly!"));
+                }
             } else {
+                DbgLog.msg(String.format("TOBOT-INIT: NaxX IMU is not connected!"));
+            }
+            if (navx_ok) {
                 navx_device.zeroYaw();
                 use_navx = true;
             }
         }
+        if (use_ada_imu) {
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "ADA_IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+            // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+            // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+            // and named "imu".
+            ada_imu = hardwareMap.get(BNO055IMU.class, "imu");
+            if (ada_imu.initialize(parameters)==false) {
+                use_ada_imu = false;
+                DbgLog.msg(String.format("TOBOT-INIT: AdaFruit IMU is not initialized properly!"));
+            }
+        }
+        if (use_gyro) {
+            gyro = hardwareMap.gyroSensor.get("gyro");
+            // calibrate the gyro.
+            double init_time = getRuntime();
+            gyro.calibrate();
+            while (!isStopRequested() && gyro.isCalibrating() && (getRuntime() - init_time < 6))  {
+                sleep(50);
+                idle();
+            }
+            if (gyro.isCalibrating()) {
+                use_gyro = false;
+            }
+        }
+
         hardwareMap.logDevices();
         show_telemetry();
         DbgLog.msg(String.format("TOBOT-INIT  end() -"));
@@ -386,8 +412,12 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         while (opModeIsActive()) {
             //show_telemetry();
-            waitOneFullHardwareCycle();
         }
+    }
+
+    double ada_imu_heading() {
+        Orientation angles   = ada_imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        return (double)(angles.firstAngle);
     }
 
     public void show_telemetry() {
@@ -395,13 +425,26 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (use_navx){
             cur_heading = navx_device.getYaw();
         }
+        else if (use_ada_imu) {
+            cur_heading = ada_imu_heading();
+        }
         else if (use_gyro){
-            cur_heading = mapHeading(gyro.getHeading());
+            cur_heading = (double)(gyro.getHeading());
         }
         telemetry.addData("0. Program State: ", state.toString());
-        telemetry.addData("1. use NavX/ use Gyro:", String.format("%s / %s ", use_navx.toString(), use_gyro.toString()));
+        telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
+                  use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
         telemetry.addData("2. IMU_heading/Current heading:", String.format("%.2f/%.2f", imu_heading, cur_heading));
-        // telemetry.addData("3. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
+        if (use_ada_imu && use_gyro) {
+            telemetry.addData("3. Gyro-heading / Ada-IMU err = ",String.format("%d / %s",
+                    gyro.getHeading(),ada_imu.getSystemError().toString()));
+        }
+        else if (use_ada_imu) {
+            telemetry.addData("3. Ada-IMU sys-st / err-st = ",String.format("%s / %s",
+                    ada_imu.getSystemStatus().toString(),ada_imu.getSystemError().toString()));
+        } else if (use_gyro) {
+            telemetry.addData("3. Gryo heading = ",String.format("%d", gyro.getHeading()));
+        }
         telemetry.addData("4. Color1 R/G/B  = ", String.format("%d / %d / %d", coSensor.red(), coSensor.green(), coSensor.blue()));
         telemetry.addData("5. Color2 R/G/B  = ", String.format("%d / %d / %d", coSensor2.red(), coSensor2.green(), coSensor2.blue()));
         telemetry.addData("6. White / range = ", String.format("%d / %.2f",detectwhite, rangeSensor.getDistance(DistanceUnit.CM)  ));
@@ -415,12 +458,12 @@ public class TT_2016_Hardware extends LinearOpMode {
         telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
 
         if (use_light) {
-            telemetry.addData("11. Raw", lightSensor.getRawLightDetected());
-            telemetry.addData("12. Normal", lightSensor.getLightDetected());
+            telemetry.addData("11. light_s Raw/Norm", String.format("%.2f / %.2f",
+                               lightSensor.getRawLightDetected(),lightSensor.getLightDetected()));
         }
         if (use_ods) {
-            telemetry.addData("13. Raw", odsSensor.getRawLightDetected());
-            telemetry.addData("14. Normal", odsSensor.getLightDetected());
+            telemetry.addData("12. ODS Raw/Norm", String.format("%.2f / %.2f",
+                    odsSensor.getRawLightDetected(),odsSensor.getLightDetected()));
         }
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);
@@ -470,6 +513,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void StraightIn(double power, double in) throws InterruptedException {
         if (use_navx){
             imu_heading = navx_device.getYaw();
+        } else if (use_ada_imu) {
+            imu_heading = ada_imu_heading();
         }
         if (use_encoder) {
             double numberR = in / INCHES_PER_ROTATION;
@@ -492,12 +537,21 @@ public class TT_2016_Hardware extends LinearOpMode {
             double cur_heading = navx_device.getYaw();
             if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
                 if (lp > 0) lp *= 0.9;
-                else rp *= 0.9;
-            } else if (cur_heading - imu_heading < -0.7) { // crook to the left, slow down right motor
-                if (lp > 0) rp *= 0.9;
+                else rp *= 0.9; // adjust backward
+            } else if (cur_heading - imu_heading < -0.7) { // crook to left, slow down right motor
+                if (rp > 0) rp *= 0.9;
                 else lp *= 0.9;
             }
 
+        } else if (use_ada_imu) {
+            double cur_heading = ada_imu_heading();
+            if (cur_heading - imu_heading > 0.7) { // crook to left,  slow down right motor
+                if (rp > 0) rp *= 0.9;
+                else lp *= 0.9;
+            } else if (cur_heading - imu_heading < -0.7) { // crook to right, slow down left motor
+                if (lp > 0) lp *= 0.9;
+                else rp *= 0.9;
+            }
         }
         motorR.setPower(rp);
         motorL.setPower(lp);
@@ -586,8 +640,25 @@ public class TT_2016_Hardware extends LinearOpMode {
                 driveTT(leftPower, rightPower);
             }
         }
+        else if (use_ada_imu) {
+            current_pos = ada_imu_heading();
+            imu_heading = current_pos + adjust_degree_navx ;
+            if (imu_heading >= 0) {
+                imu_heading -= 360;
+                heading_cross_zero = true;
+            }
+            if (heading_cross_zero && (current_pos >= -180)) {
+                current_pos -= 360;
+            }
+            while ((current_pos <= imu_heading) && ((getRuntime() - initAutoOpTime) < 5.0)) {
+                current_pos = ada_imu_heading();
+                if (heading_cross_zero && (current_pos >= -180)) {
+                    current_pos -= 360;
+                }
+                driveTT(leftPower, rightPower);
+            }
+        }
         else if (use_gyro) {
-        // if (false) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
             heading = gyro.getHeading() - (int) adjust_degree_gyro;
@@ -618,10 +689,8 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
 
                 // show_heading();
-                waitForNextHardwareCycle();
             }
-            driveTT(0, 0);
-        } else {
+        } else { // use encoder
             run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
         }
         driveTT(0, 0);
@@ -671,8 +740,25 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
                 driveTT(leftPower, rightPower);
             }
-
-        } else if (use_gyro) {
+        } else if (use_ada_imu) {
+                current_pos = ada_imu_heading();
+                imu_heading = current_pos - adjust_degree_navx ;
+                if (imu_heading <= -360) {
+                    imu_heading += 360;
+                    heading_cross_zero = true;
+                }
+                if (heading_cross_zero && (current_pos <= -180)) {
+                    current_pos += 360;
+                }
+                while ((current_pos >= imu_heading) && ((getRuntime() - initAutoOpTime) < 5.0)) {
+                    current_pos = ada_imu_heading();
+                    if (heading_cross_zero && (current_pos <= -180)) {
+                        current_pos += 360;
+                    }
+                    driveTT(leftPower, rightPower);
+                }
+        }
+        else if (use_gyro) {
         // if (false) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
@@ -682,7 +768,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             DbgLog.msg(String.format("LOP: Right Turn %.2f degree: Gyro tar/curr heading = %d/%d",
                     degree, heading, gyro.getHeading()));
 
-            while (cur_heading < heading && (getRuntime() - initAutoOpTime < 4)) {
+            while (cur_heading < heading && (getRuntime() - initAutoOpTime < 5)) {
                 driveTT(leftPower, rightPower);
                 if (prev_heading!=cur_heading) {
                     DbgLog.msg(String.format("LOP: Gyro heading tar/curr = %d/%d, power L/R = %.2f/%.2f",
@@ -694,10 +780,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     cur_heading += 360;
                 }
                 // show_heading();
-                waitForNextHardwareCycle();
-
             }
-            driveTT(0, 0);
         } else {
             if (use_encoder) {
                 run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
@@ -711,7 +794,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         driveTT(0, 0);
-         sleep(500);
+        sleep(500);
     }
 
     void set_drive_modes(DcMotor.RunMode mode) {
@@ -748,6 +831,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         reset_chassis();
     }
 
+    //--------------------------------------------------------------------------
+    //
+    // has_right_drive_encoder_reached
+    //
+
     boolean has_left_drive_encoder_reached(double p_count) {
         if (leftPower < 0) {
             //return (Math.abs(motorFL.getCurrentPosition()) < p_count);
@@ -760,7 +848,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     //--------------------------------------------------------------------------
     //
-    // has_right_drive_encoder_reached
+    // have_drive_encoders_reached
     //
 
     /**
@@ -774,11 +862,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
 
     } // has_right_drive_encoder_reached
-
-    //--------------------------------------------------------------------------
-    //
-    // have_drive_encoders_reached
-    //
 
     /**
      * Indicate whether the drive motors' encoders have reached specified values.
@@ -843,7 +926,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_right_beacon(RIGHT_BEACON_INIT);
     }
 
-
     void bump_beacon() throws InterruptedException {
         driveTT(0.2, 0.2);
         sleep(500);
@@ -896,7 +978,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void set_slider_gate(double pos) {
-          slider_gate_sv_pos = pos;
+        slider_gate_sv_pos = pos;
         slider_gate_sv.setPosition(slider_gate_sv_pos);
     }
 
@@ -924,7 +1006,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         right_beacon_side_sv_pos = pos;
         right_beacon_side_sv.setPosition(right_beacon_side_sv_pos);
     }
-
 
     public void stopAtWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
@@ -958,7 +1039,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         stop_chassis();
     }
-
 
     public void auto_part1(boolean is_red, boolean is_in) throws InterruptedException {
 
@@ -1083,7 +1163,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         sleep(700);
         set_pusher(PUSHER_UP);
     }
-
 
     public void goShooting (int times, boolean is_red, boolean first_beacon) throws InterruptedException {
         if (is_red) {
@@ -1360,7 +1439,9 @@ public class TT_2016_Hardware extends LinearOpMode {
         v_warning_message += p_exception_message;
 
     }
-
-    private boolean v_warning_generated = false;
-    private String v_warning_message;
+    public enum State {
+        STATE_TELEOP,    // state to test teleop
+        STATE_AUTO,        // state to test auto routines
+        STATE_TUNEUP    // state to manually tune up servo positions and arm positions
+    }
 }

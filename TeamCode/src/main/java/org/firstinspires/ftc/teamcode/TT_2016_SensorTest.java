@@ -83,7 +83,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
         waitForStart();
 
         int count = 0;
-        speedScale = (float) 0.5;
+        speedScale = (float) 0.6;
         double red_acc = 0, blue_acc = 0, red_final = 0, blue_final = 0;
         while (opModeIsActive()) {
             float left = -gamepad1.left_stick_y;
@@ -105,14 +105,14 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 // if the A button is pushed on gamepad1, decrease the speed
                 // of the chassis
                 if (speedScale > 0.2) {
-                    speedScale -= 0.001;
+                    speedScale -= 0.002;
                     sleep(5);
                 }
             } else if (gamepad1.y) {
                 // if the Y button is pushed on gamepad1, increase the speed
                 // of the chassis
                 if (speedScale < 1) {
-                    speedScale += 0.001;
+                    speedScale += 0.002;
                     sleep(5);
                 }
             }
@@ -174,12 +174,13 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 goBeacon(false);
             }
             if (gamepad2.dpad_up){
-                StraightIn(1.0,72);
+                StraightIn(1.0,60);
             }
             if (gamepad2.dpad_down){
-                StraightIn(0.5,30);
-                TurnRightD(0.5,45,true);
-                StraightIn(0.5,30);
+                //StraightIn(0.5,30);
+                //TurnRightD(0.5,45,true);
+                //StraightIn(0.5,30);
+                StraightIn(-1.0,60);
             }
             if (gamepad2.left_bumper){
                 if(left_beacon_side_sv_pos > 0.05) {
