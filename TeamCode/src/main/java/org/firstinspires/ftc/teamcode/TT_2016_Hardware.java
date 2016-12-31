@@ -1261,10 +1261,16 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             sleep(200);
             if(is_red){
-                TurnLeftD(0.5, navx_device.getYaw()-(-45), true);
+                if (use_navx)
+                    TurnLeftD(0.5, navx_device.getYaw()-(-45), true);
+                else
+                    TurnLeftD(0.5, 85, true);
             }
             else{
-                TurnRightD(0.5, 45-(navx_device.getYaw()), true);
+                if (use_navx)
+                    TurnRightD(0.5, 45-(navx_device.getYaw()), true);
+                else
+                    TurnRightD(0.5, 90, true);
             }
             //StraightIn(-0.5, 3);
         }
@@ -1319,21 +1325,31 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
 
         if (true) {
-            //goUntilWhite(0.2);
-            goUntilWall(0.3, distanceToWall);
-            StraightIn(-0.5, 2.5);
+            if (use_ods) {
+                stopAtWhite(0.3);
+                StraightIn(-0.5,7.5);
+            } else {
+                goUntilWall(0.3, distanceToWall);
+                StraightIn(-0.5, 2.5);
+            }
             shooter.setPower(0.5);
-            sleep(400);
+            // sleep(400);
             if(is_red){
-                TurnLeftD(0.5, 83, true);
+                if (use_navx)
+                    TurnLeftD(0.5, navx_device.getYaw()-(-45), true);
+                else
+                    TurnLeftD(0.5, 85, true);
             }
             else{
-                TurnRightD(0.5, 90, true);
+                if (use_navx)
+                    TurnRightD(0.5, 45-(navx_device.getYaw()), true);
+                else
+                    TurnRightD(0.5, 90, true);
             }
             shooter.setPower(0.95);
             //StraightIn(-0.5, 3);
         }
-        sleep(500);
+        sleep(200);
         //forwardTillUltra(10, 0.25, 3);
         blue_detected = false;
         red_detected = false;
@@ -1395,7 +1411,6 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if(use_adacolor) {
             cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
-
 
             if (cur_sum_ada_colors >= WHITE_ADA) {
                 return true;
