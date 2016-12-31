@@ -158,10 +158,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     // following variables are used by Chassis
     State state;
-    Boolean allow_navx = true; // set to false to disable navx
-    Boolean use_navx = false; // will set to true by program when calibration is OK
-    Boolean use_ada_imu = true;
-    Boolean use_gyro = true;
+    Boolean use_navx = true;    // set to false to disable navx
+    Boolean use_ada_imu = true; // set to false to disable adafruit IMU
+    Boolean use_gyro = true;    // set to false to disable MR gyro
     Boolean use_encoder = true;
     Boolean use_ultra = false;
     Boolean use_range = true;
@@ -337,7 +336,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // 1. navx
         // 2. ada imu
         // 3. gyro
-        if (allow_navx) {
+        if (use_navx) {
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT,
                     AHRS.DeviceDataType.kProcessedData);
@@ -364,9 +363,11 @@ public class TT_2016_Hardware extends LinearOpMode {
             if (navx_ok) {
                 navx_device.zeroYaw();
                 use_navx = true;
+            } else {
+                use_navx = false;
             }
         }
-        if (use_ada_imu) {
+        if (!use_navx && use_ada_imu) {
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
             parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -383,8 +384,10 @@ public class TT_2016_Hardware extends LinearOpMode {
                 use_ada_imu = false;
                 DbgLog.msg(String.format("TOBOT-INIT: AdaFruit IMU is not initialized properly!"));
             }
+        } else {
+            use_ada_imu = false;
         }
-        if (use_gyro) {
+        if (!use_navx && !use_ada_imu && use_gyro) {
             gyro = hardwareMap.gyroSensor.get("gyro");
             // calibrate the gyro.
             double init_time = getRuntime();
@@ -396,8 +399,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             if (gyro.isCalibrating()) {
                 use_gyro = false;
             }
+        } else {
+            use_gyro = false;
         }
-
         hardwareMap.logDevices();
         show_telemetry();
         DbgLog.msg(String.format("TOBOT-INIT  end() -"));
@@ -422,48 +426,49 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void show_telemetry() {
         double cur_heading = 0;
-        if (use_navx){
-            cur_heading = navx_device.getYaw();
-        }
-        else if (use_ada_imu) {
-            cur_heading = ada_imu_heading();
-        }
-        else if (use_gyro){
-            cur_heading = (double)(gyro.getHeading());
+        if (state==State.STATE_TUNEUP) {
+            if (use_navx) {
+                cur_heading = navx_device.getYaw();
+            } else if (use_ada_imu) {
+                cur_heading = ada_imu_heading();
+            } else if (use_gyro) {
+                cur_heading = (double) (gyro.getHeading());
+            }
         }
         telemetry.addData("0. Program State: ", state.toString());
         telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
                   use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
-        telemetry.addData("2. IMU_heading/Current heading:", String.format("%.2f/%.2f", imu_heading, cur_heading));
-        if (use_ada_imu && use_gyro) {
-            telemetry.addData("3. Gyro-heading / Ada-IMU err = ",String.format("%d / %s",
-                    gyro.getHeading(),ada_imu.getSystemError().toString()));
-        }
-        else if (use_ada_imu) {
-            telemetry.addData("3. Ada-IMU sys-st / err-st = ",String.format("%s / %s",
-                    ada_imu.getSystemStatus().toString(),ada_imu.getSystemError().toString()));
-        } else if (use_gyro) {
-            telemetry.addData("3. Gryo heading = ",String.format("%d", gyro.getHeading()));
-        }
-        telemetry.addData("4. Color1 R/G/B  = ", String.format("%d / %d / %d", coSensor.red(), coSensor.green(), coSensor.blue()));
-        telemetry.addData("5. Color2 R/G/B  = ", String.format("%d / %d / %d", coSensor2.red(), coSensor2.green(), coSensor2.blue()));
-        telemetry.addData("6. White / range = ", String.format("%d / %.2f",detectwhite, rangeSensor.getDistance(DistanceUnit.CM)  ));
-        if(use_adacolor){
-            telemetry.addData("7. Ada C/B/R/G/Sum  = ", String.format("%d/%d/%d/%d/%d", coAda.alpha(), coAda.blue(), coAda.red(), coAda.green(),
-                    (coAda.alpha() + coAda.blue() + coAda.red() + coAda.green())));
-        }
-        telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
-        telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
+        if (state==State.STATE_TUNEUP) {
+            telemetry.addData("2. IMU_heading/Current heading:", String.format("%.2f/%.2f", imu_heading, cur_heading));
+            if (use_ada_imu && use_gyro) {
+                telemetry.addData("3. Gyro-heading / Ada-IMU err = ", String.format("%d / %s",
+                        gyro.getHeading(), ada_imu.getSystemError().toString()));
+            } else if (use_ada_imu) {
+                telemetry.addData("3. Ada-IMU sys-st / err-st = ", String.format("%s / %s",
+                        ada_imu.getSystemStatus().toString(), ada_imu.getSystemError().toString()));
+            } else if (use_gyro) {
+                telemetry.addData("3. Gryo heading = ", String.format("%d", gyro.getHeading()));
+            }
+            telemetry.addData("4. Color1 R/G/B  = ", String.format("%d / %d / %d", coSensor.red(), coSensor.green(), coSensor.blue()));
+            telemetry.addData("5. Color2 R/G/B  = ", String.format("%d / %d / %d", coSensor2.red(), coSensor2.green(), coSensor2.blue()));
+            telemetry.addData("6. White / range = ", String.format("%d / %.2f", detectwhite, rangeSensor.getDistance(DistanceUnit.CM)));
+            if (use_adacolor) {
+                telemetry.addData("7. Ada C/B/R/G/Sum  = ", String.format("%d/%d/%d/%d/%d", coAda.alpha(), coAda.blue(), coAda.red(), coAda.green(),
+                        (coAda.alpha() + coAda.blue() + coAda.red() + coAda.green())));
+            }
+            telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
+            telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
 
-        telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
+            telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
 
-        if (use_light) {
-            telemetry.addData("11. light_s Raw/Norm", String.format("%.2f / %.2f",
-                               lightSensor.getRawLightDetected(),lightSensor.getLightDetected()));
-        }
-        if (use_ods) {
-            telemetry.addData("12. ODS Raw/Norm", String.format("%.2f / %.2f",
-                    odsSensor.getRawLightDetected(),odsSensor.getLightDetected()));
+            if (use_light) {
+                telemetry.addData("11. light_s Raw/Norm", String.format("%.2f / %.2f",
+                        lightSensor.getRawLightDetected(), lightSensor.getLightDetected()));
+            }
+            if (use_ods) {
+                telemetry.addData("12. ODS Raw/Norm", String.format("%.2f / %.2f",
+                        odsSensor.getRawLightDetected(), odsSensor.getLightDetected()));
+            }
         }
 
         //telemetry.addData("7. left  cur/tg enc:", motorBL.getCurrentPosition() + "/" + leftCnt);

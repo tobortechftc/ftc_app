@@ -206,6 +206,14 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     sleep(5);
                 }
             }
+            if (gamepad2.left_stick_y>0.1) {
+                linear_slider.setPower(1);
+            } else if (gamepad2.left_stick_y<-0.1) {
+                linear_slider.setPower(-1);
+            } else {
+                linear_slider.setPower(0);
+            }
+
             if (gamepad2.y){
                 set_slider_gate(0.05);
             }
@@ -270,11 +278,10 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 }
             }
 
-
-
             //touch = (tSensor.isPressed()?1:0);
 
-            show_telemetry();
+            if (count%8==7)
+                show_telemetry();
             if (false) {
                 // tel9emetry.addData("1. Red  cumu. / cur = ", red_final + String.format("/ %d", coSensor.red()));
                 // telemetry.addData("2. Blue cumu. / cur = ", blue_final + String.format("/ %d", coSensor.blue()));
