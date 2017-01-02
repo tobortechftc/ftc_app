@@ -83,7 +83,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double RIGHT_BEACON_INIT = 0.84;
     final static double LEFT_BEACON_SIDE_DOWN = 0.2;
     final static double LEFT_BEACON_SIDE_PRESS = 0.9;
-    final static double LEFT_BEACON_SIDE_INIT = 0.3;
+    final static double LEFT_BEACON_SIDE_INIT = 0.2;
     final static double RIGHT_BEACON_SIDE_DOWN = 0.4;
     final static double RIGHT_BEACON_SIDE_PRESS = 0.02;
     final static double RIGHT_BEACON_SIDE_INIT = 0.6;
@@ -403,6 +403,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             use_gyro = false;
         }
         hardwareMap.logDevices();
+        stop_tobot();
         show_telemetry();
         DbgLog.msg(String.format("TOBOT-INIT  end() -"));
     } // end of tobot_init
@@ -700,7 +701,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         driveTT(0, 0);
 
-         sleep(500);
+         sleep(300);
     }
 
     public void TurnRightD(double power, float degree, boolean spotTurn) throws InterruptedException {
@@ -799,7 +800,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         driveTT(0, 0);
-        sleep(500);
+        sleep(300);
     }
 
     void set_drive_modes(DcMotor.RunMode mode) {
@@ -926,13 +927,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_right_button() throws InterruptedException {
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(300);
+        sleep(200);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
 
     void bump_beacon() throws InterruptedException {
-        driveTT(0.2, 0.2);
+        driveTT(0.35, 0.35);
         sleep(500);
         driveTT(0, 0);
         StraightIn(-0.5, 3);
@@ -940,7 +941,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_left_button() throws InterruptedException {
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(300);
+        sleep(200);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -1069,17 +1070,15 @@ public class TT_2016_Hardware extends LinearOpMode {
         else {
             StraightIn(1.0,91);
         }
-        sleep(300);
+        sleep(200);
 
         if (is_red){
-            TurnRightD(0.4,40,true);
-            StraightIn(0.75, 8);
+            TurnRightD(0.5,40,true);
         }
         else {
-            TurnLeftD(0.4,40,true);
-            StraightIn(0.75,7);
+            TurnLeftD(0.5,40,true);
         }
-
+        StraightIn(0.75, 10);
 
 
         if (use_gyro) {
@@ -1099,13 +1098,13 @@ public class TT_2016_Hardware extends LinearOpMode {
                 goBeaconAndShooting(true,is_red);
                 StraightIn(1.0, 13);
                 if(is_red){
-                    TurnRightD(0.45,45 -(navx_device.getYaw()),true);
-                    StraightIn(1.0,50);
+                    TurnRightD(0.5,45 -(navx_device.getYaw()),true);
+                    StraightIn(1.0,46);
                     goBeacon(true);
                 }
                 else{
-                    TurnLeftD(0.45,navx_device.getYaw()-(-45),true);
-                    StraightIn(0.8,50);
+                    TurnLeftD(0.5,navx_device.getYaw()-(-45),true);
+                    StraightIn(1.0,50);
                     goBeacon(false);
                 }
             }
@@ -1132,30 +1131,30 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         }
 
-        // Additional Autonomous code (launch ball, second beacon, etc.) goes here
+        stop_tobot();
     }
 
     public void auto_out_shooting (boolean is_red) throws InterruptedException {
         sleep(4000);
-        StraightIn(-0.5,15);
+        StraightIn(-0.5,17);
         if (is_red){
-            TurnLeftD(0.5, 20, true);
+            TurnLeftD(0.4, 30, true);
             goShooting(2, true, false);
-            TurnLeftD(0.5, 35, true);
+            TurnLeftD(0.4, 40, true);
         }
         else{
-            TurnRightD(0.5, 25, true);
+            TurnRightD(0.4, 25, true);
             goShooting(2, false, false);
-            TurnRightD(0.5, 35, true);
+            TurnRightD(0.4, 40, true);
         }
         StraightIn(-0.6, 55);
         if(is_red){
-            TurnLeftD(0.5, 45, true);
-            StraightIn(-0.5, 10);
+            TurnLeftD(0.4, 40, true);
+            StraightIn(-0.5, 15);
         }
         else{
-            TurnRightD(0.5, 45, true);
-            StraightIn(-0.5, 10);
+            TurnRightD(0.4, 40, true);
+            StraightIn(-0.5, 8);
         }
 
     }
@@ -1188,7 +1187,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
         }
         for (int i=0; i<times; i++) {
-            push_ball();
+
             if (i==0) {
                 shooter.setPower(0.5);
                 sleep(200);
@@ -1201,9 +1200,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
             set_gate(GATE_OPEN);
             sleep(500);
-            set_gate(GATE_CLOSED);
+            push_ball();
         }
-
+        set_gate(GATE_CLOSED);
         sleep(1000);
         shooter.setPower(0);
 
@@ -1259,7 +1258,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (true) {
 
-            sleep(200);
+            //sleep(200);
             if(is_red){
                 if (use_navx)
                     TurnLeftD(0.5, navx_device.getYaw()-(-45), true);
@@ -1349,7 +1348,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             shooter.setPower(0.95);
             //StraightIn(-0.5, 3);
         }
-        sleep(200);
+       // sleep(200);
         //forwardTillUltra(10, 0.25, 3);
         blue_detected = false;
         red_detected = false;
@@ -1395,10 +1394,11 @@ public class TT_2016_Hardware extends LinearOpMode {
             //sleep(500);
             //set_gate(GATE_CLOSED);
             if(shoot_twice){
+                sleep(300);
                 push_ball();
                 //sleep(200);
                 //set_gate(GATE_OPEN);
-                sleep(1000);
+                sleep(850);
                 set_gate(GATE_CLOSED);
             }
             shooter.setPower(0.0);

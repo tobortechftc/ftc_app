@@ -23,13 +23,13 @@ public class TT_ColorPicker {
     double _currentRed  ;
     double _currentBlue ;
 
-    double[] _runningRed  = new double[10] ;
-    double[] _runningBlue = new double[10] ;
+    double[] _runningRed  = new double[5] ;
+    double[] _runningBlue = new double[5] ;
 
     TT_ColorPicker(ColorSensor colorSensorR, ColorSensor colorSensorL){
         _colorSensorR = colorSensorR ;
         _colorSensorL = colorSensorL ;
-        for ( int i = 0 ; i < 10 ; i++){
+        for ( int i = 0 ; i < 5 ; i++){
             _runningRed[i] = 0 ;
             _runningBlue[i]= 0 ;
         }
@@ -51,9 +51,9 @@ public class TT_ColorPicker {
     }
 
     private void insertNewSamples(double red, double blue){
-        for ( int i = 9 ; i >= 1 ; i-- ) {
-            _runningRed[i]=_runningRed[i-1] ; // 0->1 ; 1->2 ; ... ; 10-> drop
-            _runningBlue[i]=_runningBlue[i-1] ; // 0->1 ; 1->2 ; ... ; 10-> drop
+        for ( int i = 4 ; i >= 1 ; i-- ) {
+            _runningRed[i]=_runningRed[i-1] ; // 0->1 ; 1->2 ; ... ; 5-> drop
+            _runningBlue[i]=_runningBlue[i-1] ; // 0->1 ; 1->2 ; ... ; 5-> drop
         }
         _runningRed[0]  = red ;
         _runningBlue[0] = blue ;
@@ -62,11 +62,11 @@ public class TT_ColorPicker {
     private void calcFinal(){
         double sumOfRed  = 0 ;
         double sumOfBlue = 0 ;
-        for ( int i = 0 ; i < 10 ; i++ ){
+        for ( int i = 0 ; i < 5 ; i++ ){
             sumOfBlue += _runningBlue[i] ;
             sumOfRed  += _runningRed[i]  ;
         }
-        _currentRed  = sumOfRed / 10 ;
-        _currentBlue = sumOfBlue / 10  ;
+        _currentRed  = sumOfRed / 5 ;
+        _currentBlue = sumOfBlue / 5  ;
     }
 }
