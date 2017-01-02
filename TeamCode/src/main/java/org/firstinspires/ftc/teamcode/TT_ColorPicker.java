@@ -29,15 +29,24 @@ public class TT_ColorPicker {
     TT_ColorPicker(ColorSensor colorSensorR, ColorSensor colorSensorL){
         _colorSensorR = colorSensorR ;
         _colorSensorL = colorSensorL ;
-        for ( int i = 0 ; i < 5 ; i++){
+        reset();
+    }
+
+    public void reset() {
+        for (int i = 0 ; i < 5 ; i++){
             _runningRed[i] = 0 ;
             _runningBlue[i]= 0 ;
         }
+        _currentRed = 0;
+        _currentBlue = 0;
     }
 
-    public Color getColor(){
-
-        insertNewSamples( _colorSensorL.red(), _colorSensorL.blue());
+    public Color getColor(boolean is_left){ // get Color of Left beacon
+        if (is_left) {
+            insertNewSamples(_colorSensorL.red(), _colorSensorL.blue());
+        } else {
+            insertNewSamples(_colorSensorL.red(), _colorSensorL.blue());
+        }
         calcFinal();
         if ( _currentBlue > ( _currentRed + COLOR_THRESHOLD) ){
             return  Color.BLUE; // 1 = Blue
@@ -45,7 +54,7 @@ public class TT_ColorPicker {
         else if ( _currentRed > ( _currentBlue + COLOR_THRESHOLD )){
             return Color.RED ; // 2 = Red
         }
-        else {
+        else { // use _colorSensorR to implies the left beacon
             return Color.UNKNOWN ; // not sure ( not enough difference )
         }
     }
@@ -62,11 +71,19 @@ public class TT_ColorPicker {
     private void calcFinal(){
         double sumOfRed  = 0 ;
         double sumOfBlue = 0 ;
-        for ( int i = 0 ; i < 5 ; i++ ){
-            sumOfBlue += _runningBlue[i] ;
-            sumOfRed  += _runningRed[i]  ;
+        int count = 0;
+        for ( count = 0 ; count < 5 ; count++ ){
+            if ((_runningBlue[count]+_runningRed[count]==0))
+                break;
+            sumOfBlue += _runningBlue[count] ;
+            sumOfRed  += _runningRed[count]  ;
         }
-        _currentRed  = sumOfRed / 5 ;
-        _currentBlue = sumOfBlue / 5  ;
+        if (count>0) {
+            _currentRed = sumOfRed / count;
+            _currentBlue = sumOfBlue / count;
+        } else {
+            _currentRed = 0;
+            _currentBlue = 0;
+        }
     }
 }

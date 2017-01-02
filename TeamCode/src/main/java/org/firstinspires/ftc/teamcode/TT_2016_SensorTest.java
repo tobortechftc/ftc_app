@@ -63,8 +63,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
         //cdim = hardwareMap.deviceInterfaceModule.get("dim");
         //colorSensor = hardwareMap.colorSensor.get("co");
         //colorSensor.enableLed(false);
-        TT_ColorPicker cp = new TT_ColorPicker(coSensor,coSensor);
-        TT_ColorPicker cp2 = new TT_ColorPicker(coSensor2,coSensor2);
+        TT_ColorPicker cp = new TT_ColorPicker(coSensor,coSensor2);
         boolean connected = false;
         //ls1 = hardwareMap.lightSensor.get("ll");
         //ls2 = hardwareMap.lightSensor.get("lr");
@@ -285,7 +284,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             if (false) {
                 // tel9emetry.addData("1. Red  cumu. / cur = ", red_final + String.format("/ %d", coSensor.red()));
                 // telemetry.addData("2. Blue cumu. / cur = ", blue_final + String.format("/ %d", coSensor.blue()));
-                telemetry.addData("1. TT Color Picker 1/2 = ", String.format("%s / %s", cp.getColor().toString(), cp2.getColor().toString()));
+                telemetry.addData("1. Color Picker l/r = ", String.format("%s / %s", cp.getColor(false).toString(),cp.getColor(true).toString()));
                 telemetry.addData("2. color-1 R/G/B    = ", String.format("%d / %d / %d", coSensor.red(), coSensor.green(), coSensor.blue()));
                 telemetry.addData("3. color-2 R/G/B    = ", String.format("%d / %d / %d", coSensor2.red(), coSensor2.green(), coSensor2.blue()));
                 telemetry.addData("4. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));

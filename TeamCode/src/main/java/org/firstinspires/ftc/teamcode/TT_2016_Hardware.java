@@ -330,7 +330,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         //LL = hardwareMap.lightSensor.get("ll");
         //LR = hardwareMap.lightSensor.get("lr");
 
-        colorPicker = new TT_ColorPicker(coSensor, coSensor2);
+        colorPicker = new TT_ColorPicker(coSensor, coSensor2); // right_color_sen, left_color_sen
 
         //Instantiate ToborTech Nav objects:
         // 1. navx
@@ -1273,7 +1273,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
             //StraightIn(-0.5, 3);
         }
-        sleep(200);
+        //sleep(200);
         //forwardTillUltra(10, 0.25, 3);
         blue_detected = false;
         red_detected = false;
@@ -1285,21 +1285,32 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
-            TT_ColorPicker.Color cur_co = TT_ColorPicker.Color.UNKNOWN;
+            TT_ColorPicker.Color left_co = TT_ColorPicker.Color.UNKNOWN;
             double initTime = getRuntime();
             // sense color up to 2 secs
             do {
-                cur_co = colorPicker.getColor();
-            } while (cur_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<2);
-            // Detect Beacon color and hit the right side
-            if (cur_co == TT_ColorPicker.Color.BLUE) {
+                left_co = colorPicker.getColor(true); // get left Beacon
+            } while (left_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<1.5);
+
+            if (left_co== TT_ColorPicker.Color.UNKNOWN) { // Try right beacon color
+                TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
+                do {
+                    right_co = colorPicker.getColor(false);
+                } while (right_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<2);
+                if (right_co==TT_ColorPicker.Color.BLUE)
+                    left_co = TT_ColorPicker.Color.RED;
+                else if (right_co==TT_ColorPicker.Color.RED)
+                    left_co = TT_ColorPicker.Color.BLUE;
+            }
+            // Detect Beacon color and hit the correct side
+            if (left_co == TT_ColorPicker.Color.BLUE) {
                 blue_detected = true;
                 if (is_red) {
                     hit_right_button();
                 } else {
                     hit_left_button();
                 }
-            } else if (cur_co == TT_ColorPicker.Color.RED) {
+            } else if (left_co == TT_ColorPicker.Color.RED) {
                 red_detected = true;
                 if (is_red) {
                     hit_left_button();
@@ -1360,21 +1371,32 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
-            TT_ColorPicker.Color cur_co = TT_ColorPicker.Color.UNKNOWN;
+            TT_ColorPicker.Color left_co = TT_ColorPicker.Color.UNKNOWN;
             double initTime = getRuntime();
             // sense color up to 2 secs
             do {
-                cur_co = colorPicker.getColor();
-            } while (cur_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<2);
-            // Detect Beacon color and hit the right side
-            if (cur_co == TT_ColorPicker.Color.BLUE) {
+                left_co = colorPicker.getColor(true);
+            } while (left_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<1);
+
+            if (left_co== TT_ColorPicker.Color.UNKNOWN) { // Try right beacon color
+                TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
+                do {
+                    right_co = colorPicker.getColor(false);
+                } while (right_co== TT_ColorPicker.Color.UNKNOWN && getRuntime()-initTime<2);
+                if (right_co==TT_ColorPicker.Color.BLUE)
+                    left_co = TT_ColorPicker.Color.RED;
+                else if (right_co==TT_ColorPicker.Color.RED)
+                    left_co = TT_ColorPicker.Color.BLUE;
+            }
+            // Detect Beacon color and hit the correct side
+            if (left_co == TT_ColorPicker.Color.BLUE) {
                 blue_detected = true;
                 if (is_red) {
                     hit_right_button();
                 } else {
                     hit_left_button();
                 }
-            } else if (cur_co == TT_ColorPicker.Color.RED) {
+            } else if (left_co == TT_ColorPicker.Color.RED) {
                 red_detected = true;
                 if (is_red) {
                     hit_left_button();
