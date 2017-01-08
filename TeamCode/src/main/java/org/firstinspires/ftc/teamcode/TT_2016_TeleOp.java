@@ -47,12 +47,17 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
         tobot_init(State.STATE_TELEOP);
         Boolean hanging_there = false;
         int test_count = 0;
+        int delay_count = 0;
+        speedScale = (float) 1.0; // control the initial chassis speed
 
 
         waitForStart();
 
         // StraightIn(0.4, 10);
         cdim.setDigitalChannelState(LED_CHANNEL, true);
+
+        // right side beacon push
+        set_right_beacon_side(RIGHT_BEACON_SIDE_PRESS);
 
         while (opModeIsActive()) {
             if (true) {
@@ -126,7 +131,8 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             } else {
                 test_count++;
             }
-
+            if (delay_count>0)
+                delay_count --;
             float left = -gamepad1.left_stick_y;
             float right = -gamepad1.right_stick_y;
 
@@ -147,21 +153,27 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             shooter.setPower(SH_power);
 
             if (gamepad1.b) { // sweeper backward
-                if (SW_power>0.1) {
+                if (delay_count>0) { // no_action
+                    ;
+                } else if (SW_power>0.1 || SW_power<-0.1) {
                     SW_power = (float) 0.0;
                 } else {
                     SW_power = (float) 1.0;
                 }
                 SH_power = (float) 0;
-                sleep(400);
+                delay_count = 200;
+                sleep(5);
             } else if (gamepad1.x) { // sweeper forward
-                if (SW_power<-0.1) {
+                if (delay_count>0) { // no action
+                    ;
+                } else if (SW_power<-0.1) {
                     SW_power = (float) 0.0;
                 } else {
                     SW_power = (float) -1.0;
                 }
                 SH_power = (float) 0;
-                sleep(400);
+                delay_count = 200;
+                sleep(5);
             }
 
             // update the speed of the chassis, or stop tape slider
@@ -251,20 +263,25 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 set_slider_gate(0.5);
             }
             if (gamepad2.right_trigger > 0.1) {
+                set_gate(GATE_OPEN);
+                sleep(1000);
                 set_gate(GATE_CLOSED);
-                sleep(5);
             }
             if (gamepad2.right_bumper) {
-                set_gate(GATE_OPEN);
-                //sleep(2000);
-                //set_gate(GATE_CLOSED);
+                if (gate_sv_pos==GATE_CLOSED)
+                    set_gate(GATE_OPEN);
+                else
+                    set_gate(GATE_CLOSED);
+                sleep(50);
             }
             if (gamepad2.left_bumper) {
                 set_pusher(PUSHER_UP);
-                sleep(5);
             }
             if (gamepad2.left_trigger > 0.1) {
                 push_ball();
+                set_gate(GATE_OPEN);
+                sleep(1000);
+                set_gate(GATE_CLOSED);
             }
 
 

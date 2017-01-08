@@ -65,11 +65,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
     final static double PUSHER_UP = 0.85;
-    final static double PUSHER_DOWN_1 = 0.55;
+    final static double PUSHER_DOWN_1 = 0.61;
     final static double PUSHER_UP1 = 0.75;
-    final static double PUSHER_DOWN_2 = 0.4;
-
-
+    final static double PUSHER_DOWN_2 = 0.48;
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.55;
     final static double GATE_OPEN = 0.001;
@@ -86,7 +84,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LEFT_BEACON_SIDE_INIT = 0.2;
     final static double RIGHT_BEACON_SIDE_DOWN = 0.4;
     final static double RIGHT_BEACON_SIDE_PRESS = 0.02;
-    final static double RIGHT_BEACON_SIDE_INIT = 0.6;
+    final static double RIGHT_BEACON_SIDE_INIT = 0.55;
     final static double WHITE_MAX = 0.79;
     final static double WHITE_MIN = 0.55;
     final static double WHITE_OP = 0.08; // optical distance sensor white color number
@@ -436,7 +434,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 cur_heading = (double) (gyro.getHeading());
             }
         }
-        telemetry.addData("0. Program State: ", state.toString());
+        telemetry.addData("0. Program State / Speed-scale: ", String.format("%s / %.3f",state.toString(),speedScale));
         telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
                   use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
         if (state==State.STATE_TUNEUP) {
