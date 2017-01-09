@@ -48,6 +48,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -69,7 +70,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_UP1 = 0.75;
     final static double PUSHER_DOWN_2 = 0.48;
     final static double PUSHER_EXTRA = 0.1;
-    final static double GATE_CLOSED = 0.55;
+    final static double GATE_CLOSED = 0.46;
     final static double GATE_OPEN = 0.001;
     final static double SLIDER_GATE_OPEN = 0.001;
     final static double SLIDER_GATE_CLOSED = 0.5;
@@ -169,7 +170,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     float leftPower = 0;
     float rightPower = 0;
     float SW_power = 0;
-    float SH_power = 0;
+    double SH_power = 0.95; // initial shooter-on power to 0.95
     double initAutoOpTime = 0;
     float currRaw = 0;
     DcMotor motorR;
@@ -400,6 +401,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             use_gyro = false;
         }
+        adjustShooterPower();
         hardwareMap.logDevices();
         stop_tobot();
         show_telemetry();
@@ -434,7 +436,13 @@ public class TT_2016_Hardware extends LinearOpMode {
                 cur_heading = (double) (gyro.getHeading());
             }
         }
-        telemetry.addData("0. Program State / Speed-scale: ", String.format("%s / %.3f",state.toString(),speedScale));
+        if (state==State.STATE_TUNEUP) {
+            telemetry.addData("0. State / Speed-scale / Volt / SH-Pw: ",
+                    String.format("%s / %.3f / %.3f / %.2f", state.toString(), speedScale, getBatteryVoltage(), SH_power));
+        } else {
+            telemetry.addData("0. State / Speed-scale / SH-Pw: ", String.format("%s / %.3f / %.2f",
+                    state.toString(), speedScale, SH_power));
+        }
         telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
                   use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
         if (state==State.STATE_TUNEUP) {
@@ -813,9 +821,37 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void stop_tobot() {
         stop_chassis();
+        SW_power = 0;
         sweeper.setPower(0);
         shooter.setPower(0);
         linear_slider.setPower(0);
+    }
+
+    void adjustShooterPower() {
+        double cur_vol = getBatteryVoltage();
+        // power = 1.0 when vol < 13.0
+        //         0.75 when vol >= 14.0
+        // when cur_vol is between 13 - 14
+        //         power = 0.75 + 0.25 * (14 - cur_vol)
+        if (cur_vol<13.0) {
+            SH_power = 1.0;
+        } else if (cur_vol>14.0) {
+            SH_power = 0.75;
+        } else {
+            SH_power = (0.75 + 0.25 * (14.0 - cur_vol));
+        }
+    }
+
+    // Computes the current battery voltage from ConceptTelemetry.java
+    double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 
     void reset_chassis() throws InterruptedException {
@@ -1188,11 +1224,11 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             if (i==0) {
                 shooter.setPower(0.5);
-                sleep(200);
-                shooter.setPower(1.0);
+                sleep(100);
+                shooter.setPower(SH_power);
                 sleep(1000);
             } else {
-                shooter.setPower(1.0);
+                shooter.setPower(SH_power);
                 sleep(500);
 
             }
@@ -1354,7 +1390,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 else
                     TurnRightD(0.5, 90, true);
             }
-            shooter.setPower(0.95);
+            shooter.setPower(SH_power);
             //StraightIn(-0.5, 3);
         }
        // sleep(200);

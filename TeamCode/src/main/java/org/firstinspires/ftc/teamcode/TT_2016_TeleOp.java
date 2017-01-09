@@ -48,8 +48,10 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
         Boolean hanging_there = false;
         int test_count = 0;
         int delay_count = 0;
-        speedScale = (float) 1.0; // control the initial chassis speed
+        int monitor_count = 0;
+        double cur_SH_power = 0;
 
+        speedScale = (float) 1.0; // control the initial chassis speed
 
         waitForStart();
 
@@ -133,6 +135,13 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (delay_count>0)
                 delay_count --;
+
+            if (true) {
+                monitor_count++;
+                if (monitor_count % 10000 == 0) {
+                    adjustShooterPower();
+                }
+            }
             float left = -gamepad1.left_stick_y;
             float right = -gamepad1.right_stick_y;
 
@@ -150,7 +159,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             motorR.setPower(rightPower);
             motorL.setPower(leftPower);
             sweeper.setPower(SW_power);
-            shooter.setPower(SH_power);
+            shooter.setPower(cur_SH_power);
 
             if (gamepad1.b) { // sweeper backward
                 if (delay_count>0) { // no_action
@@ -160,7 +169,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 } else {
                     SW_power = (float) 1.0;
                 }
-                SH_power = (float) 0;
+                cur_SH_power = (float) 0;
                 delay_count = 200;
                 sleep(5);
             } else if (gamepad1.x) { // sweeper forward
@@ -171,7 +180,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 } else {
                     SW_power = (float) -1.0;
                 }
-                SH_power = (float) 0;
+                cur_SH_power = (float) 0;
                 delay_count = 200;
                 sleep(5);
             }
@@ -242,13 +251,14 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
 
             if (gamepad2.x) { // shooter on
+                adjustShooterPower();
                 SW_power = (float) 0;
                 shooter.setPower(0.5);
-                SH_power = (float) 0.9;
-                sleep(400);
+                cur_SH_power = (float) SH_power;
+                sleep(5);
             } else if (gamepad2.b) { // shooter off
                 SW_power = (float) 0;
-                SH_power = (float) 0;
+                cur_SH_power = (float) 0;
                 set_gate(GATE_CLOSED);
             }
 
@@ -264,7 +274,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (gamepad2.right_trigger > 0.1) {
                 set_gate(GATE_OPEN);
-                sleep(1000);
+                sleep(500);
                 set_gate(GATE_CLOSED);
             }
             if (gamepad2.right_bumper) {
@@ -279,8 +289,9 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (gamepad2.left_trigger > 0.1) {
                 push_ball();
+                sleep(200);
                 set_gate(GATE_OPEN);
-                sleep(1000);
+                sleep(800);
                 set_gate(GATE_CLOSED);
             }
 

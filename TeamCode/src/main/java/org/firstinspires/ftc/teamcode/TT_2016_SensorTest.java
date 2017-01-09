@@ -82,6 +82,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
         waitForStart();
 
         int count = 0;
+        int monitor_count = 0;
         speedScale = (float) 0.6;
         double red_acc = 0, blue_acc = 0, red_final = 0, blue_final = 0;
         while (opModeIsActive()) {
@@ -225,6 +226,10 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             motorL.setPower(leftPower);
 
             count++;
+            monitor_count++;
+            if (monitor_count%10000==0) {
+                adjustShooterPower();
+            }
             red_acc += coSensor.red();
             blue_acc += coSensor.blue();
 
