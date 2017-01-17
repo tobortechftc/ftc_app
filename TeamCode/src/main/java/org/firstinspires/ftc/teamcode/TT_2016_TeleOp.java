@@ -141,6 +141,10 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 if (monitor_count % 10000 == 0) {
                     adjustShooterPower();
                 }
+                if (monitor_count%100==0) {
+                    double ul_val = ultra.getUltrasonicLevel();
+                    shooting_range = (ul_val>=ULTRA_GOAL_MIN && ul_val<=ULTRA_GOAL_MAX);
+                }
             }
             float left = -gamepad1.left_stick_y;
             float right = -gamepad1.right_stick_y;

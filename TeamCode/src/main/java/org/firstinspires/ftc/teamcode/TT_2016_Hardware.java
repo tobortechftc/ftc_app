@@ -93,6 +93,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double WHITE_NXT = 1.9;
     final static double WHITE_ODS = 1.00;
     final static double RANGE_WALL = 186.2;
+    final static double ULTRA_GOAL_MIN = 96;
+    final static double ULTRA_GOAL_MAX = 101;
 
     // we assume that the LED pin of the RGB sensor is connected to
     // digital port 5 (zero indexed).
@@ -132,8 +134,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     double right_beacon_side_sv_pos=0;
     // amount to change the claw servo position by
     double slider_gate_sv_pos=0;
-    boolean blue_detected = false;
-    boolean red_detected = false;
+    Boolean blue_detected = false;
+    Boolean red_detected = false;
     int detectwhite = 0;
     AHRS navx_device;
     BNO055IMU ada_imu; // The Adafruit IMU sensor object
@@ -161,11 +163,12 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_ada_imu = true; // set to false to disable adafruit IMU
     Boolean use_gyro = true;    // set to false to disable MR gyro
     Boolean use_encoder = true;
-    Boolean use_ultra = false;
+    Boolean use_ultra = true;
     Boolean use_range = true;
     Boolean use_adacolor = false;
     Boolean use_light = false;
     Boolean use_ods = true;
+    Boolean shooting_range = false;
     float speedScale = (float) 0.7; // controlling the speed of the chassis in teleOp state
     float leftPower = 0;
     float rightPower = 0;
@@ -445,7 +448,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
                   use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
+
         if (state==State.STATE_TUNEUP) {
+            double ul_val=0.0, rg_val=0.0;
+            if (use_ultra)
+                ul_val = ultra.getUltrasonicLevel();
+            if (use_range)
+                rg_val = rangeSensor.getDistance(DistanceUnit.CM);
+
             telemetry.addData("2. IMU_heading/Current heading:", String.format("%.2f/%.2f", imu_heading, cur_heading));
             if (use_ada_imu && use_gyro) {
                 telemetry.addData("3. Gyro-heading / Ada-IMU err = ", String.format("%d / %s",
@@ -458,7 +468,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
             telemetry.addData("4. Color1 R/G/B  = ", String.format("%d / %d / %d", coSensor.red(), coSensor.green(), coSensor.blue()));
             telemetry.addData("5. Color2 R/G/B  = ", String.format("%d / %d / %d", coSensor2.red(), coSensor2.green(), coSensor2.blue()));
-            telemetry.addData("6. White / range = ", String.format("%d / %.2f", detectwhite, rangeSensor.getDistance(DistanceUnit.CM)));
+            telemetry.addData("6. White/range/ul(Goal)= ", String.format("%d/%.2f/%.2f(%s)", detectwhite, rg_val, ul_val, shooting_range.toString()));
             if (use_adacolor) {
                 telemetry.addData("7. Ada C/B/R/G/Sum  = ", String.format("%d/%d/%d/%d/%d", coAda.alpha(), coAda.blue(), coAda.red(), coAda.green(),
                         (coAda.alpha() + coAda.blue() + coAda.red() + coAda.green())));
@@ -991,8 +1001,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (use_range){
         // (true) {
             us_val = rangeSensor.getDistance(DistanceUnit.CM);
-        } else if (use_ultra) {
-            us_val = ultra.getUltrasonicLevel();
         }
         double init_time = getRuntime();
         while ((us_val > us_stop_val) && ((getRuntime() - init_time) < max_sec)) {
@@ -1000,8 +1008,6 @@ public class TT_2016_Hardware extends LinearOpMode {
             // us_val = ultra.getUltrasonicLevel();
             if (use_range) {
                 us_val = rangeSensor.getDistance(DistanceUnit.CM);
-            } else if (use_ultra) {
-                us_val = ultra.getUltrasonicLevel();
             }
         }
         driveTT(0, 0); // Make sure robot is stopped
