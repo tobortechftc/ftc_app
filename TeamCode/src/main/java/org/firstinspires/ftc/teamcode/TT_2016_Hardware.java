@@ -707,7 +707,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         driveTT(0, 0);
 
-         sleep(300);
+         sleep(150);
     }
 
     public void TurnRightD(double power, float degree, boolean spotTurn) throws InterruptedException {
@@ -806,7 +806,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         driveTT(0, 0);
-        sleep(300);
+        sleep(150);
     }
 
     void set_drive_modes(DcMotor.RunMode mode) {
@@ -1132,12 +1132,20 @@ public class TT_2016_Hardware extends LinearOpMode {
                 goBeaconAndShooting(true,is_red);
                 StraightIn(1.0, 13);
                 if(is_red){
-                    TurnRightD(0.5,45 -(navx_device.getYaw()),true);
+                    if (use_navx) {
+                        TurnRightD(0.5, 45 - (navx_device.getYaw()), true);
+                    } else {
+                        TurnRightD(0.5, 88, true);
+                    }
                     StraightIn(1.0,46);
                     goBeacon(true);
                 }
                 else{
-                    TurnLeftD(0.5,navx_device.getYaw()-(-45),true);
+                    if (use_navx) {
+                        TurnLeftD(0.5, navx_device.getYaw() - (-45), true);
+                    } else {
+                        TurnLeftD(0.5, 90, true);
+                    }
                     StraightIn(1.0,50);
                     goBeacon(false);
                 }
@@ -1450,11 +1458,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             //sleep(500);
             //set_gate(GATE_CLOSED);
             if(shoot_twice){
-                sleep(300);
+                sleep(600);
+                shooter.setPower(1);
                 push_ball();
-                //sleep(200);
+                //sleep(500);
                 //set_gate(GATE_OPEN);
-                sleep(850);
+                sleep(600);
                 set_gate(GATE_CLOSED);
             }
             shooter.setPower(0.0);
