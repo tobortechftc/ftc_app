@@ -1380,7 +1380,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goBeaconAndShooting (boolean shoot_twice, boolean is_red) throws InterruptedException {
         boolean isFirstBeacon = false;
         double distanceToWall = 66.1;
-        double shooterPW = SH_power*1.2;
+        double shooterPW = SH_power*1.1;
         if (shooterPW>1.0)
             shooterPW=1.0;
         if(use_range){
@@ -1475,6 +1475,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             //set_gate(GATE_CLOSED);
             if(shoot_twice){
                 sleep(600);
+                shooterPW = SH_power*1.2;
+                if (shooterPW>1.0)
+                    shooterPW=1.0;
                 shooter.setPower(shooterPW);
                 push_ball();
                 //sleep(500);
