@@ -78,7 +78,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.05;
-    final static double RIGHT_BEACON_PRESS = 0.42;
+    final static double RIGHT_BEACON_PRESS = 0.4;
     final static double RIGHT_BEACON_INIT = 0.84;
     final static double LEFT_BEACON_SIDE_DOWN = 0.2;
     final static double LEFT_BEACON_SIDE_PRESS = 0.9;
@@ -1142,7 +1142,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         TurnRightD(0.5, 45 - (navx_device.getYaw()), true);
                     } else {
-                        TurnRightD(0.5, 83, true);
+                        TurnRightD(0.5, 86, true);
                     }
                     StraightIn(1.0,46);
                     goBeacon(true);
@@ -1151,7 +1151,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         TurnLeftD(0.5, navx_device.getYaw() - (-45), true);
                     } else {
-                        TurnLeftD(0.5, 85, true);
+                        TurnLeftD(0.5, 88, true);
                     }
                     StraightIn(1.0,50);
                     goBeacon(false);
@@ -1376,6 +1376,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goBeaconAndShooting (boolean shoot_twice, boolean is_red) throws InterruptedException {
         boolean isFirstBeacon = false;
         double distanceToWall = 66.1;
+        double shooterPW = SH_power*1.2;
+        if (shooterPW>1.0)
+            shooterPW=1.0;
         if(use_range){
             if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
                 isFirstBeacon = true;
@@ -1395,17 +1398,17 @@ public class TT_2016_Hardware extends LinearOpMode {
             // sleep(400);
             if(is_red){
                 if (use_navx)
-                    TurnLeftD(0.5, navx_device.getYaw()-(-45), true);
+                    TurnLeftD(0.5, navx_device.getYaw()-(-46), true);
                 else
                     TurnLeftD(0.5, 85, true);
             }
             else{
                 if (use_navx)
-                    TurnRightD(0.5, 45-(navx_device.getYaw()), true);
+                    TurnRightD(0.5, 46-(navx_device.getYaw()), true);
                 else
                     TurnRightD(0.5, 90, true);
             }
-            shooter.setPower(SH_power);
+            shooter.setPower(shooterPW);
             //StraightIn(-0.5, 3);
         }
        // sleep(200);
@@ -1460,10 +1463,10 @@ public class TT_2016_Hardware extends LinearOpMode {
         if(true){
             StraightIn(-1.0,18);
             if(is_red){
-                TurnRightD(0.5, 5, true);
+                TurnRightD(0.5, 2, true);
             }
             else{
-                TurnLeftD(0.5, 5, true);
+                TurnLeftD(0.5, 2, true);
             }
             //push_ball();
             //sleep(200);
@@ -1472,7 +1475,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             //set_gate(GATE_CLOSED);
             if(shoot_twice){
                 sleep(600);
-                shooter.setPower(1);
+                shooter.setPower(shooterPW);
                 push_ball();
                 //sleep(500);
                 //set_gate(GATE_OPEN);
@@ -1515,18 +1518,18 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public boolean detectWall(double distance) {
         if(!use_range){
-        //if (true) {
+
             return false;
         }
         double range = rangeSensor.getDistance(DistanceUnit.CM);
         if (range  > distance) {
             return false;
         }
-
+        return true;
         //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
         //        return false;
         //    }
-        return true;
+
     }
 
     void m_warning_message(String p_exception_message) {

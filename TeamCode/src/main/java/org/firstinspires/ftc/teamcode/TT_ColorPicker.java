@@ -16,8 +16,8 @@ public class TT_ColorPicker {
 
     ColorSensor _colorSensorL;
     ColorSensor _colorSensorR;
-
     //DeviceInterfaceModule cdim;
+
     //TouchSensor t;
     final static double COLOR_THRESHOLD = 4;
     double _currentRed  ;
