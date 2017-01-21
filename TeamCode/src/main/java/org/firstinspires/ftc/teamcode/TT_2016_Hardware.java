@@ -1117,7 +1117,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             TurnRightD(0.5,40,true);
         }
         else {
-            TurnLeftD(0.5,40,true);
+            TurnLeftD(0.5,38,true);
         }
         StraightIn(0.75, 10);
 
@@ -1149,7 +1149,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
                 else{
                     if (use_navx) {
-                        TurnLeftD(0.5, navx_device.getYaw() - (-45), true);
+                        TurnLeftD(0.5, (float) (navx_device.getYaw() - (-45.5)), true);
                     } else {
                         TurnLeftD(0.5, 88, true);
                     }
@@ -1302,7 +1302,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         else if (use_ods) {
             stopAtWhite(0.3);
-            StraightIn(-0.5,7.5);
+            if (is_red)
+                StraightIn(-0.5, 7.5);
+            else {
+                StraightIn(-0.5, 8);
+            }
         }
 
         if (true) {
@@ -1462,12 +1466,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         if(true){
             StraightIn(-1.0,18);
-            if(is_red){
-                TurnRightD(0.5, 2, true);
-            }
-            else{
-                TurnLeftD(0.5, 2, true);
-            }
+            TurnRightD(0.5, 2, true); // shoot towards center vortex
+
             //push_ball();
             //sleep(200);
             set_gate(GATE_OPEN);
