@@ -839,16 +839,17 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void adjustShooterPower() {
         double cur_vol = getBatteryVoltage();
-        // power = 1.0 when vol < 13.0
-        //         0.75 when vol >= 14.0
-        // when cur_vol is between 13 - 14
-        //         power = 0.75 + 0.25 * (14 - cur_vol)
+        // power = 1.0 when vol =< 13.0
+        //         0.70 when vol >= 14.0
+        // when cur_vol is >13
+        //         power = 1.0 - 0.3 * (cur_vol - 13)
         if (cur_vol<13.0) {
             SH_power = 1.0;
-        } else if (cur_vol>14.0) {
-            SH_power = 0.75;
-        } else {
-            SH_power = (0.75 + 0.25 * (14.0 - cur_vol));
+        } else{
+            SH_power = ((1.0 - 0.3 * (cur_vol - 13))*1.1);
+            if (SH_power > 1.0){
+                SH_power = 1.0;
+            }
         }
     }
 
@@ -1136,12 +1137,12 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (is_shooting){
             if(do_second_beacon){
                 goBeaconAndShooting(true,is_red);
-                StraightIn(1.0, 13);
+                StraightIn(1.0, 11);
                 if(is_red){
                     if (use_navx) {
                         TurnRightD(0.5, 45 - (navx_device.getYaw()), true);
                     } else {
-                        TurnRightD(0.5, 88, true);
+                        TurnRightD(0.5, 83, true);
                     }
                     StraightIn(1.0,46);
                     goBeacon(true);
@@ -1150,7 +1151,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         TurnLeftD(0.5, navx_device.getYaw() - (-45), true);
                     } else {
-                        TurnLeftD(0.5, 90, true);
+                        TurnLeftD(0.5, 85, true);
                     }
                     StraightIn(1.0,50);
                     goBeacon(false);
@@ -1457,7 +1458,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         if(true){
-            StraightIn(-1.0,20);
+            StraightIn(-1.0,18);
+            if(is_red){
+                TurnRightD(0.5, 5, true);
+            }
+            else{
+                TurnLeftD(0.5, 5, true);
+            }
             //push_ball();
             //sleep(200);
             set_gate(GATE_OPEN);
