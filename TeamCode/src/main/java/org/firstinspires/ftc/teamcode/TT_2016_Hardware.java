@@ -364,7 +364,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
             if (navx_ok) {
                 navx_device.zeroYaw();
-                use_navx = true;
+                sleep(500);
+                double cur_yaw = navx_device.getYaw();
+                if (Math.abs(cur_yaw) <=3) {
+                    use_navx = true;
+                }
+                else use_navx = false;
             } else {
                 use_navx = false;
             }
@@ -1184,26 +1189,28 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void auto_out_shooting (boolean is_red) throws InterruptedException {
-        sleep(4000);
+        sleep(7000);
         StraightIn(-0.5,17);
         if (is_red){
-            TurnLeftD(0.4, 30, true);
+            TurnLeftD(0.4, 27, true);
+            StraightIn(-0.6, 5);
             goShooting(2, true, false);
-            TurnLeftD(0.4, 40, true);
+            TurnLeftD(0.4, 43, true);
         }
         else{
             TurnRightD(0.4, 25, true);
+            StraightIn(-0.6, 5);
             goShooting(2, false, false);
             TurnRightD(0.4, 40, true);
         }
-        StraightIn(-0.6, 55);
+        StraightIn(-0.6, 50);
         if(is_red){
             TurnLeftD(0.4, 40, true);
-            StraightIn(-0.5, 15);
+            StraightIn(-0.5, 21);
         }
         else{
             TurnRightD(0.4, 40, true);
-            StraightIn(-0.5, 8);
+            StraightIn(-0.5, 15);
         }
 
     }
@@ -1244,12 +1251,13 @@ public class TT_2016_Hardware extends LinearOpMode {
                 sleep(1000);
             } else {
                 shooter.setPower(SH_power);
-                sleep(500);
+                sleep(1500);
 
             }
             set_gate(GATE_OPEN);
             sleep(500);
-            push_ball();
+            set_gate(GATE_CLOSED);
+            if (i==0) push_ball();
         }
         set_gate(GATE_CLOSED);
         sleep(1000);
