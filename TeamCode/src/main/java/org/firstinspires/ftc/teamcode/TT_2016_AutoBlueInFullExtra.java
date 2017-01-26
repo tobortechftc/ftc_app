@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * Linear Tele Op Mode
@@ -40,6 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * NOTE: This op mode will not work with the NXT Motor Controllers. Use an Nxt op mode instead.
  */
 @Autonomous(name="AutoBlueInOneBeacon", group="2016_Auto")
+@Disabled
 public class TT_2016_AutoBlueInFullExtra extends TT_2016_Hardware {
     // CONSTANT VALUES.
     // CONSTANT VALUES.
@@ -55,10 +57,12 @@ public class TT_2016_AutoBlueInFullExtra extends TT_2016_Hardware {
         tobot_init(State.STATE_AUTO);
 
         waitForStart();
-
-        auto_part1(false, true);
-
-        auto_part2(false, true, true, false, true);
+        if (opModeIsActive()) {
+            auto_part1(false, true);
+        }
+        if (opModeIsActive()) {
+            auto_part2(false, true, true, false, true);
+        }
 
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);
@@ -67,7 +71,7 @@ public class TT_2016_AutoBlueInFullExtra extends TT_2016_Hardware {
         //telemetry.addData("1. Red   = ", red_detected);
         //telemetry.addData("2. Blue  = ", blue_detected);
         //telemetry.addData("3. LL/LR = ", String.format("%.2f/%.2f", LL.getLightDetected(), LR.getLightDetected()));
-        show_telemetry();
+        //show_telemetry();
 
 
     }

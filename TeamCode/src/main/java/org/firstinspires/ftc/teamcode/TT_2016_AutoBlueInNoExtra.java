@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * Linear Tele Op Mode
@@ -40,6 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * NOTE: This op mode will not work with the NXT Motor Controllers. Use an Nxt op mode instead.
  */
 @Autonomous(name="AutoBlueInNoExtra", group="2016_Auto")
+@Disabled
 public class TT_2016_AutoBlueInNoExtra extends TT_2016_Hardware {
     // CONSTANT VALUES.
     // CONSTANT VALUES.

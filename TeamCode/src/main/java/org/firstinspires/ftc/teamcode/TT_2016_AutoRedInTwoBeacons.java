@@ -55,10 +55,12 @@ public class TT_2016_AutoRedInTwoBeacons extends TT_2016_Hardware {
         tobot_init(State.STATE_AUTO);
 
         waitForStart();
-
-        auto_part1(true, true);
-
-        auto_part2(true, true, true, true, false);
+        if (opModeIsActive()) {
+            auto_part1(true, true);
+        }
+        if (opModeIsActive()) {
+            auto_part2(true, true, true, true, false);
+        }
 
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);
@@ -67,8 +69,7 @@ public class TT_2016_AutoRedInTwoBeacons extends TT_2016_Hardware {
         //telemetry.addData("1. Red   = ", red_detected);
         //telemetry.addData("2. Blue  = ", blue_detected);
         //telemetry.addData("3. LL/LR = ", String.format("%.2f/%.2f", LL.getLightDetected(), LR.getLightDetected()));
-        show_telemetry();
-
+        //show_telemetry();
 
     }
 

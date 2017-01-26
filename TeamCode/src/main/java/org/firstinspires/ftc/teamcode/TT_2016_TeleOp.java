@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.util.Range;
  * <p/>
  * Define all hardware (e.g. motors, servos, sensors) used by Tobot
  */
-@TeleOp(name="TeleOp-2016", group="TT-LN-OP")
+@TeleOp(name = "TeleOp-2016", group = "TT-LN-OP")
 public class TT_2016_TeleOp extends TT_2016_Hardware {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -133,17 +133,17 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             } else {
                 test_count++;
             }
-            if (delay_count>0)
-                delay_count --;
+            if (delay_count > 0)
+                delay_count--;
 
             if (true) {
                 monitor_count++;
                 if (monitor_count % 10000 == 0) {
                     adjustShooterPower();
                 }
-                if (monitor_count%100==0) {
+                if (monitor_count % 100 == 0) {
                     double ul_val = ultra.getUltrasonicLevel();
-                    shooting_range = (ul_val>=ULTRA_GOAL_MIN && ul_val<=ULTRA_GOAL_MAX);
+                    shooting_range = (ul_val >= ULTRA_GOAL_MIN && ul_val <= ULTRA_GOAL_MAX);
                 }
             }
             float left = -gamepad1.left_stick_y;
@@ -166,23 +166,27 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             shooter.setPower(cur_SH_power);
 
             if (gamepad1.b) { // sweeper backward
-                if (delay_count>0) { // no_action
+                if (delay_count > 0) { // no_action
                     ;
-                } else if (SW_power>0.1 || SW_power<-0.1) {
+                } else if (SW_power > 0.1 || SW_power < -0.1) {
                     SW_power = (float) 0.0;
                 } else {
                     SW_power = (float) 1.0;
+                    set_left_beacon(LEFT_BEACON_INIT);
+                    set_right_beacon(RIGHT_BEACON_INIT);
                 }
                 cur_SH_power = (float) 0;
                 delay_count = 200;
                 sleep(5);
             } else if (gamepad1.x) { // sweeper forward
-                if (delay_count>0) { // no action
+                if (delay_count > 0) { // no action
                     ;
-                } else if (SW_power<-0.1) {
+                } else if (SW_power < -0.1) {
                     SW_power = (float) 0.0;
                 } else {
                     SW_power = (float) -1.0;
+                    set_left_beacon(LEFT_BEACON_INIT);
+                    set_right_beacon(RIGHT_BEACON_INIT);
                 }
                 cur_SH_power = (float) 0;
                 delay_count = 200;
@@ -190,7 +194,10 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
 
             // update the speed of the chassis, or stop tape slider
-            if (gamepad1.a) {
+            if (gamepad1.a && gamepad1.y) { // back = fix speedscale 0.5
+                speedScale = (float) 0.5;
+                sleep(5);
+            } else if (gamepad1.a) {
                 // if the A button is pushed on gamepad1, decrease the speed
                 // of the chassis
                 if (speedScale > 0.2) {
@@ -212,7 +219,6 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (gamepad1.right_bumper) { //
                 set_right_beacon_side(RIGHT_BEACON_SIDE_DOWN);
-
             }
 
             if (gamepad1.left_trigger > 0.1) { // left climber down
@@ -223,32 +229,40 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 set_left_beacon_side(LEFT_BEACON_SIDE_DOWN);
 
             }
-            if (gamepad1.dpad_down) {
-
-            }
-            if (gamepad1.dpad_up) {
-
-            }
-            if (gamepad1.dpad_left) {
-                if (Math.abs(left_beacon_sv_pos-LEFT_BEACON_INIT) < 0.1) {
+            if (false) {
+                // disable dpad
+            } else if (gamepad1.dpad_down) { // both beacon pushers down
+                set_left_beacon(LEFT_BEACON_INIT);
+                set_right_beacon(RIGHT_BEACON_INIT);
+                sweeper.setPower(-0.5);
+                sleep(100);
+                sweeper.setPower(0);
+                sleep(400);
+            } else if (gamepad1.dpad_up) { // both beacon pushers up
+                set_left_beacon(LEFT_BEACON_PRESS);
+                set_right_beacon(RIGHT_BEACON_PRESS);
+                sweeper.setPower(0.5);
+                sleep(100);
+                sweeper.setPower(0);
+                sleep(400);
+            } else if (gamepad1.dpad_left) {
+                if (Math.abs(left_beacon_sv_pos - LEFT_BEACON_INIT) < 0.1) {
                     set_left_beacon(LEFT_BEACON_PRESS);
-                }
-                else {
+                } else {
                     set_left_beacon(LEFT_BEACON_INIT);
                 }
                 sleep(500);
             } else if (gamepad1.dpad_right) {
-                if (Math.abs(right_beacon_sv_pos-RIGHT_BEACON_INIT) < 0.1) {
+                if (Math.abs(right_beacon_sv_pos - RIGHT_BEACON_INIT) < 0.1) {
                     set_right_beacon(RIGHT_BEACON_PRESS);
-                }
-                else {
+                } else {
                     set_right_beacon(RIGHT_BEACON_INIT);
                 }
                 sleep(500);
             }
-            if (gamepad2.left_stick_y>0.1) {
+            if (gamepad2.left_stick_y > 0.1) {
                 linear_slider.setPower(1);
-            } else if (gamepad2.left_stick_y<-0.1) {
+            } else if (gamepad2.left_stick_y < -0.1) {
                 linear_slider.setPower(-1);
             } else {
                 linear_slider.setPower(0);
@@ -270,10 +284,10 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
 
             }
 
-            if (gamepad2.y){
+            if (gamepad2.y) {
                 set_slider_gate(0.5);
             }
-            if (gamepad2.a){
+            if (gamepad2.a) {
                 set_slider_gate(0.05);
             }
             if (gamepad2.right_trigger > 0.1) {
@@ -282,7 +296,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 set_gate(GATE_CLOSED);
             }
             if (gamepad2.right_bumper) {
-                if (gate_sv_pos==GATE_CLOSED)
+                if (gate_sv_pos == GATE_CLOSED)
                     set_gate(GATE_OPEN);
                 else
                     set_gate(GATE_CLOSED);
@@ -300,37 +314,43 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
 
 
-                if (gamepad2.dpad_up) {
-                    stop_chassis();
-                    gamepad2.reset();
-                } else if (gamepad2.dpad_left) {
-                    if (Math.abs(left_beacon_sv_pos-LEFT_BEACON_INIT) < 0.1) {
-                        set_left_beacon(LEFT_BEACON_PRESS);
-                    }
-                    else {
-                        set_left_beacon(LEFT_BEACON_INIT);
-                    }
-                    sleep(500);
-                } else if (gamepad2.dpad_right) {
-                   if (Math.abs(right_beacon_sv_pos-RIGHT_BEACON_INIT) < 0.1) {
-                        set_right_beacon(RIGHT_BEACON_PRESS);
-                    }
-                    else {
-                       set_right_beacon(RIGHT_BEACON_INIT);
-                   }
-                    sleep(500);
-                } else if (gamepad2.dpad_down) {
-                    gamepad2.reset();
-                    stop_chassis();
-                }
-                if (detectWhite()) {
-                    detectwhite = 1;
+            if (gamepad2.dpad_up) {
+                set_left_beacon(LEFT_BEACON_PRESS);
+                set_right_beacon(RIGHT_BEACON_PRESS);
+                sweeper.setPower(0.5);
+                sleep(100);
+                sweeper.setPower(0);
+                sleep(400);
+            } else if (gamepad2.dpad_left) {
+                if (Math.abs(left_beacon_sv_pos - LEFT_BEACON_INIT) < 0.1) {
+                    set_left_beacon(LEFT_BEACON_PRESS);
                 } else {
-                    detectwhite = 0;
+                    set_left_beacon(LEFT_BEACON_INIT);
                 }
-
-                show_telemetry();
+                sleep(500);
+            } else if (gamepad2.dpad_right) {
+                if (Math.abs(right_beacon_sv_pos - RIGHT_BEACON_INIT) < 0.1) {
+                    set_right_beacon(RIGHT_BEACON_PRESS);
+                } else {
+                    set_right_beacon(RIGHT_BEACON_INIT);
+                }
+                sleep(500);
+            } else if (gamepad2.dpad_down) {
+                set_left_beacon(LEFT_BEACON_INIT);
+                set_right_beacon(RIGHT_BEACON_INIT);
+                sweeper.setPower(-0.5);
+                sleep(100);
+                sweeper.setPower(0);
+                sleep(400);
             }
-            cdim.setDigitalChannelState(LED_CHANNEL, false);
+            if (detectWhite()) {
+                detectwhite = 1;
+            } else {
+                detectwhite = 0;
+            }
+
+            show_telemetry();
         }
+        cdim.setDigitalChannelState(LED_CHANNEL, false);
     }
+}
