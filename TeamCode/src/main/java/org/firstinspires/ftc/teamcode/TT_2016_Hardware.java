@@ -366,7 +366,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 navx_device.zeroYaw();
                 sleep(500);
                 double pre_yaw = navx_device.getYaw();
-                driveTT(0.2,0.25);
+                driveTT(0.3,0.25);
                 sleep(5);
                 driveTT(0,0);
                 sleep(10);
@@ -1163,7 +1163,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         degree = 45 - (navx_device.getYaw());
                     } else if (use_ada_imu) {
-                        degree = (float) (225+ada_imu_heading());
+                        degree = (float) (360+ada_imu_heading()+45);
                     } else if (use_gyro) {
                         degree = (360 - gyro.getHeading() + 45);
                     }
@@ -1212,6 +1212,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void auto_out_shooting (boolean is_red) throws InterruptedException {
+        StraightIn(-0.4,0.1);
         sleep(7000);
         StraightIn(-0.5,17);
         if (is_red){
@@ -1361,7 +1362,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 if (use_navx) {
                     degree = (45 - navx_device.getYaw());
                 } else if (use_ada_imu) {
-                    degree = (float) (225 + ada_imu_heading());
+                    degree = (float) (360 + ada_imu_heading() + 45);
                 } else if (use_gyro) {
                     degree = (360 - gyro.getHeading() + 45);
                 }
@@ -1464,7 +1465,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 if (use_navx) {
                     degree = (46 - navx_device.getYaw());
                 } else if (use_ada_imu) {
-                    degree = (float) (226 + ada_imu_heading());
+                    degree = (float) (360 + ada_imu_heading() + 46);
                 } else if (use_gyro) {
                     degree = (360 - gyro.getHeading() + 46);
                 }
