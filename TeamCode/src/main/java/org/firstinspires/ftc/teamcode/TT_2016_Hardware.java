@@ -1163,7 +1163,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         degree = 45 - (navx_device.getYaw());
                     } else if (use_ada_imu) {
-                        degree = (float) (360+ada_imu_heading()+45);
+                        degree = (float) (360+ada_imu_heading()+46);
                     } else if (use_gyro) {
                         degree = (360 - gyro.getHeading() + 45);
                     }
@@ -1177,7 +1177,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         degree = (float)(navx_device.getYaw() + 45.5);
                     } else if (use_ada_imu) {
-                        degree = (float) (45.5 - (int)ada_imu_heading());
+                        degree = (float) (46 - (int)ada_imu_heading());
                     } else if (use_gyro) {
                         degree = (float) (gyro.getHeading() + 45.5);
                     }
