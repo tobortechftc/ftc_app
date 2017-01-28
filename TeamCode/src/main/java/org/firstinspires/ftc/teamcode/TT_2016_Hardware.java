@@ -30,6 +30,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
@@ -78,12 +79,12 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.45;
     final static double LEFT_BEACON_INIT = 0.12;
-    final static double RIGHT_BEACON_PRESS = 0.45;
+    final static double RIGHT_BEACON_PRESS = 0.38;
     final static double RIGHT_BEACON_INIT = 0.64;
     final static double LEFT_BEACON_SIDE_DOWN = 0.15;
     final static double LEFT_BEACON_SIDE_PRESS = 0.82;
     final static double LEFT_BEACON_SIDE_INIT = 0.15;
-    final static double RIGHT_BEACON_SIDE_DOWN = 0.4;
+    final static double RIGHT_BEACON_SIDE_DOWN = 0.50;
     final static double RIGHT_BEACON_SIDE_PRESS = 0.01;
     final static double RIGHT_BEACON_SIDE_INIT = 0.55;
     final static double WHITE_MAX = 0.79;
@@ -125,15 +126,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     // position of servos
     boolean bCurrState = false;
-    double light_sensor_sv_pos=0;
-    double left_beacon_sv_pos=0;
-    double right_beacon_sv_pos=0;
-    double gate_sv_pos=0;
-    double pusher_sv_pos=0;
-    double left_beacon_side_sv_pos=0;
-    double right_beacon_side_sv_pos=0;
+    double light_sensor_sv_pos = 0;
+    double left_beacon_sv_pos = 0;
+    double right_beacon_sv_pos = 0;
+    double gate_sv_pos = 0;
+    double pusher_sv_pos = 0;
+    double left_beacon_side_sv_pos = 0;
+    double right_beacon_side_sv_pos = 0;
     // amount to change the claw servo position by
-    double slider_gate_sv_pos=0;
+    double slider_gate_sv_pos = 0;
     Boolean blue_detected = false;
     Boolean red_detected = false;
     int detectwhite = 0;
@@ -246,10 +247,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_slider_gate(SLIDER_GATE_CLOSED);
 
 
-
         long systemTime = System.nanoTime();
-
-
 
 
         // initialize chassis variables
@@ -306,7 +304,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
 
         // get a reference to our ColorSensor object.
-        if(use_adacolor){
+        if (use_adacolor) {
             coAda = hardwareMap.colorSensor.get("color");
         }
 
@@ -325,7 +323,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         //tSensor = hardwareMap.touchSensor.get("to");
         //opSensor = hardwareMap.opticalDistanceSensor.get("op");
-        if(use_ultra) {
+        if (use_ultra) {
             ultra = hardwareMap.ultrasonicSensor.get("ultra");
         }
 
@@ -366,15 +364,14 @@ public class TT_2016_Hardware extends LinearOpMode {
                 navx_device.zeroYaw();
                 sleep(500);
                 double pre_yaw = navx_device.getYaw();
-                driveTT(0.3,0.25);
+                driveTT(0.3, 0.25);
                 sleep(5);
-                driveTT(0,0);
+                driveTT(0, 0);
                 sleep(10);
                 imu_heading = navx_device.getYaw();
-                if (Math.abs(imu_heading-pre_yaw) > 0.0001) {
+                if (Math.abs(imu_heading - pre_yaw) > 0.0001) {
                     use_navx = true;
-                }
-                else use_navx = false;
+                } else use_navx = false;
             } else {
                 use_navx = false;
             }
@@ -382,18 +379,18 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (!use_navx && use_ada_imu) {
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
             parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-            parameters.loggingEnabled      = true;
-            parameters.loggingTag          = "ADA_IMU";
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "ADA_IMU";
             parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
             // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
             // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
             // and named "imu".
             ada_imu = hardwareMap.get(BNO055IMU.class, "imu");
-            if (ada_imu.initialize(parameters)==false) {
+            if (ada_imu.initialize(parameters) == false) {
                 use_ada_imu = false;
                 DbgLog.msg(String.format("TOBOT-INIT: AdaFruit IMU is not initialized properly!"));
             }
@@ -405,7 +402,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             // calibrate the gyro.
             double init_time = getRuntime();
             gyro.calibrate();
-            while (!isStopRequested() && gyro.isCalibrating() && (getRuntime() - init_time < 6))  {
+            while (!isStopRequested() && gyro.isCalibrating() && (getRuntime() - init_time < 6)) {
                 sleep(50);
                 idle();
             }
@@ -436,13 +433,13 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     double ada_imu_heading() {
-        Orientation angles   = ada_imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        return (double)(angles.firstAngle);
+        Orientation angles = ada_imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        return (double) (angles.firstAngle);
     }
 
     public void show_telemetry() {
         double cur_heading = 0;
-        if (state==State.STATE_TUNEUP) {
+        if (state == State.STATE_TUNEUP) {
             if (use_navx) {
                 cur_heading = navx_device.getYaw();
             } else if (use_ada_imu) {
@@ -451,7 +448,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 cur_heading = (double) (gyro.getHeading());
             }
         }
-        if (state==State.STATE_TUNEUP) {
+        if (state == State.STATE_TUNEUP) {
             telemetry.addData("0. State / Speed-scale / Volt / SH-Pw: ",
                     String.format("%s / %.3f / %.3f / %.2f", state.toString(), speedScale, getBatteryVoltage(), SH_power));
         } else {
@@ -459,10 +456,10 @@ public class TT_2016_Hardware extends LinearOpMode {
                     state.toString(), speedScale, SH_power));
         }
         telemetry.addData("1. use NavX/ use Ada-imu/ use Gyro:", String.format("%s / %s / %s",
-                  use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
+                use_navx.toString(), use_ada_imu.toString(), use_gyro.toString()));
 
-        if (state==State.STATE_TUNEUP) {
-            double ul_val=0.0, rg_val=0.0;
+        if (state == State.STATE_TUNEUP) {
+            double ul_val = 0.0, rg_val = 0.0;
             if (use_ultra)
                 ul_val = ultra.getUltrasonicLevel();
             if (use_range)
@@ -505,15 +502,15 @@ public class TT_2016_Hardware extends LinearOpMode {
         //show_heading();
         telemetry.update();
         // Dbg.msg(String.format("Gyro heading tar/curr = %d/%d, power L/R = %.2f/%.2f",
-	    //                   heading, cur_heading, leftPower, rightPower));
+        //                   heading, cur_heading, leftPower, rightPower));
     }
 
     public void show_heading() {
-        touch = (tSensor.isPressed()?1:0);
+        touch = (tSensor.isPressed() ? 1 : 0);
         telemetry.addData("9. head/gyro/ods/touch:", String.format("%d/%d/%.4f/%d",
-                heading, gyro.getHeading(), opSensor.getLightDetected(),touch));
+                heading, gyro.getHeading(), opSensor.getLightDetected(), touch));
         telemetry.addData("9. head/gyro/ods/ultra/touch:", String.format("%d/%d/%.4f/%.2f/%d",
-                heading, gyro.getHeading(), opSensor.getLightDetected(), ultra.getUltrasonicLevel(),touch));
+                heading, gyro.getHeading(), opSensor.getLightDetected(), ultra.getUltrasonicLevel(), touch));
     }
 
     public void StraightR(double power, double n_rotations) throws InterruptedException {
@@ -546,7 +543,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void StraightIn(double power, double in) throws InterruptedException {
-        if (use_navx){
+        if (use_navx) {
             imu_heading = navx_device.getYaw();
         } else if (use_ada_imu) {
             imu_heading = ada_imu_heading();
@@ -602,13 +599,13 @@ public class TT_2016_Hardware extends LinearOpMode {
         int rightTC1 = rightCnt;
         int leftTC2 = 0;
         int rightTC2 = 0;
-        if (leftPower > 0.4 && leftTC1 > 200){
+        if (leftPower > 0.4 && leftTC1 > 200) {
             leftTC2 = 100;
-            leftTC1 -=100;
+            leftTC1 -= 100;
         }
-        if(rightPower > 0.4 && rightTC1 > 200){
+        if (rightPower > 0.4 && rightTC1 > 200) {
             rightTC2 = 100;
-            rightTC1 -=100;
+            rightTC1 -= 100;
         }
         driveTT(leftPower, rightPower);
         initAutoOpTime = getRuntime();
@@ -617,10 +614,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             driveTT(leftPower, rightPower);
             show_telemetry();
         }
-        if(rightTC2>0 || leftTC2>0) {
-            driveTT(0.35,0.35);
-            while (!have_drive_encoders_reached(leftTC2, rightTC2) && (getRuntime() - initAutoOpTime < 7) && opModeIsActive()){
-                driveTT(0.35,0.35);
+        if (rightTC2 > 0 || leftTC2 > 0) {
+            driveTT(0.35, 0.35);
+            while (!have_drive_encoders_reached(leftTC2, rightTC2) && (getRuntime() - initAutoOpTime < 7) && opModeIsActive()) {
+                driveTT(0.35, 0.35);
                 // show_telemetry();
             }
         }
@@ -636,7 +633,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void TurnLeftD(double power, float degree, boolean spotTurn) throws InterruptedException {
         if (!opModeIsActive()) return;
         double adjust_degree_gyro = GYRO_ROTATION_RATIO_L * (double) degree;
-        double adjust_degree_navx = NAVX_ROTATION_RATIO_L  * (double) degree;
+        double adjust_degree_navx = NAVX_ROTATION_RATIO_L * (double) degree;
         double current_pos = 0;
         boolean heading_cross_zero = false;
         initAutoOpTime = getRuntime();
@@ -660,7 +657,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         rightPower = (float) power;
         if (use_navx) {
             current_pos = navx_device.getYaw();
-            imu_heading = current_pos - adjust_degree_navx ;
+            imu_heading = current_pos - adjust_degree_navx;
             if (imu_heading <= -180) {
                 imu_heading += 360;
                 heading_cross_zero = true;
@@ -675,10 +672,9 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
                 driveTT(leftPower, rightPower);
             }
-        }
-        else if (use_ada_imu) {
+        } else if (use_ada_imu) {
             current_pos = ada_imu_heading();
-            imu_heading = current_pos + adjust_degree_navx ;
+            imu_heading = current_pos + adjust_degree_navx;
             if (imu_heading >= 0) {
                 imu_heading -= 360;
                 heading_cross_zero = true;
@@ -693,8 +689,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
                 driveTT(leftPower, rightPower);
             }
-        }
-        else if (use_gyro) {
+        } else if (use_gyro) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
             heading = gyro.getHeading() - (int) adjust_degree_gyro;
@@ -710,7 +705,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             while (cur_heading > heading && (getRuntime() - initAutoOpTime < 4) && opModeIsActive()) {
                 driveTT(leftPower, rightPower);
-                if (prev_heading!=cur_heading) {
+                if (prev_heading != cur_heading) {
                     DbgLog.msg(String.format("LOP: Gyro heading tar/curr = %d/%d, power L/R = %.2f/%.2f",
                             heading, cur_heading, leftPower, rightPower));
                 }
@@ -731,7 +726,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         driveTT(0, 0);
 
-         sleep(150);
+        sleep(150);
     }
 
     public void TurnRightD(double power, float degree, boolean spotTurn) throws InterruptedException {
@@ -762,7 +757,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (use_navx) {
             current_pos = navx_device.getYaw();
-            imu_heading = current_pos + adjust_degree_navx ;
+            imu_heading = current_pos + adjust_degree_navx;
             if (imu_heading >= 180) {
                 imu_heading -= 360;
                 heading_cross_zero = true;
@@ -778,28 +773,27 @@ public class TT_2016_Hardware extends LinearOpMode {
                 driveTT(leftPower, rightPower);
             }
         } else if (use_ada_imu) {
+            current_pos = ada_imu_heading();
+            imu_heading = current_pos - adjust_degree_navx;
+            if (imu_heading <= -360) {
+                imu_heading += 360;
+                heading_cross_zero = true;
+            }
+            if (heading_cross_zero && (current_pos <= -180)) {
+                current_pos += 360;
+            }
+            while ((current_pos >= imu_heading) && ((getRuntime() - initAutoOpTime) < 5.0) && opModeIsActive()) {
                 current_pos = ada_imu_heading();
-                imu_heading = current_pos - adjust_degree_navx ;
-                if (imu_heading <= -360) {
-                    imu_heading += 360;
-                    heading_cross_zero = true;
-                }
                 if (heading_cross_zero && (current_pos <= -180)) {
                     current_pos += 360;
                 }
-                while ((current_pos >= imu_heading) && ((getRuntime() - initAutoOpTime) < 5.0) && opModeIsActive()) {
-                    current_pos = ada_imu_heading();
-                    if (heading_cross_zero && (current_pos <= -180)) {
-                        current_pos += 360;
-                    }
-                    driveTT(leftPower, rightPower);
-                }
-        }
-        else if (use_gyro) {
-        // if (false) {
+                driveTT(leftPower, rightPower);
+            }
+        } else if (use_gyro) {
+            // if (false) {
             initAutoOpTime = getRuntime();
             int cur_heading = gyro.getHeading();
-            heading = cur_heading + (int)adjust_degree_gyro;
+            heading = cur_heading + (int) adjust_degree_gyro;
             int prev_heading = -1;
             int init_heading = cur_heading;
             DbgLog.msg(String.format("LOP: Right Turn %.2f degree: Gyro tar/curr heading = %d/%d",
@@ -807,7 +801,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             while (cur_heading < heading && (getRuntime() - initAutoOpTime < 5) && opModeIsActive()) {
                 driveTT(leftPower, rightPower);
-                if (prev_heading!=cur_heading) {
+                if (prev_heading != cur_heading) {
                     DbgLog.msg(String.format("LOP: Gyro heading tar/curr = %d/%d, power L/R = %.2f/%.2f",
                             heading, cur_heading, leftPower, rightPower));
                 }
@@ -821,8 +815,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             if (use_encoder) {
                 run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
-            }
-            else {
+            } else {
                 long degree_in_ms = 33 * (long) degree;
                 driveTT(leftPower, rightPower);
                 sleep(degree_in_ms);
@@ -858,11 +851,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         //         0.70 when vol >= 14.0
         // when cur_vol is >13
         //         power = 1.0 - 0.3 * (cur_vol - 13)
-        if (cur_vol<13.0) {
+        if (cur_vol < 13.0) {
             SH_power = 1.0;
-        } else{
-            SH_power = ((1.0 - 0.3 * (cur_vol - 13))*1.1);
-            if (SH_power > 1.0){
+        } else {
+            SH_power = ((1.0 - 0.3 * (cur_vol - 13)) * 1.1);
+            if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
         }
@@ -937,25 +930,25 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (has_left_drive_encoder_reached(p_left_count) && has_right_drive_encoder_reached(p_right_count)) {
             l_return = true;
         } else if (has_left_drive_encoder_reached(p_left_count)) { // shift target encoder value from right to left
-            double diff = Math.abs(p_right_count - motorR.getCurrentPosition())/2;
-            if (leftPower<0) {
+            double diff = Math.abs(p_right_count - motorR.getCurrentPosition()) / 2;
+            if (leftPower < 0) {
                 leftCnt -= diff;
             } else {
                 leftCnt += diff;
             }
-            if (rightPower<0) {
+            if (rightPower < 0) {
                 rightCnt += diff;
             } else {
                 rightCnt -= diff;
             }
         } else if (has_right_drive_encoder_reached(p_right_count)) { // shift target encoder value from left to right
-            double diff = Math.abs(p_left_count - motorL.getCurrentPosition())/2;
-            if (rightPower<0) {
+            double diff = Math.abs(p_left_count - motorL.getCurrentPosition()) / 2;
+            if (rightPower < 0) {
                 rightCnt -= diff;
             } else {
                 rightCnt += diff;
             }
-            if (leftPower<0) {
+            if (leftPower < 0) {
                 leftCnt += diff;
             } else {
                 leftCnt -= diff;
@@ -1012,14 +1005,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void forwardTillUltra(double us_stop_val, double power, double max_sec, boolean is_red) throws InterruptedException {
         double us_val = 0;
-        if(is_red){
+        if (is_red) {
             imu_heading = -45.0;
-        }
-        else{
+        } else {
             imu_heading = 45.0;
         }
-        if (use_range){
-        // (true) {
+        if (use_range) {
+            // (true) {
             us_val = rangeSensor.getDistance(DistanceUnit.CM);
         }
         double init_time = getRuntime();
@@ -1039,8 +1031,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void set_gate(double pos) {
-       gate_sv_pos = pos;
-       gate_sv.setPosition(gate_sv_pos);
+        gate_sv_pos = pos;
+        gate_sv.setPosition(gate_sv_pos);
     }
 
     public void set_slider_gate(double pos) {
@@ -1063,12 +1055,12 @@ public class TT_2016_Hardware extends LinearOpMode {
         right_beacon_sv.setPosition(right_beacon_sv_pos);
     }
 
-    public void set_left_beacon_side(double pos){
+    public void set_left_beacon_side(double pos) {
         left_beacon_side_sv_pos = pos;
         left_beacon_side_sv.setPosition(left_beacon_side_sv_pos);
     }
 
-    public void set_right_beacon_side(double pos){
+    public void set_right_beacon_side(double pos) {
         right_beacon_side_sv_pos = pos;
         right_beacon_side_sv.setPosition(right_beacon_side_sv_pos);
     }
@@ -1076,9 +1068,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void stopAtWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
         driveTT(power, power);
-        int i=0;
+        int i = 0;
         while (!detectWhite() && (getRuntime() - initAutoOpTime < 3)) {
-            if ((++i%10)==0)
+            if ((++i % 10) == 0)
                 driveTT(power, power);
         }
         stop_chassis();
@@ -1087,10 +1079,10 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goUntilWhite(double power) throws InterruptedException {
         initAutoOpTime = getRuntime();
         driveTT(power, power);
-        int i=0;
+        int i = 0;
         while ((!detectWhite() || !detectWall(RANGE_WALL)) && (getRuntime() - initAutoOpTime < 3) && opModeIsActive()) {
-            if ((++i%10)==0)
-              driveTT(power, power);
+            if ((++i % 10) == 0)
+                driveTT(power, power);
         }
         stop_chassis();
     }
@@ -1098,9 +1090,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void goUntilWall(double power, double distance) throws InterruptedException {
         initAutoOpTime = getRuntime();
         driveTT(power, power);
-        int i=0;
+        int i = 0;
         while (!detectWall(distance) && (getRuntime() - initAutoOpTime < 2) && opModeIsActive()) {
-            if ((++i%10)==0)
+            if ((++i % 10) == 0)
                 driveTT(power, power);
         }
         stop_chassis();
@@ -1116,7 +1108,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (!opModeIsActive()) {  // change true to skip part1
             return;
         }
-            //sleep(300);
+        //sleep(300);
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
@@ -1126,17 +1118,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (is_in) {
             StraightIn(1.0, 42);
-        }
-        else {
-            StraightIn(1.0,91);
+        } else {
+            StraightIn(1.0, 91);
         }
         sleep(200);
 
-        if (is_red){
-            TurnRightD(0.5,40,true);
-        }
-        else {
-            TurnLeftD(0.5,38,true);
+        if (is_red) {
+            TurnRightD(0.5, 40, true);
+        } else {
+            TurnLeftD(0.5, 38, true);
         }
         StraightIn(0.75, 10);
 
@@ -1148,62 +1138,59 @@ public class TT_2016_Hardware extends LinearOpMode {
         // driveTT(0.5,0.5); sleep(1);driveTT(0,0);
     }
 
-    public void auto_part2 (boolean is_red, boolean is_in, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException{
+    public void auto_part2(boolean is_red, boolean is_in, boolean is_shooting, boolean do_second_beacon, boolean is_hitting_ball) throws InterruptedException {
 
 
         //StraightIn(-0.5, 7);
 
-        if (is_shooting){
-            if(do_second_beacon){
-                if (opModeIsActive()) goBeaconAndShooting(true,is_red);
-                StraightIn(1.0, 11.5);
+        if (is_shooting) {
+            if (do_second_beacon) {
+                if (opModeIsActive()) {
+                    goBeaconAndShooting(true, is_red);
+                }
+                StraightIn(1.0, 11.5); //Go forward from shooting to return to the original position
                 // turn parallel to beacon
-                if (is_red){
+                if (is_red) {
                     float degree = 86;
                     if (use_navx) {
                         degree = 45 - (navx_device.getYaw());
                     } else if (use_ada_imu) {
-                        degree = (float) (360+ada_imu_heading()+46);
+                        degree = (float) (360 + ada_imu_heading() + 46);
                     } else if (use_gyro) {
                         degree = (360 - gyro.getHeading() + 45);
                     }
-                    if (degree>=180) degree=179;
+                    if (degree >= 180) degree = 179;
                     TurnRightD(0.5, degree, true);
-                    StraightIn(1.0,46);
+                    StraightIn(1.0, 46);
                     goBeacon(true);
-                }
-                else { // blue
+                } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (float)(navx_device.getYaw() + 45.5);
+                        degree = (float) (navx_device.getYaw() + 49);
                     } else if (use_ada_imu) {
-                        degree = (float) (46 - (int)ada_imu_heading());
+                        degree = (float) (49 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 45.5);
+                        degree = (float) (gyro.getHeading() + 49);
                     }
-                    if (degree>=180) degree=179;
+                    if (degree >= 180) degree = 179;
                     TurnLeftD(0.5, degree, true);
-                    StraightIn(1.0,50);
+                    StraightIn(1.0, 50);
                     goBeacon(false);
                 }
-            }
-            else if(is_hitting_ball){
-                if (is_red){
+            } else if (is_hitting_ball) {
+                if (is_red) {
                     goBeacon(true);
-                }
-                else{
+                } else {
                     goBeacon(false);
                 }
-                StraightIn(-0.75,25);
-                goShooting(2,is_red,true);
+                StraightIn(-0.75, 25);
+                goShooting(2, is_red, true);
                 goBall(is_red, is_in);
             }
-        }
-        else{
-            if (is_red){
+        } else {
+            if (is_red) {
                 goBeacon(true);
-            }
-            else{
+            } else {
                 goBeacon(false);
             }
         }
@@ -1211,28 +1198,26 @@ public class TT_2016_Hardware extends LinearOpMode {
         stop_tobot();
     }
 
-    public void auto_out_shooting (boolean is_red) throws InterruptedException {
-        StraightIn(-0.4,0.1);
+    public void auto_out_shooting(boolean is_red) throws InterruptedException {
+        StraightIn(-0.4, 0.1);
         sleep(7000);
-        StraightIn(-0.5,17);
-        if (is_red){
-            TurnLeftD(0.4, 27, true);
-            StraightIn(-0.6, 5);
+        StraightIn(-0.5, 17);
+        if (is_red) {
+            TurnLeftD(0.4, 30, true);
+            StraightIn(-0.6, 6);
             goShooting(2, true, false);
             TurnLeftD(0.4, 43, true);
-        }
-        else{
-            TurnRightD(0.4, 25, true);
-            StraightIn(-0.6, 5);
+        } else {
+            TurnRightD(0.4, 40, true);
+            StraightIn(-0.6, 6);
             goShooting(2, false, false);
             TurnRightD(0.4, 40, true);
         }
         StraightIn(-0.6, 50);
-        if(is_red){
+        if (is_red) {
             TurnLeftD(0.4, 40, true);
-            StraightIn(-0.5, 21);
-        }
-        else{
+            StraightIn(-0.5, 17);
+        } else {
             TurnRightD(0.4, 40, true);
             StraightIn(-0.5, 15);
         }
@@ -1247,12 +1232,12 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_pusher(PUSHER_UP);
     }
 
-    public void goShooting (int times, boolean is_red, boolean first_beacon) throws InterruptedException {
+    public void goShooting(int times, boolean is_red, boolean first_beacon) throws InterruptedException {
         if (is_red) {
             if (first_beacon) {
                 //StraightIn(-0.5, 7);
                 sleep(400);
-               //TurnRightD(0.3,1,true);
+                //TurnRightD(0.3,1,true);
             } else {
 
             }
@@ -1265,22 +1250,24 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             }
         }
-        for (int i=0; i<times; i++) {
+        for (int i = 0; i < times; i++) {
 
-            if (i==0) {
+            if (i == 0) {
                 shooter.setPower(0.5);
                 sleep(100);
-                shooter.setPower(SH_power);
-                sleep(1000);
-            } else {
-                shooter.setPower(SH_power);
-                sleep(1500);
-
             }
+            if (SH_power * 1.1 < 1.0) {
+                shooter.setPower(SH_power * 1.1);
+            } else {
+                shooter.setPower(1.0);
+            }
+            sleep(2000);
+
+
             set_gate(GATE_OPEN);
             sleep(500);
             set_gate(GATE_CLOSED);
-            if (i==0) push_ball();
+            if (i == 0) push_ball();
         }
         set_gate(GATE_CLOSED);
         sleep(1000);
@@ -1288,52 +1275,50 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     }
 
-    public void goBall (boolean is_red, boolean is_in) throws InterruptedException {
-            if (is_in) {
-                StraightIn(-0.6, 20);
-                if (is_red) {
-                    TurnRightD(0.5, 60, true);
-                    TurnLeftD(0.5, 60, true);
-                } else {
-                    TurnLeftD(0.5, 60, true);
-                    TurnRightD(0.5, 60, true);
-                }
-                StraightIn(-0.4, 7);
-            } else { // out position
-                StraightIn(-0.6, 5);
-                if (is_red) {
-                    TurnRightD(0.5, 45, true);
-                }
-                else {
-                    TurnLeftD(0.5, 45, true);
-                }
-                StraightIn(-0.6, 55);
-                if (is_red) {
-                    TurnRightD(0.5, 60, true);
-                    TurnLeftD(0.5, 60, true);
-                } else {
-                    TurnLeftD(0.5, 60, true);
-                    TurnRightD(0.5, 60, true);
-                }
-                StraightIn(-0.4, 7);
+    public void goBall(boolean is_red, boolean is_in) throws InterruptedException {
+        if (is_in) {
+            StraightIn(-0.6, 20);
+            if (is_red) {
+                TurnRightD(0.5, 60, true);
+                TurnLeftD(0.5, 60, true);
+            } else {
+                TurnLeftD(0.5, 60, true);
+                TurnRightD(0.5, 60, true);
             }
+            StraightIn(-0.4, 7);
+        } else { // out position
+            StraightIn(-0.6, 5);
+            if (is_red) {
+                TurnRightD(0.5, 45, true);
+            } else {
+                TurnLeftD(0.5, 45, true);
+            }
+            StraightIn(-0.6, 55);
+            if (is_red) {
+                TurnRightD(0.5, 60, true);
+                TurnLeftD(0.5, 60, true);
+            } else {
+                TurnLeftD(0.5, 60, true);
+                TurnRightD(0.5, 60, true);
+            }
+            StraightIn(-0.4, 7);
+        }
     }
 
-    public void goBeacon (boolean is_red) throws InterruptedException {
+    public void goBeacon(boolean is_red) throws InterruptedException {
         if (!opModeIsActive()) return;
 
         boolean isFirstBeacon = false;
         double distanceToWall = 66.1;
         // if(use_range){
         if (false) {
-            if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
+            if (rangeSensor.getDistance(DistanceUnit.CM) >= 140) {
                 isFirstBeacon = true;
                 distanceToWall = 180.2;
             }
             goUntilWall(0.3, distanceToWall);
             StraightIn(-0.5, 2.5);
-        }
-        else if (use_ods && opModeIsActive()) {
+        } else if (use_ods && opModeIsActive()) {
             stopAtWhite(0.3);
             if (is_red)
                 StraightIn(-0.5, 7.5);
@@ -1345,7 +1330,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             float degree;
             //sleep(200);
-            if(is_red){
+            if (is_red) {
                 degree = 85;
                 if (use_navx) {
                     degree = navx_device.getYaw() + 45;
@@ -1354,10 +1339,9 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else if (use_gyro) {
                     degree = gyro.getHeading() + 45;
                 }
-                if (degree>=180) degree=179;
+                if (degree >= 180) degree = 179;
                 TurnLeftD(0.5, degree, true);
-            }
-            else { // blue
+            } else { // blue
                 degree = 90;
                 if (use_navx) {
                     degree = (45 - navx_device.getYaw());
@@ -1366,7 +1350,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else if (use_gyro) {
                     degree = (360 - gyro.getHeading() + 45);
                 }
-                if (degree>=180) degree=179;
+                if (degree >= 180) degree = 179;
                 TurnRightD(0.5, degree, true);
             }
             //StraightIn(-0.5, 3);
@@ -1379,7 +1363,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-             forwardTillUltra(11, 0.25, 5, is_red);
+            forwardTillUltra(11, 0.25, 5, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1388,16 +1372,18 @@ public class TT_2016_Hardware extends LinearOpMode {
             // sense color up to 2 secs
             do {
                 left_co = colorPicker.getColor(true); // get left Beacon
-            } while ((left_co== TT_ColorPicker.Color.UNKNOWN) && (getRuntime()-initTime<0.5) && opModeIsActive());
+            }
+            while ((left_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
 
-            if ((left_co==TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
+            if ((left_co == TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
                 TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
                 do {
                     right_co = colorPicker.getColor(false);
-                } while ((right_co== TT_ColorPicker.Color.UNKNOWN) && (getRuntime()-initTime<1.0) && opModeIsActive());
-                if (right_co==TT_ColorPicker.Color.BLUE)
+                }
+                while ((right_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 1.0) && opModeIsActive());
+                if (right_co == TT_ColorPicker.Color.BLUE)
                     left_co = TT_ColorPicker.Color.RED;
-                else if (right_co==TT_ColorPicker.Color.RED)
+                else if (right_co == TT_ColorPicker.Color.RED)
                     left_co = TT_ColorPicker.Color.BLUE;
             }
             // Detect Beacon color and hit the correct side
@@ -1422,16 +1408,16 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
     }
 
-    public void goBeaconAndShooting (boolean shoot_twice, boolean is_red) throws InterruptedException {
+    public void goBeaconAndShooting(boolean shoot_twice, boolean is_red) throws InterruptedException {
         if (!opModeIsActive()) return;
 
         boolean isFirstBeacon = false;
         double distanceToWall = 66.1;
-        double shooterPW = SH_power*1.1;
-        if (shooterPW>1.0)
-            shooterPW=1.0;
-        if(use_range){
-            if(rangeSensor.getDistance(DistanceUnit.CM) >= 140){
+        double shooterPW = SH_power * 1.1;
+        if (shooterPW > 1.0)
+            shooterPW = 1.0;
+        if (use_range) {
+            if (rangeSensor.getDistance(DistanceUnit.CM) >= 140) {
                 isFirstBeacon = true;
                 distanceToWall = 180.2;
             }
@@ -1440,7 +1426,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             if (use_ods) {
                 stopAtWhite(0.3);
-                StraightIn(-0.5,7.5);
+                StraightIn(-0.5, 7.5);
             } else {
                 goUntilWall(0.3, distanceToWall);
                 StraightIn(-0.5, 2.5);
@@ -1448,7 +1434,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             shooter.setPower(0.5);
             // turn toward beacon
             float degree;
-            if (is_red){
+            if (is_red) {
                 degree = 85;
                 if (use_navx) {
                     degree = navx_device.getYaw() + 46;
@@ -1457,10 +1443,9 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else if (use_gyro) {
                     degree = gyro.getHeading() + 46;
                 }
-                if (degree>=180) degree=179;
+                if (degree >= 180) degree = 179;
                 TurnLeftD(0.5, degree, true);
-            }
-            else { // blue
+            } else { // blue
                 degree = 90;
                 if (use_navx) {
                     degree = (46 - navx_device.getYaw());
@@ -1469,14 +1454,14 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else if (use_gyro) {
                     degree = (360 - gyro.getHeading() + 46);
                 }
-                if (degree>=180) degree=179;
+                if (degree >= 180) degree = 179;
                 TurnRightD(0.5, degree, true);
             }
 
             shooter.setPower(shooterPW);
             //StraightIn(-0.5, 3);
         }
-       // sleep(200);
+        // sleep(200);
         //forwardTillUltra(10, 0.25, 3);
         blue_detected = false;
         red_detected = false;
@@ -1493,16 +1478,18 @@ public class TT_2016_Hardware extends LinearOpMode {
             // sense color up to 2 secs
             do {
                 left_co = colorPicker.getColor(true);
-            } while ((left_co==TT_ColorPicker.Color.UNKNOWN) && (getRuntime()-initTime<0.5) && opModeIsActive());
+            }
+            while ((left_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
 
-            if ((left_co==TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
+            if ((left_co == TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
                 TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
                 do {
                     right_co = colorPicker.getColor(false);
-                } while ((right_co==TT_ColorPicker.Color.UNKNOWN) && (getRuntime()-initTime<1.0) && opModeIsActive());
-                if (right_co==TT_ColorPicker.Color.BLUE)
+                }
+                while ((right_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 1.0) && opModeIsActive());
+                if (right_co == TT_ColorPicker.Color.BLUE)
                     left_co = TT_ColorPicker.Color.RED;
-                else if (right_co==TT_ColorPicker.Color.RED)
+                else if (right_co == TT_ColorPicker.Color.RED)
                     left_co = TT_ColorPicker.Color.BLUE;
             }
             // Detect Beacon color and hit the correct side
@@ -1527,20 +1514,25 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
 
         }
-        if(opModeIsActive()){
-            StraightIn(-1.0,18);
-            TurnRightD(0.5, 2, true); // shoot towards center vortex
-
+        if (opModeIsActive()) {
+            StraightIn(-1.0, 18);
+            if(!is_red){
+                TurnRightD(0.5, 2, true); // shoot towards center vortex
+            }
+            shooterPW = SH_power * 1.1;
+            if (shooterPW > 1.0)
+                shooterPW = 1.0;
+            shooter.setPower(shooterPW);
             //push_ball();
             //sleep(200);
-            set_gate(GATE_OPEN);
+            set_gate(GATE_OPEN); // shooting first ball
             //sleep(500);
             //set_gate(GATE_CLOSED);
-            if(shoot_twice && opModeIsActive()){
+            if (shoot_twice && opModeIsActive()) {
                 sleep(600);
-                shooterPW = SH_power*1.2;
-                if (shooterPW>1.0)
-                    shooterPW=1.0;
+                shooterPW = SH_power * 1.1;
+                if (shooterPW > 1.0)
+                    shooterPW = 1.0;
                 shooter.setPower(shooterPW);
                 push_ball();
                 //sleep(500);
@@ -1553,42 +1545,41 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public boolean detectWhite() {
-    int cur_sum_ada_colors = 0;
+        int cur_sum_ada_colors = 0;
         double light = 0;
 
-        if(use_adacolor) {
+        if (use_adacolor) {
             cur_sum_ada_colors = coAda.alpha() + coAda.blue() + coAda.red() + coAda.green();
 
             if (cur_sum_ada_colors >= WHITE_ADA) {
                 return true;
             }
-        }else if (use_light) {
+        } else if (use_light) {
             light = lightSensor.getRawLightDetected();
 
             if (light >= WHITE_NXT) {
                 return true;
             }
-        }
-        else if (use_ods){
+        } else if (use_ods) {
             light = odsSensor.getRawLightDetected();
 
             if (light >= WHITE_ODS) {
                 return true;
             }
         }
-    //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
-    //        return false;
-    //    }
+        //    if (opSensor.getLightDetected() < WHITE_OP) { // to-do
+        //        return false;
+        //    }
         return false;
     }
 
     public boolean detectWall(double distance) {
-        if(!use_range){
+        if (!use_range) {
 
             return false;
         }
         double range = rangeSensor.getDistance(DistanceUnit.CM);
-        if (range  > distance) {
+        if (range > distance) {
             return false;
         }
         return true;
@@ -1606,6 +1597,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         v_warning_message += p_exception_message;
 
     }
+
     public enum State {
         STATE_TELEOP,    // state to test teleop
         STATE_AUTO,        // state to test auto routines
