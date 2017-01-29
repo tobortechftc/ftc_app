@@ -1516,8 +1516,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         if (opModeIsActive()) {
             StraightIn(-1.0, 18);
-            if(!is_red){
-                TurnRightD(0.5, 2, true); // shoot towards center vortex
+            if(is_red){
+                TurnRightD(0.5, 1, true); // shoot towards center vortex
+            }
+            else {
+                TurnRightD(0.5, 2, true);
             }
             shooterPW = SH_power * 1.1;
             if (shooterPW > 1.0)
