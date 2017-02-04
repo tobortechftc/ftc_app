@@ -71,8 +71,10 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_UP1 = 0.75;
     final static double PUSHER_DOWN_2 = 0.48;
     final static double PUSHER_EXTRA = 0.1;
-    final static double GATE_CLOSED = 0.46;
-    final static double GATE_OPEN = 0.001;
+    final static double GATE_CLOSED = 0.84;
+    final static double GATE_OPEN = 0.61;
+    final static double GOLF_GATE_CLOSED = 0.58;
+    final static double GOLF_GATE_OPEN = 0.34;
     final static double SLIDER_GATE_OPEN = 0.001;
     final static double SLIDER_GATE_CLOSED = 0.5;
     final static double LIGHT_SENSOR_UP = 0.03;
@@ -130,6 +132,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     double left_beacon_sv_pos = 0;
     double right_beacon_sv_pos = 0;
     double gate_sv_pos = 0;
+    double golf_gate_sv_pos = 0;
     double pusher_sv_pos = 0;
     double left_beacon_side_sv_pos = 0;
     double right_beacon_side_sv_pos = 0;
@@ -186,6 +189,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Servo left_beacon_sv;
     Servo right_beacon_sv;
     Servo gate_sv;
+    Servo golf_gate_sv;
     Servo pusher_sv;
     Servo left_beacon_side_sv;
     Servo right_beacon_side_sv;
@@ -227,6 +231,10 @@ public class TT_2016_Hardware extends LinearOpMode {
         v_warning_generated = false;
         v_warning_message = "Can't map; ";
 
+        if (st==State.STATE_TELEOP) { // disable IMU initialization
+            use_navx = false;
+            use_ada_imu = false;
+        }
 
         //light_sensor_sv = init_servo("light_sensor_sv");
         left_beacon_sv = init_servo("left_beacon_sv");
@@ -234,6 +242,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         left_beacon_side_sv = init_servo("left_beacon_side_sv");
         right_beacon_side_sv = init_servo("right_beacon_side_sv");
         gate_sv = init_servo("gate_sv");
+        golf_gate_sv = init_servo("golf_sv");
         pusher_sv = init_servo("pusher_sv");
         slider_gate_sv = init_servo("slider_gate_sv");
         //DbgLog.msg(String.format("TOBOT-INIT  light_sensor_sv -"));
@@ -242,7 +251,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_right_beacon(RIGHT_BEACON_INIT);
         set_left_beacon_side(LEFT_BEACON_SIDE_INIT);
         set_right_beacon_side(RIGHT_BEACON_SIDE_INIT);
-        set_gate(GATE_CLOSED);
+        set_gate(GATE_OPEN);
+        set_golf_gate(GOLF_GATE_CLOSED);
         set_pusher(PUSHER_UP);
         set_slider_gate(SLIDER_GATE_CLOSED);
 
@@ -483,7 +493,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         (coAda.alpha() + coAda.blue() + coAda.red() + coAda.green())));
             }
             telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
-            telemetry.addData("9. gate/ pusher  = ", String.format("%.2f / %.2f", gate_sv_pos, pusher_sv_pos));
+            telemetry.addData("9. gate/pusher/golf= ", String.format("%.2f/%.2f/%.2f", gate_sv_pos, pusher_sv_pos, golf_gate_sv_pos));
 
             telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
 
@@ -850,11 +860,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         // power = 1.0 when vol =< 13.0
         //         0.70 when vol >= 14.0
         // when cur_vol is >13
-        //         power = 1.0 - 0.3 * (cur_vol - 13)
+        //         power = 1.0 - 0.25 * (cur_vol - 13)
         if (cur_vol < 13.0) {
             SH_power = 1.0;
         } else {
-            SH_power = ((1.0 - 0.3 * (cur_vol - 13)) * 1.1);
+            SH_power = ((1.0 - 0.25 * (cur_vol - 13))*1.0);
             if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
@@ -1033,6 +1043,11 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void set_gate(double pos) {
         gate_sv_pos = pos;
         gate_sv.setPosition(gate_sv_pos);
+    }
+
+    public void set_golf_gate(double pos) {
+        golf_gate_sv_pos = pos;
+        golf_gate_sv.setPosition(golf_gate_sv_pos);
     }
 
     public void set_slider_gate(double pos) {

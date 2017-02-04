@@ -127,17 +127,33 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                         set_light_sensor(light_sensor_sv_pos - 0.005);
                     sleep(5);
                 }
+
+                if (gamepad1.dpad_right) {
+                    if (left_beacon_sv_pos < 1)
+                        set_left_beacon(left_beacon_sv_pos + 0.005);
+                    sleep(5);
+                }
+                if (gamepad1.dpad_left) {
+                    if (left_beacon_sv_pos > 0)
+                        set_left_beacon(left_beacon_sv_pos - 0.005);
+                    sleep(5);
+                }
+            } else {
+                if (gamepad1.dpad_up && gamepad1.start) {
+                    StraightIn(1, 72);
+                } else if (gamepad1.dpad_up) { // try out auto-blue
+                    DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red out!");
+                    auto_part1(false, true);
+                } else if (gamepad1.dpad_down) { // try out auto-red
+                    DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red in!");
+                    auto_part1(true, true);
+                } else if (gamepad1.dpad_right) {
+                    TurnRightD(0.5, 90, true);
+                } else if (gamepad1.dpad_left) {
+                    TurnLeftD(0.5, 90, true);
+                }
             }
-            if (gamepad1.dpad_right) {
-                if (left_beacon_sv_pos<1)
-                    set_left_beacon(left_beacon_sv_pos+0.005);
-                sleep(5);
-            }
-            if (gamepad1.dpad_left) {
-                if (left_beacon_sv_pos>0)
-                    set_left_beacon(left_beacon_sv_pos-0.005);
-                sleep(5);
-            }
+
             if (gamepad1.x) {
                 if (right_beacon_sv_pos<1)
                     set_right_beacon(right_beacon_sv_pos+0.005);
@@ -167,20 +183,47 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 TurnLeftD(0.45,90,true);
             }
 
-            if (gamepad2.dpad_left) {
-                goBeacon(true);
-            }
-            if (gamepad2.dpad_right) {
-                goBeacon(false);
-            }
-            if (gamepad2.dpad_up){
-                StraightIn(1.0,60);
-            }
-            if (gamepad2.dpad_down){
-                //StraightIn(0.5,30);
-                //TurnRightD(0.5,45,true);
-                //StraightIn(0.5,30);
-                StraightIn(-1.0,60);
+            //-----------------------------
+            // gamepad2 buttons
+            //-----------------------------
+
+            if (true) { // tune-up serves
+                if (gamepad2.dpad_left) {
+                    if (gate_sv_pos > 0.005)
+                        set_gate(gate_sv_pos - 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_right) {
+                    if (gate_sv_pos < 0.995)
+                        set_gate(gate_sv_pos + 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_down) {
+                    if (golf_gate_sv_pos > 0.005)
+                        set_golf_gate(golf_gate_sv_pos - 0.005);
+                    sleep(5);
+                }
+                if (gamepad2.dpad_up) {
+                    if (golf_gate_sv_pos < 0.995)
+                        set_golf_gate(golf_gate_sv_pos + 0.005);
+                    sleep(5);
+                }
+            } else { // turn-up auto routines
+                if (gamepad2.dpad_left) {
+                    goBeacon(true);
+                }
+                if (gamepad2.dpad_right) {
+                    goBeacon(false);
+                }
+                if (gamepad2.dpad_up) {
+                    StraightIn(1.0, 60);
+                }
+                if (gamepad2.dpad_down) {
+                    //StraightIn(0.5,30);
+                    //TurnRightD(0.5,45,true);
+                    //StraightIn(0.5,30);
+                    StraightIn(-1.0, 60);
+                }
             }
             if (gamepad2.left_bumper){
                 if(left_beacon_side_sv_pos > 0.05) {
@@ -248,42 +291,6 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 detectwhite = 1;
             } else {
                 detectwhite = 0;
-            }
-            if (gamepad1.dpad_up && gamepad1.start) {
-                StraightIn(1 , 72);
-            }
-            else if (gamepad1.dpad_up) { // try out auto-blue
-                DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red out!");
-                auto_part1(false,true);
-            } else if (gamepad1.dpad_down) { // try out auto-red
-                DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red in!");
-                auto_part1(true, true);
-            } else if (gamepad1.dpad_right) {
-                TurnRightD(0.5, 90, true);
-            } else if (gamepad1.dpad_left) {
-                TurnLeftD(0.5, 90, true);
-            }
-            if (false) {
-                if (gamepad2.dpad_left) {
-                    if (gate_sv_pos > 0.005)
-                        set_gate(gate_sv_pos - 0.005);
-                    sleep(5);
-                }
-                if (gamepad2.dpad_right) {
-                    if (gate_sv_pos < 0.995)
-                        set_gate(gate_sv_pos + 0.005);
-                    sleep(5);
-                }
-                if (gamepad2.dpad_down) {
-                    if (pusher_sv_pos > 0.005)
-                        set_pusher(pusher_sv_pos - 0.005);
-                    sleep(5);
-                }
-                if (gamepad2.dpad_up) {
-                    if (pusher_sv_pos < 0.995)
-                        set_pusher(pusher_sv_pos + 0.005);
-                    sleep(5);
-                }
             }
 
             //touch = (tSensor.isPressed()?1:0);

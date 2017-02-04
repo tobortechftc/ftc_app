@@ -277,7 +277,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             } else if (gamepad2.b) { // shooter off
                 SW_power = (float) 0;
                 cur_SH_power = (float) 0;
-                set_gate(GATE_CLOSED);
+                set_golf_gate(GOLF_GATE_CLOSED);
             }
 
             if (gamepad2.x || gamepad2.b) {
@@ -291,15 +291,25 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 set_slider_gate(0.05);
             }
             if (gamepad2.right_trigger > 0.1) {
-                set_gate(GATE_OPEN);
-                sleep(500);
-                set_gate(GATE_CLOSED);
+                set_golf_gate(GOLF_GATE_OPEN);
+                sleep(100);
+                set_golf_gate(GOLF_GATE_CLOSED);
+                //set_gate(GATE_OPEN);
+                //sleep(500);
+                //set_gate(GATE_CLOSED);
             }
             if (gamepad2.right_bumper) {
-                if (gate_sv_pos == GATE_CLOSED)
+                if (golf_gate_sv_pos == GOLF_GATE_CLOSED) {
+                    set_golf_gate(GOLF_GATE_OPEN);
+                } else {
+                    set_golf_gate(GOLF_GATE_CLOSED);
+                }
+                if (false) {
+                } else if (gate_sv_pos == GATE_CLOSED) {
                     set_gate(GATE_OPEN);
-                else
+                } else {
                     set_gate(GATE_CLOSED);
+                }
                 sleep(50);
             }
             if (gamepad2.left_bumper) {
@@ -307,10 +317,11 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (gamepad2.left_trigger > 0.1) {
                 push_ball();
-                sleep(200);
                 set_gate(GATE_OPEN);
                 sleep(800);
-                set_gate(GATE_CLOSED);
+                set_golf_gate(GOLF_GATE_OPEN);
+                sleep(100);
+                set_golf_gate(GATE_CLOSED);
             }
 
 
