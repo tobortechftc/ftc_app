@@ -104,7 +104,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     static final int LED_CHANNEL = 1;
 
     final static int ONE_ROTATION = 1120; // for AndyMark-40 motor encoder one rotation
+
     // final static int ONE_ROTATION = 1680; // for AndyMark-60 motor encoder one rotation
+
     // final static double RROBOT = 11;  // number of wheel turns to get chassis 360-degree
     final static double RROBOT = 6.63;  // number of wheel turns to get chassis 360-degree turn
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
@@ -1139,9 +1141,9 @@ public class TT_2016_Hardware extends LinearOpMode {
         sleep(200);
 
         if (is_red) {
-            TurnRightD(0.5, 40, true);
+            TurnRightD(0.35, 40, true);
         } else {
-            TurnLeftD(0.5, 38, true);
+            TurnLeftD(0.35, 38, true);
         }
         StraightIn(0.75, 10);
 
@@ -1175,7 +1177,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         degree = (360 - gyro.getHeading() + 45);
                     }
                     if (degree >= 180) degree = 179;
-                    TurnRightD(0.5, degree, true);
+                    TurnRightD(0.35, degree, true);
                     StraightIn(1.0, 46);
                     goBeacon(true);
                 } else { // blue
@@ -1188,7 +1190,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         degree = (float) (gyro.getHeading() + 49);
                     }
                     if (degree >= 180) degree = 179;
-                    TurnLeftD(0.5, degree, true);
+                    TurnLeftD(0.35, degree, true);
                     StraightIn(1.0, 50);
                     goBeacon(false);
                 }
@@ -1218,22 +1220,22 @@ public class TT_2016_Hardware extends LinearOpMode {
         sleep(7000);
         StraightIn(-0.5, 17);
         if (is_red) {
-            TurnLeftD(0.4, 30, true);
+            TurnLeftD(0.35, 30, true);
             StraightIn(-0.6, 6);
             goShooting(2, true, false);
-            TurnLeftD(0.4, 43, true);
+            TurnLeftD(0.35, 43, true);
         } else {
-            TurnRightD(0.4, 40, true);
+            TurnRightD(0.35, 40, true);
             StraightIn(-0.6, 6);
             goShooting(2, false, false);
-            TurnRightD(0.4, 40, true);
+            TurnRightD(0.35, 40, true);
         }
         StraightIn(-0.6, 50);
         if (is_red) {
-            TurnLeftD(0.4, 40, true);
+            TurnLeftD(0.35, 40, true);
             StraightIn(-0.5, 17);
         } else {
-            TurnRightD(0.4, 40, true);
+            TurnRightD(0.35, 40, true);
             StraightIn(-0.5, 15);
         }
     }
@@ -1252,7 +1254,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             if (first_beacon) {
                 //StraightIn(-0.5, 7);
                 sleep(400);
-                //TurnRightD(0.3,1,true);
+                //TurnRightD(0.35,1,true);
             } else {
 
             }
@@ -1260,7 +1262,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             if (first_beacon) {
                 //StraightIn(-0.5, 7);
                 sleep(400);
-                //TurnLeftD(0.3,1,true);
+                //TurnLeftD(0.35,1,true);
             } else {
 
             }
@@ -1279,12 +1281,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             sleep(2000);
 
 
-            set_gate(GATE_OPEN);
+            set_golf_gate(GOLF_GATE_OPEN);
             sleep(500);
-            set_gate(GATE_CLOSED);
+            set_golf_gate(GOLF_GATE_CLOSED);
             if (i == 0) push_ball();
         }
-        set_gate(GATE_CLOSED);
+        set_gate(GOLF_GATE_CLOSED);
         sleep(1000);
         shooter.setPower(0);
 
@@ -1294,27 +1296,27 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (is_in) {
             StraightIn(-0.6, 20);
             if (is_red) {
-                TurnRightD(0.5, 60, true);
-                TurnLeftD(0.5, 60, true);
+                TurnRightD(0.35, 60, true);
+                TurnLeftD(0.35, 60, true);
             } else {
-                TurnLeftD(0.5, 60, true);
-                TurnRightD(0.5, 60, true);
+                TurnLeftD(0.35, 60, true);
+                TurnRightD(0.35, 60, true);
             }
             StraightIn(-0.4, 7);
         } else { // out position
             StraightIn(-0.6, 5);
             if (is_red) {
-                TurnRightD(0.5, 45, true);
+                TurnRightD(0.35, 45, true);
             } else {
-                TurnLeftD(0.5, 45, true);
+                TurnLeftD(0.35, 45, true);
             }
             StraightIn(-0.6, 55);
             if (is_red) {
-                TurnRightD(0.5, 60, true);
-                TurnLeftD(0.5, 60, true);
+                TurnRightD(0.35, 60, true);
+                TurnLeftD(0.35, 60, true);
             } else {
-                TurnLeftD(0.5, 60, true);
-                TurnRightD(0.5, 60, true);
+                TurnLeftD(0.35, 60, true);
+                TurnRightD(0.35, 60, true);
             }
             StraightIn(-0.4, 7);
         }
@@ -1355,7 +1357,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = gyro.getHeading() + 45;
                 }
                 if (degree >= 180) degree = 179;
-                TurnLeftD(0.5, degree, true);
+                TurnLeftD(0.35, degree, true);
             } else { // blue
                 degree = 90;
                 if (use_navx) {
@@ -1366,7 +1368,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = (360 - gyro.getHeading() + 45);
                 }
                 if (degree >= 180) degree = 179;
-                TurnRightD(0.5, degree, true);
+                TurnRightD(0.35, degree, true);
             }
             //StraightIn(-0.5, 3);
         }
@@ -1378,7 +1380,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 5, is_red);
+            forwardTillUltra(11, 0.25, 6, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1440,10 +1442,10 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (opModeIsActive()) {
             if (use_ods) {
-                stopAtWhite(0.3);
+                stopAtWhite(0.2);
                 StraightIn(-0.5, 7.5);
             } else {
-                goUntilWall(0.3, distanceToWall);
+                goUntilWall(0.2, distanceToWall);
                 StraightIn(-0.5, 2.5);
             }
             shooter.setPower(0.5);
@@ -1459,7 +1461,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = gyro.getHeading() + 46;
                 }
                 if (degree >= 180) degree = 179;
-                TurnLeftD(0.5, degree, true);
+                TurnLeftD(0.35, degree, true);
             } else { // blue
                 degree = 90;
                 if (use_navx) {
@@ -1470,7 +1472,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = (360 - gyro.getHeading() + 46);
                 }
                 if (degree >= 180) degree = 179;
-                TurnRightD(0.5, degree, true);
+                TurnRightD(0.35, degree, true);
             }
 
             shooter.setPower(shooterPW);
@@ -1484,7 +1486,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 5, is_red);
+            forwardTillUltra(11, 0.25, 6, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1532,10 +1534,10 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             StraightIn(-1.0, 18);
             if(is_red){
-                TurnRightD(0.5, 1, true); // shoot towards center vortex
+                TurnRightD(0.35, 1, true); // shoot towards center vortex
             }
             else {
-                TurnRightD(0.5, 2, true);
+                TurnRightD(0.35, 2, true);
             }
             shooterPW = SH_power * 1.1;
             if (shooterPW > 1.0)
@@ -1543,7 +1545,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             shooter.setPower(shooterPW);
             //push_ball();
             //sleep(200);
-            set_gate(GATE_OPEN); // shooting first ball
+            set_golf_gate(GOLF_GATE_OPEN); // shooting first ball
             //sleep(500);
             //set_gate(GATE_CLOSED);
             if (shoot_twice && opModeIsActive()) {
@@ -1556,7 +1558,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 //sleep(500);
                 //set_gate(GATE_OPEN);
                 sleep(600);
-                set_gate(GATE_CLOSED);
+                set_golf_gate(GOLF_GATE_CLOSED);
             }
             shooter.setPower(0.0);
         }
