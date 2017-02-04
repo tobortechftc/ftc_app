@@ -292,7 +292,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
             if (gamepad2.right_trigger > 0.1) {
                 set_golf_gate(GOLF_GATE_OPEN);
-                sleep(100);
+                sleep(200);
                 set_golf_gate(GOLF_GATE_CLOSED);
                 //set_gate(GATE_OPEN);
                 //sleep(500);
@@ -318,10 +318,10 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (gamepad2.left_trigger > 0.1) {
                 push_ball();
                 set_gate(GATE_OPEN);
-                sleep(800);
+                sleep(500);
                 set_golf_gate(GOLF_GATE_OPEN);
                 sleep(100);
-                set_golf_gate(GATE_CLOSED);
+                set_golf_gate(GOLF_GATE_CLOSED);
             }
 
 

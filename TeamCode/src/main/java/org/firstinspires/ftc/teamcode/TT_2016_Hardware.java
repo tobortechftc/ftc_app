@@ -73,8 +73,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.84;
     final static double GATE_OPEN = 0.61;
-    final static double GOLF_GATE_CLOSED = 0.58;
-    final static double GOLF_GATE_OPEN = 0.34;
+    final static double GOLF_GATE_CLOSED = 0.54;
+    final static double GOLF_GATE_OPEN = 0.92;
     final static double SLIDER_GATE_OPEN = 0.001;
     final static double SLIDER_GATE_CLOSED = 0.5;
     final static double LIGHT_SENSOR_UP = 0.03;
@@ -103,8 +103,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     // digital port 5 (zero indexed).
     static final int LED_CHANNEL = 1;
 
-    //final static int ONE_ROTATION = 1120; // for AndyMark-40 motor encoder one rotation
-    final static int ONE_ROTATION = 1680; // for AndyMark-60 motor encoder one rotation
+    final static int ONE_ROTATION = 1120; // for AndyMark-40 motor encoder one rotation
+    // final static int ONE_ROTATION = 1680; // for AndyMark-60 motor encoder one rotation
     // final static double RROBOT = 11;  // number of wheel turns to get chassis 360-degree
     final static double RROBOT = 6.63;  // number of wheel turns to get chassis 360-degree turn
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio

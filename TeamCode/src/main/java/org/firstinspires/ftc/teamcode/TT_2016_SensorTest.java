@@ -97,7 +97,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             //telemetry.addData("1 navX-Device", connected ?
             //        "Connected" : "Disconnected" );
 
-            if ( connected ) {
+            if ( connected && use_navx) {
                 yaw = navx_device.getYaw();
             }
 
@@ -105,14 +105,14 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                 // if the A button is pushed on gamepad1, decrease the speed
                 // of the chassis
                 if (speedScale > 0.2) {
-                    speedScale -= 0.002;
+                    speedScale -= 0.005;
                     sleep(5);
                 }
             } else if (gamepad1.y) {
                 // if the Y button is pushed on gamepad1, increase the speed
                 // of the chassis
                 if (speedScale < 1) {
-                    speedScale += 0.002;
+                    speedScale += 0.005;
                     sleep(5);
                 }
             }
@@ -187,7 +187,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             // gamepad2 buttons
             //-----------------------------
 
-            if (true) { // tune-up serves
+            if (false) { // tune-up serves
                 if (gamepad2.dpad_left) {
                     if (gate_sv_pos > 0.005)
                         set_gate(gate_sv_pos - 0.005);
@@ -280,7 +280,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             red_acc += coSensor.red();
             blue_acc += coSensor.blue();
 
-            if (count == 10) {
+            if (count == 100) {
                 red_final = red_acc;
                 blue_final = blue_acc;
                 red_acc = 0;
@@ -295,7 +295,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
 
             //touch = (tSensor.isPressed()?1:0);
 
-            if (count%8==7)
+            if (count%50==0)
                 show_telemetry();
             if (false) {
                 // tel9emetry.addData("1. Red  cumu. / cur = ", red_final + String.format("/ %d", coSensor.red()));
