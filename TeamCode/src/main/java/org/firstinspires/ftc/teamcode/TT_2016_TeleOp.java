@@ -175,7 +175,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                     set_left_beacon(LEFT_BEACON_INIT);
                     set_right_beacon(RIGHT_BEACON_INIT);
                 }
-                cur_SH_power = (float) 0;
+                //cur_SH_power = (float) 0;
                 delay_count = 200;
                 sleep(5);
             } else if (gamepad1.x) { // sweeper forward
@@ -183,12 +183,14 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                     ;
                 } else if (SW_power < -0.1) {
                     SW_power = (float) 0.0;
+                    set_gate(GATE_CLOSED);
                 } else {
                     SW_power = (float) -1.0;
+                    set_gate(GATE_OPEN);
                     set_left_beacon(LEFT_BEACON_INIT);
                     set_right_beacon(RIGHT_BEACON_INIT);
                 }
-                cur_SH_power = (float) 0;
+                //cur_SH_power = (float) 0;
                 delay_count = 200;
                 sleep(5);
             }
@@ -213,19 +215,19 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 }
             }
 
-            if (gamepad1.right_trigger > 0.1) { // *reconfigure later*
+            if (gamepad2.right_trigger > 0.1) { // *reconfigure later*
                 set_right_beacon_side(RIGHT_BEACON_SIDE_PRESS);
                 sleep(300);
             }
-            if (gamepad1.right_bumper) { //
+            if (gamepad2.right_bumper) { //
                 set_right_beacon_side(RIGHT_BEACON_SIDE_DOWN);
             }
 
-            if (gamepad1.left_trigger > 0.1) { // left climber down
+            if (gamepad2.left_trigger > 0.1) { // left climber down
                 set_left_beacon_side(LEFT_BEACON_SIDE_PRESS);
                 sleep(300);
             }
-            if (gamepad1.left_bumper) { // left climber up
+            if (gamepad2.left_bumper) { // left climber up
                 set_left_beacon_side(LEFT_BEACON_SIDE_DOWN);
 
             }
@@ -290,7 +292,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (gamepad2.a) {
                 set_slider_gate(0.05);
             }
-            if (gamepad2.right_trigger > 0.1) {
+            if (gamepad1.right_trigger > 0.1) {
                 set_golf_gate(GOLF_GATE_OPEN);
                 sleep(200);
                 set_golf_gate(GOLF_GATE_CLOSED);
@@ -298,13 +300,13 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 //sleep(500);
                 //set_gate(GATE_CLOSED);
             }
-            if (gamepad2.right_bumper) {
+            if (gamepad1.right_bumper) {
                 if (golf_gate_sv_pos == GOLF_GATE_CLOSED) {
                     set_golf_gate(GOLF_GATE_OPEN);
                 } else {
                     set_golf_gate(GOLF_GATE_CLOSED);
                 }
-                if (false) {
+                if (true) {
                 } else if (gate_sv_pos == GATE_CLOSED) {
                     set_gate(GATE_OPEN);
                 } else {
@@ -312,15 +314,15 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 }
                 sleep(50);
             }
-            if (gamepad2.left_bumper) {
+            if (gamepad1.left_bumper) {
                 set_pusher(PUSHER_UP);
             }
-            if (gamepad2.left_trigger > 0.1) {
+            if (gamepad1.left_trigger > 0.1) {
                 push_ball();
-                set_gate(GATE_OPEN);
-                sleep(500);
+                //set_gate(GATE_OPEN);
+                sleep(550);
                 set_golf_gate(GOLF_GATE_OPEN);
-                sleep(100);
+                sleep(200);
                 set_golf_gate(GOLF_GATE_CLOSED);
             }
 

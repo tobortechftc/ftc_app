@@ -116,7 +116,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     sleep(5);
                 }
             }
-            if (false) {
+            if (true) {
                 if (gamepad1.dpad_down) {
                     if (light_sensor_sv_pos < 1)
                         set_light_sensor(light_sensor_sv_pos + 0.005);
@@ -187,7 +187,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             // gamepad2 buttons
             //-----------------------------
 
-            if (false) { // tune-up serves
+            if (true) { // tune-up serves
                 if (gamepad2.dpad_left) {
                     if (gate_sv_pos > 0.005)
                         set_gate(gate_sv_pos - 0.005);
