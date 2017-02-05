@@ -1227,7 +1227,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     public void auto_out_shooting(boolean is_red, boolean is_ball) throws InterruptedException {
         StraightIn(-0.4, 0.1);
         sleep(7000);
-        StraightIn(-0.5, 17);
+        StraightIn(-0.5, 15);
         if (is_red) {
             TurnLeftD(0.35, 30, true);
             StraightIn(-0.6, 6);
