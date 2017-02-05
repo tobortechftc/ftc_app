@@ -546,7 +546,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
 
-        sleep(300);
+        sleep(150);
     }
 
     public int mapHeading(int n) {
@@ -611,13 +611,13 @@ public class TT_2016_Hardware extends LinearOpMode {
         int rightTC1 = rightCnt;
         int leftTC2 = 0;
         int rightTC2 = 0;
-        if (leftPower > 0.4 && leftTC1 > 200) {
-            leftTC2 = 100;
-            leftTC1 -= 100;
+        if (leftPower > 0.4 && leftTC1 > 600) {
+            leftTC2 = 500;
+            leftTC1 -= 500;
         }
-        if (rightPower > 0.4 && rightTC1 > 200) {
-            rightTC2 = 100;
-            rightTC1 -= 100;
+        if (rightPower > 0.4 && rightTC1 > 600) {
+            rightTC2 = 500;
+            rightTC1 -= 500;
         }
         driveTT(leftPower, rightPower);
         initAutoOpTime = getRuntime();
@@ -627,9 +627,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             show_telemetry();
         }
         if (rightTC2 > 0 || leftTC2 > 0) {
-            driveTT(0.35, 0.35);
+            driveTT(0.2, 0.2);
             while (!have_drive_encoders_reached(leftTC2, rightTC2) && (getRuntime() - initAutoOpTime < 7) && opModeIsActive()) {
-                driveTT(0.35, 0.35);
+                driveTT(0.2, 0.2);
                 // show_telemetry();
             }
         }
@@ -862,11 +862,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         // power = 1.0 when vol =< 13.0
         //         0.70 when vol >= 14.0
         // when cur_vol is >13
-        //         power = 1.0 - 0.25 * (cur_vol - 13)
+        //         power = 1.0 - 0.3 * (cur_vol - 13)
         if (cur_vol < 13.0) {
             SH_power = 1.0;
         } else {
-            SH_power = ((1.0 - 0.25 * (cur_vol - 13))*1.0);
+            SH_power = ((1.0 - 0.3 * (cur_vol - 13))*1.0);
             if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
@@ -993,7 +993,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_right_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(200);
+        sleep(400);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
@@ -1010,7 +1010,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_left_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(200);
+        sleep(400);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -1134,7 +1134,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         set_right_beacon_side(RIGHT_BEACON_SIDE_DOWN);
 
         if (is_in) {
-            StraightIn(1.0, 42);
+            StraightIn(1.0, 46);
         } else {
             StraightIn(1.0, 91);
         }
@@ -1145,7 +1145,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             TurnLeftD(0.35, 38, true);
         }
-        StraightIn(0.75, 10);
+        StraightIn(0.75, 15);
 
 
         if (use_gyro) {
@@ -1193,6 +1193,15 @@ public class TT_2016_Hardware extends LinearOpMode {
                     TurnLeftD(0.35, degree, true);
                     StraightIn(1.0, 50);
                     goBeacon(false);
+                } if(is_hitting_ball){
+                    StraightIn(-0.75, 10);
+                    if(is_red){
+                        TurnRightD(0.4, 40, true);
+                    }
+                    else{
+                        TurnLeftD(0.35, 45, true);
+                    }
+                    StraightIn(-1.0, 60);
                 }
             } else if (is_hitting_ball) {
                 if (is_red) {
@@ -1338,26 +1347,26 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else if (use_ods && opModeIsActive()) {
             stopAtWhite(0.3);
             if (is_red)
-                StraightIn(-0.5, 7.5);
+                StraightIn(-0.5, 6);
             else {
-                StraightIn(-0.5, 8);
+                StraightIn(-0.5, 6.5);
             }
         }
         // Turn 90" toward beacon
         if (opModeIsActive()) {
-            float degree;
+            double degree;
             //sleep(200);
             if (is_red) {
                 degree = 85;
                 if (use_navx) {
-                    degree = navx_device.getYaw() + 45;
+                    degree = navx_device.getYaw() + 44.5;
                 } else if (use_ada_imu) {
-                    degree = (float) (45 - ada_imu_heading());
+                    degree = (float) (44.5 - ada_imu_heading());
                 } else if (use_gyro) {
-                    degree = gyro.getHeading() + 45;
+                    degree = gyro.getHeading() + 44;
                 }
                 if (degree >= 180) degree = 179;
-                TurnLeftD(0.35, degree, true);
+                TurnLeftD(0.35, (float) degree, true);
             } else { // blue
                 degree = 90;
                 if (use_navx) {
@@ -1368,7 +1377,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = (360 - gyro.getHeading() + 45);
                 }
                 if (degree >= 180) degree = 179;
-                TurnRightD(0.35, degree, true);
+                TurnRightD(0.35, (float) degree, true);
             }
             //StraightIn(-0.5, 3);
         }
@@ -1380,7 +1389,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 6, is_red);
+            forwardTillUltra(11, 0.25, 7, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1443,7 +1452,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             if (use_ods) {
                 stopAtWhite(0.2);
-                StraightIn(-0.5, 7.5);
+                StraightIn(-0.5, 5.5);
             } else {
                 goUntilWall(0.2, distanceToWall);
                 StraightIn(-0.5, 2.5);
@@ -1486,7 +1495,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 6, is_red);
+            forwardTillUltra(11, 0.25, 7, is_red);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1532,7 +1541,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         if (opModeIsActive()) {
-            StraightIn(-1.0, 18);
+            StraightIn(-0.75, 16);
             if(is_red){
                 TurnRightD(0.35, 1, true); // shoot towards center vortex
             }
