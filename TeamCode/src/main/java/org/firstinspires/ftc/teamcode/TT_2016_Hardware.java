@@ -1224,7 +1224,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         stop_tobot();
     }
 
-    public void auto_out_shooting(boolean is_red) throws InterruptedException {
+    public void auto_out_shooting(boolean is_red, boolean is_ball) throws InterruptedException {
         StraightIn(-0.4, 0.1);
         sleep(7000);
         StraightIn(-0.5, 17);
@@ -1234,18 +1234,30 @@ public class TT_2016_Hardware extends LinearOpMode {
             goShooting(2, true, false);
             TurnLeftD(0.35, 43, true);
         } else {
-            TurnRightD(0.35, 40, true);
+            TurnRightD(0.35, 37, true);
             StraightIn(-0.6, 6);
             goShooting(2, false, false);
-            TurnRightD(0.35, 40, true);
+            TurnRightD(0.35, 38, true);
         }
         StraightIn(-0.6, 50);
         if (is_red) {
             TurnLeftD(0.35, 40, true);
-            StraightIn(-0.5, 17);
+            if(is_ball) {
+                StraightIn(0.5, 38);
+                StraightIn(-0.5,40);
+            }
+            else{
+                StraightIn(-0.5, 17);
+            }
         } else {
             TurnRightD(0.35, 40, true);
-            StraightIn(-0.5, 15);
+            if (is_ball) {
+                StraightIn(0.5, 38);
+                StraightIn(-0.5, 40);
+            }
+            else {
+                StraightIn(-0.5, 15);
+            }
         }
     }
 

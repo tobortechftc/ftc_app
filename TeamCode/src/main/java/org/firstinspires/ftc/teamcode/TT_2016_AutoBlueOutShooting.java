@@ -56,7 +56,7 @@ public class TT_2016_AutoBlueOutShooting extends TT_2016_Hardware {
 
         waitForStart();
         if (opModeIsActive()) {
-            auto_out_shooting(false);
+            auto_out_shooting(false, false);
         }
 
         //  StraightR(0.5,0.1);
