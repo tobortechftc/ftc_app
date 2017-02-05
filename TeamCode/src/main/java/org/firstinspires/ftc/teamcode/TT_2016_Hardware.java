@@ -993,7 +993,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_right_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(400);
+        sleep(500);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
@@ -1010,7 +1010,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_left_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(400);
+        sleep(500);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -1165,7 +1165,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 if (opModeIsActive()) {
                     goBeaconAndShooting(true, is_red);
                 }
-                StraightIn(1.0, 11.5); //Go forward from shooting to return to the original position
+                StraightIn(1.0, 13.5); //Go forward from shooting to return to the original position
                 // turn parallel to beacon
                 if (is_red) {
                     float degree = 86;
@@ -1183,7 +1183,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (float) (navx_device.getYaw() + 49);
+                        degree = (navx_device.getYaw() + 49);
                     } else if (use_ada_imu) {
                         degree = (float) (49 - (int) ada_imu_heading());
                     } else if (use_gyro) {
@@ -1199,7 +1199,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         TurnRightD(0.4, 40, true);
                     }
                     else{
-                        TurnLeftD(0.35, 45, true);
+                        TurnLeftD(0.4, 45, true);
                     }
                     StraightIn(-1.0, 60);
                 }

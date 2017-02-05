@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * Linear Tele Op Mode
@@ -40,9 +39,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Enables control of the robot via the gamepad.
  * NOTE: This op mode will not work with the NXT Motor Controllers. Use an Nxt op mode instead.
  */
-@Autonomous(name="AutoRedOut", group="2016_Auto")
-@Disabled
-public class TT_2016_AutoRedOut extends TT_2016_Hardware {
+@Autonomous(name="AutoBlueInTwoBeaconsNoIMU", group="2016_Auto")
+public class TT_2016_AutoBlueInTwoBeaconsNoIMU extends TT_2016_Hardware {
     // CONSTANT VALUES.
     // CONSTANT VALUES.
 
@@ -54,16 +52,20 @@ public class TT_2016_AutoRedOut extends TT_2016_Hardware {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        use_navx = false;
+        use_ada_imu = false;
+
         tobot_init(State.STATE_AUTO);
 
         waitForStart();
+
         if (opModeIsActive()) {
-            auto_part1(true, false);
-        }
-        if (opModeIsActive()) {
-            auto_part2(true, false, false, false, true);
+            auto_part1(false, true);
         }
 
+        if (opModeIsActive()) {
+            auto_part2(false, true, true, true, false);
+        }
         //  StraightR(0.5,0.1);
         //  TurnRightD(0.5,90,true);
         //  StraightR(0.6,3.33);
