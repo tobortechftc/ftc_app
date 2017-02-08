@@ -1183,11 +1183,11 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (navx_device.getYaw() + 49);
+                        degree = (navx_device.getYaw() + 47);
                     } else if (use_ada_imu) {
-                        degree = (float) (49 - (int) ada_imu_heading());
+                        degree = (float) (47 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 49);
+                        degree = (float) (gyro.getHeading() + 47);
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
@@ -1196,10 +1196,10 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } if(is_hitting_ball){
                     StraightIn(-0.75, 10);
                     if(is_red){
-                        TurnRightD(0.4, 40, true);
+                        TurnRightD(0.6, 40, true);
                     }
                     else{
-                        TurnLeftD(0.4, 45, true);
+                        TurnLeftD(0.6, 45, true);
                     }
                     StraightIn(-1.0, 60);
                 }
