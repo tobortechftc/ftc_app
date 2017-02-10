@@ -110,8 +110,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     // final static double RROBOT = 11;  // number of wheel turns to get chassis 360-degree
     final static double RROBOT = 6.63;  // number of wheel turns to get chassis 360-degree turn
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
-    final static double GYRO_ROTATION_RATIO_L = 0.80; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
-    final static double GYRO_ROTATION_RATIO_R = 0.85; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
+    final static double GYRO_ROTATION_RATIO_L = 0.65; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
+    final static double GYRO_ROTATION_RATIO_R = 0.71; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     // variables for sensors
@@ -355,13 +355,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             double init_time = getRuntime();
             boolean navx_ok = false;
-            while (!navx_ok && (getRuntime() - init_time < 6)) { // wait for 6 sec to get connected
+            while (!navx_ok && (getRuntime() - init_time < 10)) { // wait for 6 sec to get connected
                 navx_ok = navx_device.isConnected();
                 idle();
             }
             if (navx_ok) {
                 boolean navx_cal = true;
-                while (navx_cal && (getRuntime() - init_time < 12)) { // wait for 12 sec to get calibration
+                while (navx_cal && (getRuntime() - init_time < 16)) { // wait for 12 sec to get calibration
                     navx_cal = navx_device.isCalibrating();
                     idle();
                 }
@@ -546,7 +546,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
 
-        sleep(150);
+        sleep(135);
     }
 
     public int mapHeading(int n) {
@@ -738,7 +738,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         driveTT(0, 0);
 
-        sleep(150);
+        sleep(135);
     }
 
     public void TurnRightD(double power, float degree, boolean spotTurn) throws InterruptedException {
@@ -836,7 +836,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         driveTT(0, 0);
-        sleep(150);
+        sleep(135);
     }
 
     void set_drive_modes(DcMotor.RunMode mode) {
@@ -993,7 +993,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_right_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(500);
+        sleep(530);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
@@ -1010,7 +1010,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void hit_left_button() throws InterruptedException {
         if (!opModeIsActive()) return;
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(500);
+        sleep(530);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -1145,7 +1145,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             TurnLeftD(0.35, 38, true);
         }
-        StraightIn(0.75, 15);
+        StraightIn(0.75, 14);
 
 
         if (use_gyro) {
@@ -1178,7 +1178,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     }
                     if (degree >= 180) degree = 179;
                     TurnRightD(0.35, degree, true);
-                    StraightIn(1.0, 46);
+                    StraightIn(1.0, 43);
                     goBeacon(true);
                 } else { // blue
                     float degree = 88;
@@ -1401,7 +1401,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 7, is_red);
+            forwardTillUltra(13, 0.25, 7, is_red);
+            sleep(100);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
@@ -1464,7 +1465,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             if (use_ods) {
                 stopAtWhite(0.2);
-                StraightIn(-0.5, 5.5);
+                StraightIn(-0.5, 5.25);
             } else {
                 goUntilWall(0.2, distanceToWall);
                 StraightIn(-0.5, 2.5);
@@ -1507,7 +1508,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(11, 0.25, 7, is_red);
+            forwardTillUltra(13, 0.25, 7, is_red);
+            sleep(100);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();

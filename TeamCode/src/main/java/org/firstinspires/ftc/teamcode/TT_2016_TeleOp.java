@@ -269,6 +269,14 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             } else {
                 linear_slider.setPower(0);
             }
+            if (true){
+                if (gamepad2.right_stick_button){
+                    TurnRightD(0.4, 90, true);
+                }
+                if (gamepad2.left_stick_button){
+                    TurnLeftD(0.4, 90, true);
+                }
+            }
 
             if (gamepad2.x) { // shooter on
                 adjustShooterPower();
