@@ -118,7 +118,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     sleep(5);
                 }
             }
-            if (true) {
+            if (false) {
                 if (gamepad1.dpad_down) {
                     if (light_sensor_sv_pos < 1)
                         set_light_sensor(light_sensor_sv_pos + 0.005);
@@ -150,9 +150,9 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     DbgLog.msg("MY_DEBUG - Beginning of Auto_Part 1 red in!");
                     auto_part1(true, true);
                 } else if (gamepad1.dpad_right) {
-                    TurnRightD(0.5, 90, true);
+                    TurnRightD(0.35, 90, true);
                 } else if (gamepad1.dpad_left) {
-                    TurnLeftD(0.5, 90, true);
+                    TurnLeftD(0.35, 90, true);
                 }
             }
 

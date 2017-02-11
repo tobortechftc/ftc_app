@@ -111,7 +111,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double RROBOT = 6.63;  // number of wheel turns to get chassis 360-degree turn
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
     final static double GYRO_ROTATION_RATIO_L = 0.65; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
-    final static double GYRO_ROTATION_RATIO_R = 0.71; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
+    final static double GYRO_ROTATION_RATIO_R = 0.65; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     // variables for sensors
@@ -414,7 +414,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             // calibrate the gyro.
             double init_time = getRuntime();
             gyro.calibrate();
-            while (!isStopRequested() && gyro.isCalibrating() && (getRuntime() - init_time < 6)) {
+            while (!isStopRequested() && gyro.isCalibrating() && (getRuntime() - init_time < 10)) {
                 sleep(50);
                 idle();
             }
@@ -1175,6 +1175,9 @@ public class TT_2016_Hardware extends LinearOpMode {
                         degree = (float) (360 + ada_imu_heading() + 46);
                     } else if (use_gyro) {
                         degree = (360 - gyro.getHeading() + 45);
+                    }
+                    if (degree < 45){
+                        degree = 86;
                     }
                     if (degree >= 180) degree = 179;
                     TurnRightD(0.35, degree, true);

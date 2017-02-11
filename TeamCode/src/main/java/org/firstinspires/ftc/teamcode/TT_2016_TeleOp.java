@@ -231,7 +231,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 set_left_beacon_side(LEFT_BEACON_SIDE_DOWN);
 
             }
-            if (false) {
+            if (true) {
                 // disable dpad
             } else if (gamepad1.dpad_down) { // both beacon pushers down
                 set_left_beacon(LEFT_BEACON_INIT);
