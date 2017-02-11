@@ -57,6 +57,8 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
     @Override
     public void runOpMode() throws InterruptedException {
         hardwareMap.logDevices();
+        use_navx = false;
+        use_ada_imu = false;
 
         tobot_init(State.STATE_TUNEUP);
 

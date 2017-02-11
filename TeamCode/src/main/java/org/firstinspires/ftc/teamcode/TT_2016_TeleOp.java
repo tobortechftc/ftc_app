@@ -196,8 +196,8 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             }
 
             // update the speed of the chassis, or stop tape slider
-            if (gamepad1.a && gamepad1.y) { // back = fix speedscale 0.5
-                speedScale = (float) 0.5;
+            if (gamepad1.a && gamepad1.y) { // back = fix speedscale 0.35
+                speedScale = (float) 0.35;
                 sleep(5);
             } else if (gamepad1.a) {
                 // if the A button is pushed on gamepad1, decrease the speed
