@@ -280,12 +280,12 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
 
             if (gamepad2.x) { // shooter on
                 adjustShooterPower();
-                SW_power = (float) 0;
+                //SW_power = (float) 0;
                 shooter.setPower(0.5);
                 cur_SH_power = (float) SH_power;
                 sleep(5);
             } else if (gamepad2.b) { // shooter off
-                SW_power = (float) 0;
+                //SW_power = (float) 0;
                 cur_SH_power = (float) 0;
                 set_golf_gate(GOLF_GATE_CLOSED);
             }

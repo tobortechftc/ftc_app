@@ -992,8 +992,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_right_button() throws InterruptedException {
         if (!opModeIsActive()) return;
+        StraightIn(-0.3,0.5);
         set_right_beacon(RIGHT_BEACON_PRESS);
-        sleep(530);
+        sleep(330);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
     }
@@ -1001,7 +1002,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     void bump_beacon() throws InterruptedException {
         if (!opModeIsActive()) return;
         driveTT(0.35, 0.35);
-        sleep(500);
+        sleep(550);
         driveTT(0, 0);
         if (!opModeIsActive()) return;
         StraightIn(-0.5, 3);
@@ -1009,8 +1010,9 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_left_button() throws InterruptedException {
         if (!opModeIsActive()) return;
+        StraightIn(-0.3,0.5);
         set_left_beacon(LEFT_BEACON_PRESS);
-        sleep(530);
+        sleep(330);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
     }
@@ -1181,7 +1183,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     }
                     if (degree >= 180) degree = 179;
                     TurnRightD(0.35, degree, true);
-                    StraightIn(1.0, 43);
+                    StraightIn(1.0, 41);
                     goBeacon(true);
                 } else { // blue
                     float degree = 88;
@@ -1194,15 +1196,15 @@ public class TT_2016_Hardware extends LinearOpMode {
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
-                    StraightIn(1.0, 50);
+                    StraightIn(1.0, 46);
                     goBeacon(false);
                 } if(is_hitting_ball){
                     StraightIn(-0.75, 10);
                     if(is_red){
-                        TurnRightD(0.6, 40, true);
+                        TurnRightD(0.6, 37, true);
                     }
                     else{
-                        TurnLeftD(0.6, 45, true);
+                        TurnLeftD(0.6, 33, true);
                     }
                     StraightIn(-1.0, 60);
                 }
@@ -1269,7 +1271,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         sleep(300);
         set_pusher(PUSHER_UP);
         set_pusher(PUSHER_DOWN_2);
-        sleep(700);
+        sleep(300);
         set_pusher(PUSHER_UP);
     }
 
@@ -1404,7 +1406,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (opModeIsActive()) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(13, 0.25, 7, is_red);
+            forwardTillUltra(12, 0.25, 7, is_red);
             sleep(100);
 
             // StraightIn(0.3, 1.0);
@@ -1501,6 +1503,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
 
             shooter.setPower(shooterPW);
+            set_pusher(PUSHER_DOWN_1);
             //StraightIn(-0.5, 3);
         }
         // sleep(200);
@@ -1511,7 +1514,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (true) {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(13, 0.25, 7, is_red);
+            forwardTillUltra(12, 0.25, 7, is_red);
             sleep(100);
 
             // StraightIn(0.3, 1.0);
@@ -1558,14 +1561,14 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         if (opModeIsActive()) {
-            StraightIn(-0.75, 16);
+            StraightIn(-0.75, 14);
             if(is_red){
                 TurnRightD(0.35, 1, true); // shoot towards center vortex
             }
             else {
                 TurnRightD(0.35, 2, true);
             }
-            shooterPW = SH_power * 1.1;
+            shooterPW = SH_power;
             if (shooterPW > 1.0)
                 shooterPW = 1.0;
             shooter.setPower(shooterPW);
@@ -1575,15 +1578,17 @@ public class TT_2016_Hardware extends LinearOpMode {
             //sleep(500);
             //set_gate(GATE_CLOSED);
             if (shoot_twice && opModeIsActive()) {
-                sleep(600);
-                shooterPW = SH_power * 1.1;
+                sleep(300);
+                set_golf_gate(GOLF_GATE_CLOSED);
+                shooterPW = SH_power;
                 if (shooterPW > 1.0)
                     shooterPW = 1.0;
                 shooter.setPower(shooterPW);
                 push_ball();
+                set_golf_gate(GOLF_GATE_OPEN);
                 //sleep(500);
                 //set_gate(GATE_OPEN);
-                sleep(600);
+                sleep(300);
                 set_golf_gate(GOLF_GATE_CLOSED);
             }
             shooter.setPower(0.0);

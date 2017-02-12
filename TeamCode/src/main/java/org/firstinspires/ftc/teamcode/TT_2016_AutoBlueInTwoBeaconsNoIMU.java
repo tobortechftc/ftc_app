@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Enables control of the robot via the gamepad.
  * NOTE: This op mode will not work with the NXT Motor Controllers. Use an Nxt op mode instead.
  */
-@Autonomous(name="AutoBlueInTwoBeaconsNoIMU", group="2016_Auto")
+@Autonomous(name="AutoBlueInTwoBeaconsNoNavX", group="2016_Auto")
 public class TT_2016_AutoBlueInTwoBeaconsNoIMU extends TT_2016_Hardware {
     // CONSTANT VALUES.
     // CONSTANT VALUES.
@@ -53,7 +53,7 @@ public class TT_2016_AutoBlueInTwoBeaconsNoIMU extends TT_2016_Hardware {
     public void runOpMode() throws InterruptedException {
 
         use_navx = false;
-        use_ada_imu = false;
+        //use_ada_imu = false;
 
         tobot_init(State.STATE_AUTO);
 
