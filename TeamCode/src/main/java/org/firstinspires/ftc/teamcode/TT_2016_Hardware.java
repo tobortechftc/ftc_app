@@ -136,8 +136,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     double gate_sv_pos = 0;
     double golf_gate_sv_pos = 0;
     double pusher_sv_pos = 0;
-    double left_beacon_side_sv_pos = 0;
-    double right_beacon_side_sv_pos = 0;
+    //double left_beacon_side_sv_pos = 0;
+    //double right_beacon_side_sv_pos = 0;
     // amount to change the claw servo position by
     double slider_gate_sv_pos = 0;
     Boolean blue_detected = false;
@@ -193,8 +193,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     Servo gate_sv;
     Servo golf_gate_sv;
     Servo pusher_sv;
-    Servo left_beacon_side_sv;
-    Servo right_beacon_side_sv;
+    //Servo left_beacon_side_sv;
+    //Servo right_beacon_side_sv;
     Servo slider_gate_sv;
     int motorRightCurrentEncoder = 0;
     int motorLeftCurrentEncoder = 0;
@@ -241,8 +241,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         //light_sensor_sv = init_servo("light_sensor_sv");
         left_beacon_sv = init_servo("left_beacon_sv");
         right_beacon_sv = init_servo("right_beacon_sv");
-        left_beacon_side_sv = init_servo("left_beacon_side_sv");
-        right_beacon_side_sv = init_servo("right_beacon_side_sv");
+        //left_beacon_side_sv = init_servo("left_beacon_side_sv");
+       // right_beacon_side_sv = init_servo("right_beacon_side_sv");
         gate_sv = init_servo("gate_sv");
         golf_gate_sv = init_servo("golf_sv");
         pusher_sv = init_servo("pusher_sv");
@@ -251,8 +251,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         //set_light_sensor(LIGHT_SENSOR_DOWN);
         set_left_beacon(LEFT_BEACON_INIT);
         set_right_beacon(RIGHT_BEACON_INIT);
-        set_left_beacon_side(LEFT_BEACON_SIDE_INIT);
-        set_right_beacon_side(RIGHT_BEACON_SIDE_INIT);
         set_gate(GATE_CLOSED);
         set_golf_gate(GOLF_GATE_CLOSED);
         set_pusher(PUSHER_UP);
@@ -497,7 +495,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             telemetry.addData("8. drive power: L=", String.format("%.2f", leftPower) + "/R=" + String.format("%.2f", rightPower));
             telemetry.addData("9. gate/pusher/golf= ", String.format("%.2f/%.2f/%.2f", gate_sv_pos, pusher_sv_pos, golf_gate_sv_pos));
 
-            telemetry.addData("10. sv ls/l_b/r_b/l_b_s/r_b_s  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos, left_beacon_side_sv_pos, right_beacon_side_sv_pos));
+            //telemetry.addData("10. sv ls/l_b/r_b  = ", String.format("%.2f / %.2f / %.2f", light_sensor_sv_pos, left_beacon_sv_pos, right_beacon_sv_pos));
 
             if (use_light) {
                 telemetry.addData("11. light_s Raw/Norm", String.format("%.2f / %.2f",
@@ -873,6 +871,53 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
     }
 
+    void shootBallGateGolf() {
+        set_gate(GATE_OPEN);
+        sleep(500);
+        set_gate(GATE_CLOSED);
+        set_golf_gate(GOLF_GATE_OPEN);
+        sleep(400);
+        set_golf_gate(GOLF_GATE_CLOSED);
+
+    }
+    void shootBallGolfGate(){
+        set_golf_gate(GOLF_GATE_OPEN);
+        set_gate(GATE_OPEN);
+        set_pusher(PUSHER_DOWN_1);
+        sleep(400);
+        set_golf_gate(GOLF_GATE_CLOSED);
+        set_pusher(PUSHER_DOWN_2);
+        sleep(300);
+        set_gate(GATE_CLOSED);
+        set_pusher(PUSHER_UP);
+    }
+
+    void shootAuto(boolean shoot_twice, double shooterPW){
+        if (shooterPW > 1.0)
+            shooterPW = 1.0;
+        shooter.setPower(shooterPW);
+        //push_ball();
+        //sleep(200);
+        shootBallGolfGate();
+        //sleep(500);
+        //set_gate(GATE_CLOSED);
+        if (shoot_twice && opModeIsActive()) {
+            sleep(300);
+            shooterPW = SH_power;
+            if (shooterPW > 1.0)
+                shooterPW = 1.0;
+            shooter.setPower(shooterPW);
+            //push_ball();
+
+            //sleep(500);
+            set_golf_gate(GOLF_GATE_OPEN);
+            sleep(400);
+            set_golf_gate(GOLF_GATE_CLOSED);
+        }
+        shooter.setPower(0.0);
+    }
+
+
     // Computes the current battery voltage from ConceptTelemetry.java
     double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
@@ -1059,11 +1104,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         slider_gate_sv.setPosition(slider_gate_sv_pos);
     }
 
-    public void set_pusher(double pos) {
-        pusher_sv_pos = pos;
-        pusher_sv.setPosition(pusher_sv_pos);
-    }
-
     public void set_left_beacon(double pos) {
         left_beacon_sv_pos = pos;
         left_beacon_sv.setPosition(left_beacon_sv_pos);
@@ -1074,14 +1114,9 @@ public class TT_2016_Hardware extends LinearOpMode {
         right_beacon_sv.setPosition(right_beacon_sv_pos);
     }
 
-    public void set_left_beacon_side(double pos) {
-        left_beacon_side_sv_pos = pos;
-        left_beacon_side_sv.setPosition(left_beacon_side_sv_pos);
-    }
-
-    public void set_right_beacon_side(double pos) {
-        right_beacon_side_sv_pos = pos;
-        right_beacon_side_sv.setPosition(right_beacon_side_sv_pos);
+    public void set_pusher(double pos) {
+        pusher_sv_pos = pos;
+        pusher_sv.setPosition(pusher_sv_pos);
     }
 
     public void stopAtWhite(double power) throws InterruptedException {
@@ -1119,6 +1154,8 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void auto_part1(boolean is_red, boolean is_in) throws InterruptedException {
 
+        set_pusher(PUSHER_DOWN_1);
+
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
                     gyro.getHeading(), leftPower, rightPower));
@@ -1133,7 +1170,6 @@ public class TT_2016_Hardware extends LinearOpMode {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
                     gyro.getHeading(), leftPower, rightPower));
         }
-        set_right_beacon_side(RIGHT_BEACON_SIDE_DOWN);
 
         if (is_in) {
             StraightIn(1.0, 46);
@@ -1266,15 +1302,6 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
     }
 
-    public void push_ball() {
-        set_pusher(PUSHER_DOWN_1);
-        sleep(300);
-        set_pusher(PUSHER_UP);
-        set_pusher(PUSHER_DOWN_2);
-        sleep(300);
-        set_pusher(PUSHER_UP);
-    }
-
     public void goShooting(int times, boolean is_red, boolean first_beacon) throws InterruptedException {
         if (is_red) {
             if (first_beacon) {
@@ -1307,13 +1334,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             sleep(2000);
 
 
-            set_golf_gate(GOLF_GATE_OPEN);
-            sleep(500);
-            set_golf_gate(GOLF_GATE_CLOSED);
-            if (i == 0) push_ball();
+            shootBallGolfGate();
+
         }
-        set_gate(GOLF_GATE_CLOSED);
-        sleep(1000);
         shooter.setPower(0);
 
     }
@@ -1492,18 +1515,18 @@ public class TT_2016_Hardware extends LinearOpMode {
             } else { // blue
                 degree = 90;
                 if (use_navx) {
-                    degree = (46 - navx_device.getYaw());
+                    degree = (45 - navx_device.getYaw());
                 } else if (use_ada_imu) {
-                    degree = (float) (360 + ada_imu_heading() + 46);
+                    degree = (float) (360 + ada_imu_heading() + 45);
                 } else if (use_gyro) {
-                    degree = (360 - gyro.getHeading() + 46);
+                    degree = (360 - gyro.getHeading() + 45);
                 }
                 if (degree >= 180) degree = 179;
                 TurnRightD(0.35, degree, true);
             }
 
             shooter.setPower(shooterPW);
-            set_pusher(PUSHER_DOWN_1);
+            //set_pusher(PUSHER_DOWN_1);
             //StraightIn(-0.5, 3);
         }
         // sleep(200);
@@ -1568,30 +1591,8 @@ public class TT_2016_Hardware extends LinearOpMode {
             else {
                 TurnRightD(0.35, 2, true);
             }
-            shooterPW = SH_power;
-            if (shooterPW > 1.0)
-                shooterPW = 1.0;
-            shooter.setPower(shooterPW);
-            //push_ball();
-            //sleep(200);
-            set_golf_gate(GOLF_GATE_OPEN); // shooting first ball
-            //sleep(500);
-            //set_gate(GATE_CLOSED);
-            if (shoot_twice && opModeIsActive()) {
-                sleep(300);
-                set_golf_gate(GOLF_GATE_CLOSED);
-                shooterPW = SH_power;
-                if (shooterPW > 1.0)
-                    shooterPW = 1.0;
-                shooter.setPower(shooterPW);
-                push_ball();
-                set_golf_gate(GOLF_GATE_OPEN);
-                //sleep(500);
-                //set_gate(GATE_OPEN);
-                sleep(300);
-                set_golf_gate(GOLF_GATE_CLOSED);
-            }
-            shooter.setPower(0.0);
+
+            shootAuto(shoot_twice, shooterPW);
         }
     }
 
