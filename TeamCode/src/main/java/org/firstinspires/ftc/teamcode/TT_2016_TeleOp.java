@@ -309,7 +309,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 }
                 if (true) {
                 } else if (gate_sv_pos == GATE_CLOSED) {
-                    set_gate(GATE_OPEN);
+                    set_gate(GATE_OPEN_SWEEPER_CLOSED);
                 } else {
                     set_gate(GATE_CLOSED);
                 }

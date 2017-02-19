@@ -71,7 +71,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_UP1 = 0.75;
     final static double PUSHER_DOWN_2 = 0.48;
     final static double PUSHER_EXTRA = 0.1;
-    final static double GATE_CLOSED = 0.3;
+    final static double GATE_CLOSED = 0.1;
+    final static double GATE_OPEN_SWEEPER_CLOSED = 0.4;
     final static double GATE_OPEN = 0.9;
     final static double GOLF_GATE_CLOSED = 0.54;
     final static double GOLF_GATE_OPEN = 0.92;
@@ -872,7 +873,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     void shootBallGateGolf() {
-        set_gate(GATE_OPEN);
+        set_gate(GATE_OPEN_SWEEPER_CLOSED);
         sleep(500);
         set_gate(GATE_CLOSED);
         set_golf_gate(GOLF_GATE_OPEN);
@@ -882,7 +883,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
     void shootBallGolfGate(){
         set_golf_gate(GOLF_GATE_OPEN);
-        set_gate(GATE_OPEN);
+        set_gate(GATE_OPEN_SWEEPER_CLOSED);
         set_pusher(PUSHER_DOWN_1);
         sleep(400);
         set_golf_gate(GOLF_GATE_CLOSED);
