@@ -67,9 +67,9 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
     final static double PUSHER_UP = 0.83;
-    final static double PUSHER_DOWN_1 = 0.61;
+    final static double PUSHER_DOWN_1 = 0.45;
     final static double PUSHER_UP1 = 0.75;
-    final static double PUSHER_DOWN_2 = 0.48;
+    final static double PUSHER_DOWN_2 = 0.3;
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.1;
     final static double GATE_OPEN_SWEEPER_CLOSED = 0.4;
@@ -237,6 +237,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (st==State.STATE_TELEOP) { // disable IMU initialization
             use_navx = false;
             use_ada_imu = false;
+            use_gyro = false;
         }
 
         //light_sensor_sv = init_servo("light_sensor_sv");
@@ -883,11 +884,12 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
     void shootBallGolfGate(){
         set_golf_gate(GOLF_GATE_OPEN);
-        set_gate(GATE_OPEN_SWEEPER_CLOSED);
         set_pusher(PUSHER_DOWN_1);
-        sleep(400);
-        set_golf_gate(GOLF_GATE_CLOSED);
+        set_gate(GATE_OPEN_SWEEPER_CLOSED);
+        sleep(300);
         set_pusher(PUSHER_DOWN_2);
+        sleep(100);
+        set_golf_gate(GOLF_GATE_CLOSED);
         sleep(300);
         set_gate(GATE_CLOSED);
         set_pusher(PUSHER_UP);
@@ -898,12 +900,12 @@ public class TT_2016_Hardware extends LinearOpMode {
             shooterPW = 1.0;
         shooter.setPower(shooterPW);
         //push_ball();
-        //sleep(200);
+        sleep(200);
         shootBallGolfGate();
         //sleep(500);
         //set_gate(GATE_CLOSED);
         if (shoot_twice && opModeIsActive()) {
-            sleep(300);
+            sleep(500);
             shooterPW = SH_power;
             if (shooterPW > 1.0)
                 shooterPW = 1.0;
@@ -1211,7 +1213,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     if (use_navx) {
                         degree = 45 - (navx_device.getYaw());
                     } else if (use_ada_imu) {
-                        degree = (float) (360 + ada_imu_heading() + 46);
+                        degree = (float) (360 + ada_imu_heading() + 45);
                     } else if (use_gyro) {
                         degree = (360 - gyro.getHeading() + 45);
                     }
@@ -1267,17 +1269,18 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     public void auto_out_shooting(boolean is_red, boolean is_ball) throws InterruptedException {
-        StraightIn(-0.4, 0.1);
-        sleep(7000);
+
         StraightIn(-0.5, 15);
         if (is_red) {
-            TurnLeftD(0.35, 30, true);
-            StraightIn(-0.6, 6);
+            TurnLeftD(0.35, 28, true);
+            StraightIn(-0.6, 8);
+            sleep(7000);
             goShooting(2, true, false);
-            TurnLeftD(0.35, 43, true);
+            TurnLeftD(0.35, 45, true);
         } else {
             TurnRightD(0.35, 37, true);
-            StraightIn(-0.6, 6);
+            StraightIn(-0.6, 8);
+            sleep(7000);
             goShooting(2, false, false);
             TurnRightD(0.35, 38, true);
         }
@@ -1286,7 +1289,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             TurnLeftD(0.35, 40, true);
             if(is_ball) {
                 StraightIn(0.5, 38);
-                StraightIn(-0.5,40);
+                StraightIn(-0.5,38);
             }
             else{
                 StraightIn(-0.5, 17);
@@ -1295,7 +1298,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             TurnRightD(0.35, 40, true);
             if (is_ball) {
                 StraightIn(0.5, 38);
-                StraightIn(-0.5, 40);
+                StraightIn(-0.5, 38);
             }
             else {
                 StraightIn(-0.5, 15);
@@ -1321,23 +1324,28 @@ public class TT_2016_Hardware extends LinearOpMode {
 
             }
         }
-        for (int i = 0; i < times; i++) {
 
-            if (i == 0) {
-                shooter.setPower(0.5);
-                sleep(100);
-            }
+            shooter.setPower(0.5);
+            sleep(100);
+
             if (SH_power * 1.1 < 1.0) {
                 shooter.setPower(SH_power * 1.1);
             } else {
                 shooter.setPower(1.0);
             }
-            sleep(2000);
+            sleep(1000);
 
 
             shootBallGolfGate();
 
+        if(times == 2){
+            sleep(1000);
+            set_golf_gate(GOLF_GATE_OPEN);
+            sleep(400);
+            set_golf_gate(GOLF_GATE_CLOSED);
         }
+
+
         shooter.setPower(0);
 
     }
