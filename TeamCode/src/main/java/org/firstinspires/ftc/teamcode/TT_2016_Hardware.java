@@ -69,7 +69,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double PUSHER_UP = 0.83;
     final static double PUSHER_DOWN_1 = 0.45;
     final static double PUSHER_UP1 = 0.75;
-    final static double PUSHER_DOWN_2 = 0.3;
+    final static double PUSHER_DOWN_2 = 0.35;
     final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.1;
     final static double GATE_OPEN_SWEEPER_CLOSED = 0.4;

@@ -180,6 +180,9 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                     ;
                 } else if (SW_power > 0.1) {
                     SW_power = (float) 0.0;
+                    set_gate(GATE_OPEN_SWEEPER_CLOSED);
+                    set_pusher(PUSHER_DOWN_2);
+                    sleep(400);
                     set_gate(GATE_CLOSED);
                 } else {
                     SW_power = (float) 1.0;

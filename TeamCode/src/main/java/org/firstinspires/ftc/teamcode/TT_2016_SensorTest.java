@@ -57,8 +57,8 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
     @Override
     public void runOpMode() throws InterruptedException {
         hardwareMap.logDevices();
-        use_navx = false;
-        use_ada_imu = false;
+        use_navx = true;
+        use_ada_imu = true;
 
         tobot_init(State.STATE_TUNEUP);
 
@@ -189,7 +189,7 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
             // gamepad2 buttons
             //-----------------------------
 
-            if (true) { // tune-up serves
+            if (false) { // tune-up serves
                 if (gamepad2.dpad_left) {
                     if (gate_sv_pos > 0.005)
                         set_gate(gate_sv_pos - 0.005);
@@ -218,13 +218,13 @@ public class TT_2016_SensorTest extends TT_2016_Hardware {
                     goBeacon(false);
                 }
                 if (gamepad2.dpad_up) {
-                    StraightIn(1.0, 60);
+                    StraightIn(1.0, 70);
                 }
                 if (gamepad2.dpad_down) {
                     //StraightIn(0.5,30);
                     //TurnRightD(0.5,45,true);
                     //StraightIn(0.5,30);
-                    StraightIn(-1.0, 60);
+                    StraightIn(-1.0, 70);
                 }
             }
             if (gamepad2.left_bumper){
