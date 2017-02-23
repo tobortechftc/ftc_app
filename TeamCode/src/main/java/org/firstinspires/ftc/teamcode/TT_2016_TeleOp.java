@@ -184,6 +184,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                     set_pusher(PUSHER_DOWN_2);
                     sleep(400);
                     set_gate(GATE_CLOSED);
+                    set_pusher(PUSHER_UP);
                 } else {
                     SW_power = (float) 1.0;
                     set_gate(GATE_OPEN);

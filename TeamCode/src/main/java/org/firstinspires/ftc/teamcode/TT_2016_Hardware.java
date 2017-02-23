@@ -66,13 +66,16 @@ public class TT_2016_Hardware extends LinearOpMode {
     // CONSTANT VALUES.
     final static double THRESHOLD = 0.1;
     final static double SERVO_SCALE = 0.001;
-    final static double PUSHER_UP = 0.83;
-    final static double PUSHER_DOWN_1 = 0.45;
-    final static double PUSHER_UP1 = 0.75;
-    final static double PUSHER_DOWN_2 = 0.35;
-    final static double PUSHER_EXTRA = 0.1;
-    final static double GATE_CLOSED = 0.1;
-    final static double GATE_OPEN_SWEEPER_CLOSED = 0.4;
+    final static double PUSHER_UP = 0.1;
+    final static double PUSHER_DOWN_1 = 0.3;
+    final static double PUSHER_DOWN_2 = 0.4;
+    //final static double PUSHER_UP = 0.89;
+    //final static double PUSHER_DOWN_1 = 0.55;
+    //final static double PUSHER_UP1 = 0.75;
+    //final static double PUSHER_DOWN_2 = 0.4;
+    //final static double PUSHER_EXTRA = 0.1;
+    final static double GATE_CLOSED = 0.3;
+    final static double GATE_OPEN_SWEEPER_CLOSED = 0.5;
     final static double GATE_OPEN = 0.9;
     final static double GOLF_GATE_CLOSED = 0.54;
     final static double GOLF_GATE_OPEN = 0.92;
@@ -81,7 +84,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LIGHT_SENSOR_UP = 0.03;
     final static double LIGHT_SENSOR_DOWN = 0.5;
     final static double LEFT_BEACON_PRESS = 0.50;
-    final static double LEFT_BEACON_INIT = 0.17;
+    final static double LEFT_BEACON_INIT = 0.12;
     final static double RIGHT_BEACON_PRESS = 0.43;
     final static double RIGHT_BEACON_INIT = 0.69;
     final static double LEFT_BEACON_SIDE_DOWN = 0.15;
@@ -175,6 +178,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     Boolean use_adacolor = false;
     Boolean use_light = false;
     Boolean use_ods = true;
+    Boolean fast_mode = false;
     Boolean shooting_range = false;
     float speedScale = (float) 0.7; // controlling the speed of the chassis in teleOp state
     float leftPower = 0;
@@ -546,7 +550,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         run_until_encoder(leftCnt, leftPower, rightCnt, rightPower);
 
-        sleep(135);
+        if (!fast_mode)
+            sleep(135);
     }
 
     public int mapHeading(int n) {
@@ -738,7 +743,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
         driveTT(0, 0);
 
-        sleep(135);
+        if (!fast_mode)
+            sleep(135);
     }
 
     public void TurnRightD(double power, float degree, boolean spotTurn) throws InterruptedException {
@@ -836,7 +842,8 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         }
         driveTT(0, 0);
-        sleep(135);
+        if (!fast_mode)
+           sleep(135);
     }
 
     void set_drive_modes(DcMotor.RunMode mode) {
@@ -859,14 +866,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void adjustShooterPower() {
         double cur_vol = getBatteryVoltage();
-        // power = 1.0 when vol =< 13.0
-        //         0.70 when vol >= 14.0
-        // when cur_vol is >13
-        //         power = 1.0 - 0.3 * (cur_vol - 13)
-        if (cur_vol < 13.0) {
+        // power = 1.0 when vol < full_power_vol
+        //
+        // when cur_vol is >= full_power_vol
+        //         power = 1.0 - 0.31 * (cur_vol - full_power_val)
+        double full_power_vol = 12.8;
+        if (cur_vol < full_power_vol) {
             SH_power = 1.0;
         } else {
-            SH_power = ((1.0 - 0.3 * (cur_vol - 13))*1.0);
+            SH_power = ((1.0 - 0.31 * (cur_vol - full_power_vol))*1.0);
             if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
@@ -874,47 +882,52 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     void shootBallGateGolf() {
-        set_gate(GATE_OPEN_SWEEPER_CLOSED);
-        sleep(500);
-        set_gate(GATE_CLOSED);
         set_golf_gate(GOLF_GATE_OPEN);
-        sleep(400);
+        // set_pusher(PUSHER_DOWN_1);
+        sleep(300);
         set_golf_gate(GOLF_GATE_CLOSED);
-
+        set_gate(GATE_OPEN_SWEEPER_CLOSED);
+        set_pusher(PUSHER_DOWN_2);
+        sleep(300);
+        set_gate(GATE_CLOSED);
+        set_pusher(PUSHER_UP);
     }
     void shootBallGolfGate(){
         set_golf_gate(GOLF_GATE_OPEN);
-        set_pusher(PUSHER_DOWN_1);
-        set_gate(GATE_OPEN_SWEEPER_CLOSED);
+        //set_pusher(PUSHER_DOWN_1);
         sleep(300);
-        set_pusher(PUSHER_DOWN_2);
-        sleep(100);
         set_golf_gate(GOLF_GATE_CLOSED);
-        sleep(300);
+        set_gate(GATE_OPEN_SWEEPER_CLOSED);
+        set_pusher(PUSHER_DOWN_2);
+        sleep(250);
+        set_pusher(PUSHER_DOWN_1);
+        sleep(250);
+        set_pusher(PUSHER_DOWN_2);
         set_gate(GATE_CLOSED);
         set_pusher(PUSHER_UP);
     }
 
     void shootAuto(boolean shoot_twice, double shooterPW){
+        shooterPW *= 1.1;
         if (shooterPW > 1.0)
             shooterPW = 1.0;
         shooter.setPower(shooterPW);
         //push_ball();
         sleep(200);
-        shootBallGolfGate();
+        shootBallGateGolf();
+        //shootBallGolfGate();
         //sleep(500);
         //set_gate(GATE_CLOSED);
         if (shoot_twice && opModeIsActive()) {
-            sleep(500);
-            shooterPW = SH_power;
+            shooterPW = SH_power * 1.1;
             if (shooterPW > 1.0)
                 shooterPW = 1.0;
             shooter.setPower(shooterPW);
             //push_ball();
 
-            //sleep(500);
+            sleep(500);
             set_golf_gate(GOLF_GATE_OPEN);
-            sleep(400);
+            sleep(300);
             set_golf_gate(GOLF_GATE_CLOSED);
         }
         shooter.setPower(0.0);
@@ -1238,7 +1251,8 @@ public class TT_2016_Hardware extends LinearOpMode {
                     StraightIn(1.0, 46);
                     goBeacon(false);
                 } if(is_hitting_ball){
-                    StraightIn(-0.75, 10);
+                    fast_mode = true;
+                    StraightIn(-1, 10);
                     if(is_red){
                         TurnRightD(0.6, 37, true);
                     }
@@ -1246,6 +1260,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         TurnLeftD(0.6, 33, true);
                     }
                     StraightIn(-1.0, 60);
+                    fast_mode = false;
                 }
             } else if (is_hitting_ball) {
                 if (is_red) {
