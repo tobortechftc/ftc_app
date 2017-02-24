@@ -116,7 +116,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double INCHES_PER_ROTATION = 12.57; // inches per chassis motor rotation based on 16/24 gear ratio
     final static double GYRO_ROTATION_RATIO_L = 0.65; // 0.83; // Ratio of Gyro Sensor Left turn to prevent overshooting the turn.
     final static double GYRO_ROTATION_RATIO_R = 0.65; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
-    final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
+    final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Left turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
     // variables for sensors
       /* This is the port on the Core Device Interace Module */
@@ -870,7 +870,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         //
         // when cur_vol is >= full_power_vol
         //         power = 1.0 - 0.31 * (cur_vol - full_power_val)
-        double full_power_vol = 12.8;
+        double full_power_vol = 13.0;
         if (cur_vol < full_power_vol) {
             SH_power = 1.0;
         } else {
@@ -1199,7 +1199,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             TurnLeftD(0.35, 38, true);
         }
-        StraightIn(0.75, 14);
+        StraightIn(0.75, 16);
 
 
         if (use_gyro) {
@@ -1224,27 +1224,27 @@ public class TT_2016_Hardware extends LinearOpMode {
                 if (is_red) {
                     float degree = 86;
                     if (use_navx) {
-                        degree = 45 - (navx_device.getYaw());
+                        degree = (float) (45.5 - navx_device.getYaw());
                     } else if (use_ada_imu) {
-                        degree = (float) (360 + ada_imu_heading() + 45);
+                        degree = (float) (360 + ada_imu_heading() + 45.5);
                     } else if (use_gyro) {
-                        degree = (360 - gyro.getHeading() + 45);
+                        degree = (float) (360 - gyro.getHeading() + 45.5);
                     }
                     if (degree < 45){
                         degree = 86;
                     }
                     if (degree >= 180) degree = 179;
                     TurnRightD(0.35, degree, true);
-                    StraightIn(1.0, 41);
+                    StraightIn(1.0, 44);
                     goBeacon(true);
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (navx_device.getYaw() + 47);
+                        degree = (navx_device.getYaw() + 46);
                     } else if (use_ada_imu) {
-                        degree = (float) (47 - (int) ada_imu_heading());
+                        degree = (float) (46 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 47);
+                        degree = (float) (gyro.getHeading() + 46);
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
@@ -1285,21 +1285,19 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void auto_out_shooting(boolean is_red, boolean is_ball) throws InterruptedException {
 
-        StraightIn(-0.5, 15);
+        StraightIn(-0.5, 40);
         if (is_red) {
-            TurnLeftD(0.35, 28, true);
-            StraightIn(-0.6, 8);
+
             sleep(7000);
             goShooting(2, true, false);
             TurnLeftD(0.35, 45, true);
         } else {
-            TurnRightD(0.35, 37, true);
-            StraightIn(-0.6, 8);
+
             sleep(7000);
             goShooting(2, false, false);
             TurnRightD(0.35, 38, true);
         }
-        StraightIn(-0.6, 50);
+        StraightIn(-0.6, 60);
         if (is_red) {
             TurnLeftD(0.35, 40, true);
             if(is_ball) {
