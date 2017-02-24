@@ -87,7 +87,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double LEFT_BEACON_PRESS = 0.50;
     final static double LEFT_BEACON_INIT = 0.12;
     final static double RIGHT_BEACON_PRESS = 0.43;
-    final static double RIGHT_BEACON_INIT = 0.69;
+    final static double RIGHT_BEACON_INIT = 0.72;
     final static double LEFT_BEACON_SIDE_DOWN = 0.15;
     final static double LEFT_BEACON_SIDE_PRESS = 0.82;
     final static double LEFT_BEACON_SIDE_INIT = 0.15;
@@ -875,7 +875,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (cur_vol < full_power_vol) {
             SH_power = 1.0;
         } else {
-            SH_power = ((1.0 - 0.31 * (cur_vol - full_power_vol))*1.0);
+            SH_power = ((1.0 - 0.3 * (cur_vol - full_power_vol))*1.0);
             if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
@@ -1144,14 +1144,14 @@ public class TT_2016_Hardware extends LinearOpMode {
         initAutoOpTime = getRuntime();
         driveTT(power, power);
         int i = 0;
-        while (!detectWhite() && (getRuntime() - initAutoOpTime < 3)) {
+        while (!detectWhite() && (getRuntime() - initAutoOpTime < 2)) {
             if ((++i % 10) == 0)
                 driveTT(power, power);
         }
         stop_chassis();
-        if ((getRuntime() - initAutoOpTime > 3.0)) { // time out, try backward
+        if ((getRuntime() - initAutoOpTime > 2.0)) { // time out, try backward
             power = -1 * power;
-            while (!detectWhite() && (getRuntime() - initAutoOpTime < 3)) {
+            while (!detectWhite() && (getRuntime() - initAutoOpTime < 2)) {
                 if ((++i % 10) == 0)
                     driveTT(power, power);
             }
@@ -1183,7 +1183,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void auto_part1(boolean is_red, boolean is_in) throws InterruptedException {
 
-        set_pusher(PUSHER_DOWN_1);
+        //set_pusher(PUSHER_DOWN_1);
 
         if (use_gyro) {
             DbgLog.msg(String.format("Gyro current heading = %d, power L/R = %.2f/%.2f",
@@ -1253,11 +1253,11 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (navx_device.getYaw() + 46);
+                        degree = (float) (navx_device.getYaw() + 46.5);
                     } else if (use_ada_imu) {
-                        degree = (float) (46 - (int) ada_imu_heading());
+                        degree = (float) (46.5 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 46);
+                        degree = (float) (gyro.getHeading() + 46.5);
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
@@ -1298,24 +1298,26 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void auto_out_shooting(boolean is_red, boolean is_ball) throws InterruptedException {
 
-        StraightIn(-0.5, 40);
+        StraightIn(-0.5, 1);
+        sleep(5000);
+        shooter.setPower(SH_power);
+        sleep(2000);
+        StraightIn(-0.5, 12.5);
         if (is_red) {
-
-            sleep(7000);
             goShooting(2, true, false);
-            TurnLeftD(0.35, 45, true);
+            TurnLeftD(0.35, 55, true);
         } else {
-
-            sleep(7000);
             goShooting(2, false, false);
-            TurnRightD(0.35, 38, true);
+            TurnRightD(0.35, 50, true);
         }
-        StraightIn(-0.6, 60);
+        StraightIn(-0.6, 43);
         if (is_red) {
             TurnLeftD(0.35, 40, true);
             if(is_ball) {
+                fast_mode = true;
                 StraightIn(0.5, 38);
-                StraightIn(-0.5,38);
+                StraightIn(-0.5, 42);
+                fast_mode = false;
             }
             else{
                 StraightIn(-0.5, 17);
@@ -1323,8 +1325,10 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             TurnRightD(0.35, 40, true);
             if (is_ball) {
+                fast_mode = true;
                 StraightIn(0.5, 38);
-                StraightIn(-0.5, 38);
+                StraightIn(-0.5, 42);
+                fast_mode = false;
             }
             else {
                 StraightIn(-0.5, 15);
@@ -1354,18 +1358,18 @@ public class TT_2016_Hardware extends LinearOpMode {
             shooter.setPower(0.5);
             sleep(100);
 
-            if (SH_power * 1.1 < 1.0) {
-                shooter.setPower(SH_power * 1.1);
+            if (SH_power * 1.15 < 1.0) {
+                shooter.setPower(SH_power * 1.15);
             } else {
                 shooter.setPower(1.0);
             }
-            sleep(1000);
+            sleep(2000);
 
 
             shootBallGolfGate();
 
         if(times == 2){
-            sleep(1000);
+            sleep(2000);
             set_golf_gate(GOLF_GATE_OPEN);
             sleep(400);
             set_golf_gate(GOLF_GATE_CLOSED);
@@ -1627,11 +1631,29 @@ public class TT_2016_Hardware extends LinearOpMode {
 
         if (opModeIsActive()) {
             StraightIn(-0.75, 14);
-            if(is_red){
-                TurnRightD(0.35, 1, true); // shoot towards center vortex
+            double degree = 0;
+            // degree > 0 is right turn correction
+            // degress < 0 is left turn correction
+            if (is_red) {
+                if (use_navx) { // -45 is the ideal heading
+                    degree = (-45.0 - navx_device.getYaw());
+                } else if (use_ada_imu) { // -315 is the ideal heading
+                    degree = (float) (315 + ada_imu_heading());
+                }
+            } else { // blue zone
+                if (use_navx) { // 45 is the ideal heading
+                    degree = (45.0-navx_device.getYaw());
+                } else if (use_ada_imu) { // -45 is the ideal heading
+                    degree = (float) (45 + ada_imu_heading());
+                }
             }
-            else {
-                TurnRightD(0.35, 2, true);
+            degree += 1;
+            if (Math.abs(degree)<0.5 || Math.abs(degree)>20) {
+
+            } else if (degree>0){
+                TurnRightD(0.35,(float)degree,true);
+            } else {
+                TurnLeftD(0.35,(float)degree,true);
             }
 
             shootAuto(shoot_twice, shooterPW);
