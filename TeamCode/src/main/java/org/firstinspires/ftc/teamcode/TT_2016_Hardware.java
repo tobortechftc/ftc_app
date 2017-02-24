@@ -54,6 +54,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
@@ -1053,11 +1054,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_right_button() throws InterruptedException {
         if (!opModeIsActive()) return;
+        fast_mode = true;
         StraightIn(-0.3,0.5);
         set_right_beacon(RIGHT_BEACON_PRESS);
         sleep(330);
         bump_beacon();
         set_right_beacon(RIGHT_BEACON_INIT);
+        fast_mode = false;
     }
 
     void bump_beacon() throws InterruptedException {
@@ -1071,11 +1074,13 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     void hit_left_button() throws InterruptedException {
         if (!opModeIsActive()) return;
+        fast_mode = true;
         StraightIn(-0.3,0.5);
         set_left_beacon(LEFT_BEACON_PRESS);
         sleep(330);
         bump_beacon();
         set_left_beacon(LEFT_BEACON_INIT);
+        fast_mode = false;
     }
 
     public void forwardTillUltra(double us_stop_val, double power, double max_sec, boolean is_red) throws InterruptedException {
@@ -1144,6 +1149,14 @@ public class TT_2016_Hardware extends LinearOpMode {
                 driveTT(power, power);
         }
         stop_chassis();
+        if ((getRuntime() - initAutoOpTime > 3.0)) { // time out, try backward
+            power = -1 * power;
+            while (!detectWhite() && (getRuntime() - initAutoOpTime < 3)) {
+                if ((++i % 10) == 0)
+                    driveTT(power, power);
+            }
+            stop_chassis();
+        }
     }
 
     public void goUntilWhite(double power) throws InterruptedException {
@@ -1443,8 +1456,10 @@ public class TT_2016_Hardware extends LinearOpMode {
             }
             //StraightIn(-0.5, 3);
         }
-        //sleep(200);
-        //forwardTillUltra(10, 0.25, 3);
+        beacon_mission(is_red);
+    }
+
+    public void beacon_mission(boolean is_red) throws InterruptedException {
         blue_detected = false;
         red_detected = false;
 
@@ -1452,49 +1467,105 @@ public class TT_2016_Hardware extends LinearOpMode {
             //sleep(1000);
             // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
             forwardTillUltra(12, 0.25, 7, is_red);
-            sleep(100);
+            // sleep(100);
 
             // StraightIn(0.3, 1.0);
             //hit_left_button();
-            TT_ColorPicker.Color left_co = TT_ColorPicker.Color.UNKNOWN;
-            double initTime = getRuntime();
-            // sense color up to 2 secs
-            do {
-                left_co = colorPicker.getColor(true); // get left Beacon
-            }
-            while ((left_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
+            boolean done = false;
+            for (int i=0; i<2 && done==false; i++) { // try at most twice
+                TT_ColorPicker.Color left_co = getColorDualSensor(true);
 
-            if ((left_co == TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
-                TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
-                do {
-                    right_co = colorPicker.getColor(false);
+                // Detect Beacon color and hit the correct side
+                if (!opModeIsActive()) return;
+                if (left_co == TT_ColorPicker.Color.BLUE) {
+                    blue_detected = true;
+                    if (is_red) {
+                        hit_right_button();
+                        // check if left is blue
+                        if (getColorDualSensor(true) == TT_ColorPicker.Color.BLUE) { // hit one more time
+                            if (getColorDualSensor(false) == TT_ColorPicker.Color.BLUE)
+                                sleep(5000);
+                            hit_right_button();
+                        }
+                    } else { // blue zone
+                        hit_left_button();
+                        // check if right is red
+                        if (getColorDualSensor(false) == TT_ColorPicker.Color.RED) { // hit one more time
+                            if (getColorDualSensor(true) == TT_ColorPicker.Color.RED)
+                                sleep(5000);
+                            hit_left_button();
+                        }
+                    }
+                    done = true;
+                } else if (left_co == TT_ColorPicker.Color.RED) {
+                    red_detected = true;
+                    if (is_red) {
+                        hit_left_button();
+                        // check if right is blue
+                        if (getColorDualSensor(false) == TT_ColorPicker.Color.BLUE) { // hit one more time
+                            if (getColorDualSensor(true) == TT_ColorPicker.Color.BLUE)
+                                sleep(5000);
+                            hit_left_button();
+                        }
+                    } else { // blue zone
+                        hit_right_button();
+                        // check if left is red
+                        if (getColorDualSensor(true) == TT_ColorPicker.Color.RED) { // hit one more time
+                            if (getColorDualSensor(false) == TT_ColorPicker.Color.RED)
+                                sleep(5000);
+                            hit_right_button();
+                        }
+                    }
+                    done = true;
+                } else { // unknown, try heading correction and retry
+                    double degree = 0;
+                    // degree > 0 is right turn correction
+                    // degress < 0 is left turn correction
+                    if (is_red) {
+                        if (use_navx) { // -45 is the ideal heading
+                            degree = (-45.0 - navx_device.getYaw());
+                        } else if (use_ada_imu) { // -315 is the ideal heading
+                            degree = (float) (315 + ada_imu_heading());
+                        }
+                    } else { // blue zone
+                        if (use_navx) { // 45 is the ideal heading
+                            degree = (45.0-navx_device.getYaw());
+                        } else if (use_ada_imu) { // -45 is the ideal heading
+                            degree = (float) (45 + ada_imu_heading());
+                        }
+                    }
+                    if (Math.abs(degree)<0.5 || Math.abs(degree)>20) {
+                        done = true;
+                    } else if (degree>0){
+                        TurnRightD(0.35,(float)degree,true);
+                    } else {
+                        TurnLeftD(0.35,(float)degree,true);
+                    }
                 }
-                while ((right_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 1.0) && opModeIsActive());
-                if (right_co == TT_ColorPicker.Color.BLUE)
-                    left_co = TT_ColorPicker.Color.RED;
-                else if (right_co == TT_ColorPicker.Color.RED)
-                    left_co = TT_ColorPicker.Color.BLUE;
-            }
-            // Detect Beacon color and hit the correct side
-            if (!opModeIsActive()) return;
-            if (left_co == TT_ColorPicker.Color.BLUE) {
-                blue_detected = true;
-                if (is_red) {
-                    hit_right_button();
-                } else {
-                    hit_left_button();
-                }
-            } else if (left_co == TT_ColorPicker.Color.RED) {
-                red_detected = true;
-                if (is_red) {
-                    hit_left_button();
-                } else {
-                    hit_right_button();
-                }
-            } else { // unknown, better not do anything than giving the credit to the opponent
-                // doing nothing. May print out the message for debugging
-            }
+            } // for loop
         }
+    }
+
+    public TT_ColorPicker.Color getColorOneSensor(Boolean is_left) {
+        TT_ColorPicker.Color result;
+        double initTime = getRuntime();
+        // sense color up to 0.5 secs
+        do {
+            result = colorPicker.getColor(is_left); // get left Beacon
+        } while ((result == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
+        return result;
+    }
+
+    public TT_ColorPicker.Color getColorDualSensor(Boolean is_left) {
+        TT_ColorPicker.Color result = getColorOneSensor(is_left);
+        if ((result == TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
+            TT_ColorPicker.Color alt = getColorOneSensor(!is_left);
+            if (alt == TT_ColorPicker.Color.BLUE)
+                result = TT_ColorPicker.Color.RED;
+            else if (alt == TT_ColorPicker.Color.RED)
+                result = TT_ColorPicker.Color.BLUE;
+        }
+        return result;
     }
 
     public void goBeaconAndShooting(boolean shoot_twice, boolean is_red) throws InterruptedException {
@@ -1551,60 +1622,9 @@ public class TT_2016_Hardware extends LinearOpMode {
             //set_pusher(PUSHER_DOWN_1);
             //StraightIn(-0.5, 3);
         }
-        // sleep(200);
-        //forwardTillUltra(10, 0.25, 3);
-        blue_detected = false;
-        red_detected = false;
 
-        if (true) {
-            //sleep(1000);
-            // Follow line until optical distance sensor detect 0.2 value to the wall (about 6cm)
-            forwardTillUltra(12, 0.25, 7, is_red);
-            sleep(100);
+        beacon_mission(is_red);
 
-            // StraightIn(0.3, 1.0);
-            //hit_left_button();
-            TT_ColorPicker.Color left_co = TT_ColorPicker.Color.UNKNOWN;
-            double initTime = getRuntime();
-            // sense color up to 2 secs
-            do {
-                left_co = colorPicker.getColor(true);
-            }
-            while ((left_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
-
-            if ((left_co == TT_ColorPicker.Color.UNKNOWN) && opModeIsActive()) { // Try right beacon color
-                TT_ColorPicker.Color right_co = TT_ColorPicker.Color.UNKNOWN;
-                do {
-                    right_co = colorPicker.getColor(false);
-                }
-                while ((right_co == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 1.0) && opModeIsActive());
-                if (right_co == TT_ColorPicker.Color.BLUE)
-                    left_co = TT_ColorPicker.Color.RED;
-                else if (right_co == TT_ColorPicker.Color.RED)
-                    left_co = TT_ColorPicker.Color.BLUE;
-            }
-            // Detect Beacon color and hit the correct side
-            if (!opModeIsActive())
-                return;
-            if (left_co == TT_ColorPicker.Color.BLUE) {
-                blue_detected = true;
-                if (is_red) {
-                    hit_right_button();
-                } else {
-                    hit_left_button();
-                }
-            } else if (left_co == TT_ColorPicker.Color.RED) {
-                red_detected = true;
-                if (is_red) {
-                    hit_left_button();
-                } else {
-                    hit_right_button();
-                }
-            } else { // unknown, better not do anything than giving the credit to the opponent
-                // doing nothing. May print out the message for debugging
-            }
-
-        }
         if (opModeIsActive()) {
             StraightIn(-0.75, 14);
             if(is_red){
