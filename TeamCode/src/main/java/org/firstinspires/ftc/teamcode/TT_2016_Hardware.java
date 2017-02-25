@@ -586,21 +586,21 @@ public class TT_2016_Hardware extends LinearOpMode {
         if (use_navx) {
             double cur_heading = navx_device.getYaw();
             if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
-                if (lp > 0) lp *= 0.9;
-                else rp *= 0.9; // adjust backward
+                if (lp > 0) lp *= 0.85;
+                else rp *= 0.85; // adjust backward
             } else if (cur_heading - imu_heading < -0.7) { // crook to left, slow down right motor
-                if (rp > 0) rp *= 0.9;
-                else lp *= 0.9;
+                if (rp > 0) rp *= 0.85;
+                else lp *= 0.85;
             }
 
         } else if (use_ada_imu) {
             double cur_heading = ada_imu_heading();
             if (cur_heading - imu_heading > 0.7) { // crook to left,  slow down right motor
-                if (rp > 0) rp *= 0.9;
-                else lp *= 0.9;
+                if (rp > 0) rp *= 0.85;
+                else lp *= 0.85;
             } else if (cur_heading - imu_heading < -0.7) { // crook to right, slow down left motor
-                if (lp > 0) lp *= 0.9;
-                else rp *= 0.9;
+                if (lp > 0) lp *= 0.85;
+                else rp *= 0.85;
             }
         }
         motorR.setPower(rp);
@@ -1253,11 +1253,11 @@ public class TT_2016_Hardware extends LinearOpMode {
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (float) (navx_device.getYaw() + 46.5);
+                        degree = (float) (navx_device.getYaw() + 47);
                     } else if (use_ada_imu) {
-                        degree = (float) (46.5 - (int) ada_imu_heading());
+                        degree = (float) (47 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 46.5);
+                        degree = (float) (gyro.getHeading() + 47);
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
@@ -1488,7 +1488,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         // check if left is blue
                         if (getColorDualSensor(true) == TT_ColorPicker.Color.BLUE) { // hit one more time
                             if (getColorDualSensor(false) == TT_ColorPicker.Color.BLUE)
-                                sleep(5000);
+                                sleep(3500);
                             hit_right_button();
                         }
                     } else { // blue zone
@@ -1496,7 +1496,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         // check if right is red
                         if (getColorDualSensor(false) == TT_ColorPicker.Color.RED) { // hit one more time
                             if (getColorDualSensor(true) == TT_ColorPicker.Color.RED)
-                                sleep(5000);
+                                sleep(3500);
                             hit_left_button();
                         }
                     }
@@ -1508,7 +1508,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         // check if right is blue
                         if (getColorDualSensor(false) == TT_ColorPicker.Color.BLUE) { // hit one more time
                             if (getColorDualSensor(true) == TT_ColorPicker.Color.BLUE)
-                                sleep(5000);
+                                sleep(3500);
                             hit_left_button();
                         }
                     } else { // blue zone
@@ -1516,7 +1516,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                         // check if left is red
                         if (getColorDualSensor(true) == TT_ColorPicker.Color.RED) { // hit one more time
                             if (getColorDualSensor(false) == TT_ColorPicker.Color.RED)
-                                sleep(5000);
+                                sleep(3500);
                             hit_right_button();
                         }
                     }

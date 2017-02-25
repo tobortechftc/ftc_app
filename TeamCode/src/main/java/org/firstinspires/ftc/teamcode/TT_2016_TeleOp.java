@@ -330,7 +330,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (gamepad2.dpad_up) {
                 set_left_beacon(LEFT_BEACON_PRESS);
                 set_right_beacon(RIGHT_BEACON_PRESS);
-                sweeper.setPower(0.5);
+                sweeper.setPower(-0.5);
                 sleep(100);
                 sweeper.setPower(0);
                 sleep(400);
@@ -351,7 +351,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             } else if (gamepad2.dpad_down) {
                 set_left_beacon(LEFT_BEACON_INIT);
                 set_right_beacon(RIGHT_BEACON_INIT);
-                sweeper.setPower(-0.5);
+                sweeper.setPower(0.5);
                 sleep(100);
                 sweeper.setPower(0);
                 sleep(400);
