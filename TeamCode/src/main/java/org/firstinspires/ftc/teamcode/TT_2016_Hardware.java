@@ -1586,6 +1586,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         do {
             result = colorPicker.getColor(is_left); // get left Beacon
         } while ((result == TT_ColorPicker.Color.UNKNOWN) && (getRuntime() - initTime < 0.5) && opModeIsActive());
+        colorPicker.reset();
         return result;
     }
 
