@@ -76,7 +76,7 @@ public class TT_2016_Hardware extends LinearOpMode {
     //final static double PUSHER_DOWN_2 = 0.4;
     //final static double PUSHER_EXTRA = 0.1;
     final static double GATE_CLOSED = 0.3;
-    final static double GATE_OPEN_SWEEPER_CLOSED = 0.5;
+    final static double GATE_OPEN_SWEEPER_CLOSED = 0.6;
     final static double GATE_OPEN = 0.9;
     final static double GOLF_GATE_CLOSED = 0.54;
     final static double GOLF_GATE_OPEN = 0.92;
@@ -119,6 +119,8 @@ public class TT_2016_Hardware extends LinearOpMode {
     final static double GYRO_ROTATION_RATIO_R = 0.65; // 0.84; // Ratio of Gyro Sensor Right turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_L = 0.75; // 0.84; // Ratio of NavX Sensor Left turn to prevent overshooting the turn.
     final static double NAVX_ROTATION_RATIO_R = 0.75; // 0.84; // Ratio of NavX Sensor Right turn to prevent overshooting the turn.
+    final static double DRIVE_RATIO_L = 0.9; //control veering by lowering left motor power
+    final static double DRIVE_RATIO_R = 1.0; //control veering by lowering right motor power
     // variables for sensors
       /* This is the port on the Core Device Interace Module */
   /* in which the navX-Micro is connected.  Modify this  */
@@ -583,28 +585,36 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void driveTT(double lp, double rp) {
         //if (use_gyro == true && lp == rp) {
-        if (use_navx) {
-            double cur_heading = navx_device.getYaw();
-            if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
-                if (lp > 0) lp *= 0.85;
-                else rp *= 0.85; // adjust backward
-            } else if (cur_heading - imu_heading < -0.7) { // crook to left, slow down right motor
-                if (rp > 0) rp *= 0.85;
-                else lp *= 0.85;
-            }
+        if(!fast_mode) {
+            if (use_navx) {
+                double cur_heading = navx_device.getYaw();
+                if (cur_heading - imu_heading > 0.7) { // crook to right,  slow down left motor
+                    if (lp > 0) lp *= 0.85;
+                    else rp *= 0.85; // adjust backward
+                } else if (cur_heading - imu_heading < -0.7) { // crook to left, slow down right motor
+                    if (rp > 0) rp *= 0.85;
+                    else lp *= 0.85;
+                }
 
-        } else if (use_ada_imu) {
-            double cur_heading = ada_imu_heading();
-            if (cur_heading - imu_heading > 0.7) { // crook to left,  slow down right motor
-                if (rp > 0) rp *= 0.85;
-                else lp *= 0.85;
-            } else if (cur_heading - imu_heading < -0.7) { // crook to right, slow down left motor
-                if (lp > 0) lp *= 0.85;
-                else rp *= 0.85;
+            } else if (use_ada_imu) {
+                double cur_heading = ada_imu_heading();
+                if (cur_heading - imu_heading > 0.7) { // crook to left,  slow down right motor
+                    if (rp > 0) rp *= 0.85;
+                    else lp *= 0.85;
+                } else if (cur_heading - imu_heading < -0.7) { // crook to right, slow down left motor
+                    if (lp > 0) lp *= 0.85;
+                    else rp *= 0.85;
+                }
             }
         }
-        motorR.setPower(rp);
-        motorL.setPower(lp);
+        if (Math.abs(rp) > 0.4 && Math.abs(lp) > 0.4) {
+            motorR.setPower(rp * DRIVE_RATIO_R);
+            motorL.setPower(lp * DRIVE_RATIO_L);
+        }
+        else{
+            motorR.setPower(rp);
+            motorL.setPower(lp);
+        }
     }
 
     public void run_until_encoder(int leftCnt, double leftPower, int rightCnt, double rightPower) throws InterruptedException {
@@ -617,13 +627,26 @@ public class TT_2016_Hardware extends LinearOpMode {
         int rightTC1 = rightCnt;
         int leftTC2 = 0;
         int rightTC2 = 0;
-        if (leftPower > 0.4 && leftTC1 > 600) {
-            leftTC2 = 500;
+        int leftTC0 = 0;
+        int rightTC0 = 0;
+        double initLeftPower = leftPower;
+        double initRightPower = rightPower;
+        if (leftPower > 0.4 && leftTC1 > 600 && !fast_mode) {
+            leftTC2 = 450;
+            leftTC0 = 50;
             leftTC1 -= 500;
         }
-        if (rightPower > 0.4 && rightTC1 > 600) {
-            rightTC2 = 500;
+        if (rightPower > 0.4 && rightTC1 > 600 && !fast_mode) {
+            rightTC2 = 450;
+            rightTC0 = 50;
             rightTC1 -= 500;
+        }
+        if (rightTC0 > 0 || leftTC0 > 0) {
+            driveTT(0.3, 0.3);
+            while (!have_drive_encoders_reached(leftTC0, rightTC0) && (getRuntime() - initAutoOpTime < 7) && opModeIsActive()) {
+                driveTT(0.3, 0.3);
+                // show_telemetry();
+            }
         }
         driveTT(leftPower, rightPower);
         initAutoOpTime = getRuntime();
@@ -909,10 +932,10 @@ public class TT_2016_Hardware extends LinearOpMode {
     }
 
     void shootAuto(boolean shoot_twice, double shooterPW){
-        shooterPW *= 1.1;
+        shooterPW *= 1.2;
         if (shooterPW > 1.0)
             shooterPW = 1.0;
-        shooter.setPower(shooterPW);
+        shooter.setPower(1.0);
         //push_ball();
         sleep(200);
         shootBallGateGolf();
@@ -1212,7 +1235,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         } else {
             TurnLeftD(0.35, 38, true);
         }
-        StraightIn(0.75, 16);
+        StraightIn(0.75, 17);
 
 
         if (use_gyro) {
@@ -1248,16 +1271,16 @@ public class TT_2016_Hardware extends LinearOpMode {
                     }
                     if (degree >= 180) degree = 179;
                     TurnRightD(0.35, degree, true);
-                    StraightIn(1.0, 44);
+                    StraightIn(1.0, 47);
                     goBeacon(true);
                 } else { // blue
                     float degree = 88;
                     if (use_navx) {
-                        degree = (float) (navx_device.getYaw() + 47);
+                        degree = (float) (navx_device.getYaw() + 47.5);
                     } else if (use_ada_imu) {
-                        degree = (float) (47 - (int) ada_imu_heading());
+                        degree = (float) (47.5 - (int) ada_imu_heading());
                     } else if (use_gyro) {
-                        degree = (float) (gyro.getHeading() + 47);
+                        degree = (float) (gyro.getHeading() + 47.5);
                     }
                     if (degree >= 180) degree = 179;
                     TurnLeftD(0.35, degree, true);
@@ -1308,7 +1331,7 @@ public class TT_2016_Hardware extends LinearOpMode {
             TurnLeftD(0.35, 55, true);
         } else {
             goShooting(2, false, false);
-            TurnRightD(0.35, 50, true);
+            TurnRightD(0.35, 45, true);
         }
         StraightIn(-0.6, 43);
         if (is_red) {
@@ -1538,8 +1561,13 @@ public class TT_2016_Hardware extends LinearOpMode {
                             degree = (float) (45 + ada_imu_heading());
                         }
                     }
-                    if (Math.abs(degree)<0.5 || Math.abs(degree)>20) {
-                        done = true;
+                    if (Math.abs(degree)<0.2 || Math.abs(degree)>20) {
+                        if(is_red){
+                            TurnLeftD(0.35, 1, true);
+                        }
+                        else{
+                            TurnRightD(0.35, 1, true);
+                        }
                     } else if (degree>0){
                         TurnRightD(0.35,(float)degree,true);
                     } else {
@@ -1548,6 +1576,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                 }
             } // for loop
         }
+        colorPicker.reset();
     }
 
     public TT_ColorPicker.Color getColorOneSensor(Boolean is_left) {
@@ -1647,7 +1676,7 @@ public class TT_2016_Hardware extends LinearOpMode {
                     degree = (float) (45 + ada_imu_heading());
                 }
             }
-            degree += 1;
+            degree += 0.5;
             if (Math.abs(degree)<0.5 || Math.abs(degree)>20) {
 
             } else if (degree>0){
