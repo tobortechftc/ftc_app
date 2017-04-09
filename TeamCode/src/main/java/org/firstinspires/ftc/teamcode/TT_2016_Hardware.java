@@ -894,11 +894,11 @@ public class TT_2016_Hardware extends LinearOpMode {
         //
         // when cur_vol is >= full_power_vol
         //         power = 1.0 - 0.31 * (cur_vol - full_power_val)
-        double full_power_vol = 13.0;
+        double full_power_vol = 13;
         if (cur_vol < full_power_vol) {
             SH_power = 1.0;
         } else {
-            SH_power = ((1.0 - 0.3 * (cur_vol - full_power_vol))*1.0);
+            SH_power = ((1.0 - 0.1 * (cur_vol - full_power_vol))*1.0);
             if (SH_power > 1.0) {
                 SH_power = 1.0;
             }
