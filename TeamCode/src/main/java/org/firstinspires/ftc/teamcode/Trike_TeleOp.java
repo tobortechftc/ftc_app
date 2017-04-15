@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.Range;
  * <p/>
  * Define all hardware (e.g. motors, servos, sensors) used by Tobot
  */
-@TeleOp(name = "TeleOp-2016", group = "TT-LN-OP")
+@TeleOp(name = "Trike-2016", group = "TT-LN-OP")
 public class Trike_TeleOp extends LinearOpMode {
 
     TrikeHardware robot = new TrikeHardware();
@@ -54,6 +54,8 @@ public class Trike_TeleOp extends LinearOpMode {
         int delay_count = 0;
         int monitor_count = 0;
         double cur_SH_power = 0;
+        boolean is_forward = true;
+        double current_turn_angle = robot.TRIKE_TURNING_INIT;
 
         robot.speedScale = (float) 1.0; // control the initial chassis speed
 
@@ -77,10 +79,33 @@ public class Trike_TeleOp extends LinearOpMode {
             robot.trike_drive.setPower(robot.drivePower);
 
             if(gamepad1.left_bumper){
-                robot.set_trike_turning(robot.TRIKE_TURNING_LEFT);
+                robot.set_trike_turning(robot.TRIKE_TURNING_INIT);
             }
+
             if(gamepad1.right_bumper){
                 robot.set_trike_turning(robot.TRIKE_TURNING_RIGHT);
+            }
+
+            if(gamepad1.a){
+                if(is_forward){
+                    robot.set_trike_turning(robot.TRIKE_TURNING_RIGHT);
+                    is_forward = false;
+                }
+                else{
+                    robot.set_trike_turning(robot.TRIKE_TURNING_INIT);
+                    is_forward = true;
+                }
+                sleep(50);
+            }
+
+            if(gamepad1.right_trigger > 0.1){
+                current_turn_angle += 0.01;
+                robot.set_trike_turning(current_turn_angle);
+            }
+
+            if(gamepad1.left_trigger > 0.1){
+                current_turn_angle -= 0.01;
+                robot.set_trike_turning(current_turn_angle);
             }
         }
     }

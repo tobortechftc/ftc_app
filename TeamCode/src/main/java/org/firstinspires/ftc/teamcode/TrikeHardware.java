@@ -24,17 +24,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TrikeHardware
 {
 
-    final static double TRIKE_TURNING_INIT = 0.5;
-    final static double TRIKE_TURNING_RIGHT = 0.1;
+    final static double TRIKE_TURNING_INIT = 0.95;
+    final static double TRIKE_TURNING_RIGHT = 0.3;
     final static double TRIKE_TURNING_LEFT = 0.9;
 
     /* Public OpMode members. */
     public DcMotor  trike_drive   = null;
     public Servo trike_turning = null;
 
-    public static final double MID_SERVO       =  0.5 ;
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
