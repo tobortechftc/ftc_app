@@ -56,7 +56,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
         waitForStart();
 
         // StraightIn(0.4, 10);
-        cdim.setDigitalChannelState(LED_CHANNEL, true);
+        //cdim.setDigitalChannelState(LED_CHANNEL, true);
 
         while (opModeIsActive()) {
             if (true) {
@@ -133,7 +133,7 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
             if (delay_count > 0)
                 delay_count--;
 
-            if (true) {
+            if (false) {
                 monitor_count++;
                 if (monitor_count % 10000 == 0) {
                     adjustShooterPower();
@@ -356,14 +356,15 @@ public class TT_2016_TeleOp extends TT_2016_Hardware {
                 sweeper.setPower(0);
                 sleep(400);
             }
+            /*
             if (detectWhite()) {
                 detectwhite = 1;
             } else {
                 detectwhite = 0;
             }
-
+            */
             show_telemetry();
         }
-        cdim.setDigitalChannelState(LED_CHANNEL, false);
+        //cdim.setDigitalChannelState(LED_CHANNEL, false);
     }
 }

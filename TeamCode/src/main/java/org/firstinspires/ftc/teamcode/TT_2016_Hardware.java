@@ -172,15 +172,15 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     // following variables are used by Chassis
     State state;
-    Boolean use_navx = true;    // set to false to disable navx
-    Boolean use_ada_imu = true; // set to false to disable adafruit IMU
-    Boolean use_gyro = true;    // set to false to disable MR gyro
+    Boolean use_navx = false;    // set to false to disable navx
+    Boolean use_ada_imu = false; // set to false to disable adafruit IMU
+    Boolean use_gyro = false;    // set to false to disable MR gyro
     Boolean use_encoder = true;
-    Boolean use_ultra = true;
-    Boolean use_range = true;
+    Boolean use_ultra = false;
+    Boolean use_range = false;
     Boolean use_adacolor = false;
     Boolean use_light = false;
-    Boolean use_ods = true;
+    Boolean use_ods = false;
     Boolean fast_mode = false;
     Boolean shooting_range = false;
     float speedScale = (float) 0.7; // controlling the speed of the chassis in teleOp state
@@ -248,8 +248,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         }
 
         //light_sensor_sv = init_servo("light_sensor_sv");
-        left_beacon_sv = init_servo("left_beacon_sv");
-        right_beacon_sv = init_servo("right_beacon_sv");
+        //left_beacon_sv = init_servo("left_beacon_sv");
+        //right_beacon_sv = init_servo("right_beacon_sv");
         //left_beacon_side_sv = init_servo("left_beacon_side_sv");
        // right_beacon_side_sv = init_servo("right_beacon_side_sv");
         gate_sv = init_servo("gate_sv");
@@ -258,8 +258,8 @@ public class TT_2016_Hardware extends LinearOpMode {
         slider_gate_sv = init_servo("slider_gate_sv");
         //DbgLog.msg(String.format("TOBOT-INIT  light_sensor_sv -"));
         //set_light_sensor(LIGHT_SENSOR_DOWN);
-        set_left_beacon(LEFT_BEACON_INIT);
-        set_right_beacon(RIGHT_BEACON_INIT);
+        //set_left_beacon(LEFT_BEACON_INIT);
+        //set_right_beacon(RIGHT_BEACON_INIT);
         set_gate(GATE_CLOSED);
         set_golf_gate(GOLF_GATE_CLOSED);
         set_pusher(PUSHER_UP);
@@ -306,6 +306,7 @@ public class TT_2016_Hardware extends LinearOpMode {
 
 
         // initialize sensores
+        /*
         cdim = hardwareMap.deviceInterfaceModule.get("dim");
         coSensor = hardwareMap.colorSensor.get("co");
         coSensor.setI2cAddress(I2cAddr.create8bit(0x60));
@@ -321,7 +322,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         // remember, the Adafruit sensor is actually two devices.
         // It's an I2C sensor and it's also an LED that can be turned on or off.
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
-
+        */
         // get a reference to our ColorSensor object.
         if (use_adacolor) {
             coAda = hardwareMap.colorSensor.get("color");
@@ -338,7 +339,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         boolean bEnabled = true;
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
-        cdim.setDigitalChannelState(LED_CHANNEL, bEnabled);
+        // cdim.setDigitalChannelState(LED_CHANNEL, bEnabled);
 
         //tSensor = hardwareMap.touchSensor.get("to");
         //opSensor = hardwareMap.opticalDistanceSensor.get("op");
@@ -349,7 +350,7 @@ public class TT_2016_Hardware extends LinearOpMode {
         //LL = hardwareMap.lightSensor.get("ll");
         //LR = hardwareMap.lightSensor.get("lr");
 
-        colorPicker = new TT_ColorPicker(coSensor, coSensor2); // right_color_sen, left_color_sen
+        // colorPicker = new TT_ColorPicker(coSensor, coSensor2); // right_color_sen, left_color_sen
 
         //Instantiate ToborTech Nav objects:
         // 1. navx
@@ -1150,12 +1151,12 @@ public class TT_2016_Hardware extends LinearOpMode {
 
     public void set_left_beacon(double pos) {
         left_beacon_sv_pos = pos;
-        left_beacon_sv.setPosition(left_beacon_sv_pos);
+        //left_beacon_sv.setPosition(left_beacon_sv_pos);
     }
 
     public void set_right_beacon(double pos) {
         right_beacon_sv_pos = pos;
-        right_beacon_sv.setPosition(right_beacon_sv_pos);
+        //right_beacon_sv.setPosition(right_beacon_sv_pos);
     }
 
     public void set_pusher(double pos) {
